@@ -13,9 +13,11 @@ import (
 )
 
 type Config struct {
-	RatingTypes []string `yaml:"RatingTypes"`
-	IssueTypes  []string `yaml:"IssueTypes"`
-	MaxRating   float32  `yaml:"MaxRating"`
+	RatingEntities    []string `yaml:"RatingEntities"`
+	IssueEntities     []string `yaml:"IssueEntities"`
+	IssueTypes        []string `yaml:"IssueTypes"`
+	AllowedProductIds []int    `yaml:"AllowedProductIds"`
+	MaxRating         float32  `yaml:"MaxRating"`
 }
 
 type Repository interface {
@@ -64,14 +66,14 @@ func NewService(ctx context.Context, cfg *Config, repo Repository) *Service {
 func (s *Service) CreateRating(ctx context.Context, req *helpdesk_v1.CreateRatingRequest) (*helpdesk_v1.CreateRatingResponse, error) {
 	// Validate rating entity
 	allowed := false
-	for _, t := range s.cfg.RatingTypes {
+	for _, t := range s.cfg.RatingEntities {
 		if t == req.Entity {
 			allowed = true
 			break
 		}
 	}
 	if !allowed {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid rating entity: %s. allowed entities: %v", req.Entity, s.cfg.RatingTypes)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid rating entity: %s. allowed entities: %v", req.Entity, s.cfg.RatingEntities)
 	}
 
 	if req.Rating < 1 || req.Rating > s.cfg.MaxRating {
@@ -156,7 +158,7 @@ func (s *Service) DeleteRating(ctx context.Context, req *helpdesk_v1.DeleteRatin
 
 func (s *Service) GetRatingsConfig(ctx context.Context, req *helpdesk_v1.GetRatingsConfigRequest) (*helpdesk_v1.GetRatingsConfigResponse, error) {
 	return &helpdesk_v1.GetRatingsConfigResponse{
-		Entities:  s.cfg.RatingTypes,
+		Entities:  s.cfg.RatingEntities,
 		MaxRating: s.cfg.MaxRating,
 	}, nil
 }
