@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS issues (
     id          UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id     TEXT         NOT NULL,
+    user_id     BIGINT         NOT NULL,
     type        TEXT         NOT NULL,           -- entity type: 'product', 'order', 'service', etc.
     entity_id   TEXT         NOT NULL,           -- ID of the entity the issue is about
     title       TEXT         NOT NULL,

@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS rating_replies (
     id          UUID             PRIMARY KEY DEFAULT gen_random_uuid(),
     rating_id   UUID             NOT NULL,
-    user_id     TEXT             NOT NULL,
+    user_id     BIGINT           NOT NULL,
     role        INTEGER          NOT NULL,
     message     TEXT             NOT NULL,
     is_deleted  BOOLEAN          NOT NULL DEFAULT FALSE,

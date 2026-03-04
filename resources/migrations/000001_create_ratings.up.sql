@@ -6,10 +6,10 @@
 
 CREATE TABLE IF NOT EXISTS ratings (
     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id     TEXT        NOT NULL,
+    user_id     BIGINT      NOT NULL,
     type        TEXT        NOT NULL,           -- entity type: 'product', 'order', 'service', etc.
     entity_id   TEXT        NOT NULL,           -- ID of the entity being rated
-    rating      SMALLINT    NOT NULL CHECK (rating >= 1),
+    rating      NUMERIC(3,1) NOT NULL CHECK (rating >= 1),
     comment     TEXT,
     created_at  BIGINT      NOT NULL DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT,
     updated_at  BIGINT      NOT NULL DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT
