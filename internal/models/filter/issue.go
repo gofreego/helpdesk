@@ -6,13 +6,14 @@ import (
 )
 
 type IssueFilter struct {
-	ID       string
-	UserID   int32
-	Entity   string
-	EntityID string
-	Status   int // 0 means no filter, otherwise use status constants
-	Page     int
-	PageSize int
+	ID        string
+	UserID    int32
+	Entity    string
+	EntityID  string
+	Status    int // 0 means no filter, otherwise use status constants
+	Page      int
+	PageSize  int
+	IssueType string
 }
 
 func (f *IssueFilter) WithDefaults() {
@@ -37,12 +38,13 @@ func FromProtoListIssuesRequest(req *helpdesk_v1.ListIssuesRequest) *IssueFilter
 		return &IssueFilter{}
 	}
 	return &IssueFilter{
-		ID:       req.Id,
-		UserID:   req.UserId,
-		Entity:   req.Entity,
-		EntityID: req.EntityId,
-		Status:   int(req.Status),
-		Page:     int(req.Page),
-		PageSize: int(req.PageSize),
+		ID:        req.Id,
+		UserID:    req.UserId,
+		Entity:    req.Entity,
+		EntityID:  req.EntityId,
+		Status:    int(req.Status),
+		Page:      int(req.Page),
+		PageSize:  int(req.PageSize),
+		IssueType: req.IssueType,
 	}
 }

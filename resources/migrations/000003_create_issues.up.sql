@@ -6,8 +6,9 @@ CREATE TABLE IF NOT EXISTS issues (
     id          UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id     BIGINT         NOT NULL,
     product_id  BIGINT         NOT NULL,
+    issue_type  VARCHAR(50)    NOT NULL,
     entity      VARCHAR(20)    NOT NULL,
-    entity_id   TEXT         NOT NULL,           -- ID of the entity the issue is about
+    entity_id   VARCHAR(50)    NOT NULL,           -- ID of the entity the issue is about
     title       TEXT         NOT NULL,
     description TEXT         NOT NULL,
     status      INTEGER      NOT NULL DEFAULT 1, -- 1=open, 2=in_progress, 3=resolved, 4=closed

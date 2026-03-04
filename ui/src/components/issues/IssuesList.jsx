@@ -12,8 +12,10 @@ const IssuesList = ({ currentUser, basePath }) => {
     entity: '',
     entityId: '',
     userId: '',
-    status: ''
+    status: '',
+    issueType: ''
   });
+  const [issueTypes, setIssueTypes] = useState([]);
 
   useEffect(() => {
     loadIssues();
@@ -24,8 +26,9 @@ const IssuesList = ({ currentUser, basePath }) => {
     try {
       const data = await fetchIssueConfig();
       setIssueEntities(data.entities || []);
+      setIssueTypes(data.types || []);
     } catch (err) {
-      console.error('Error fetching issue entities:', err);
+      console.error('Error fetching issue config:', err);
     }
   };
 
@@ -51,7 +54,7 @@ const IssuesList = ({ currentUser, basePath }) => {
 
 
   const handleClearFilters = () => {
-    setFilters({ productId: '', entity: '', entityId: '', userId: '', status: '' });
+    setFilters({ productId: '', entity: '', entityId: '', userId: '', status: '', issueType: '' });
     setLoading(true);
     setTimeout(() => loadIssues(), 100);
   };
@@ -83,7 +86,7 @@ const IssuesList = ({ currentUser, basePath }) => {
       </div>
 
       <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
           <div>
             <label className="form-label">Product ID</label>
             <input
@@ -146,6 +149,20 @@ const IssuesList = ({ currentUser, basePath }) => {
               <option value="4">Closed</option>
             </select>
           </div>
+          <div>
+            <label className="form-label">Issue Type</label>
+            <select
+              name="issueType"
+              className="form-select"
+              value={filters.issueType}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Types</option>
+              {issueTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
           <button onClick={handleApplyFilters} className="btn btn-primary">
@@ -155,7 +172,7 @@ const IssuesList = ({ currentUser, basePath }) => {
             Clear Filters
           </button>
         </div>
-      </div>
+      </div >
 
       <div className="card">
         {issues.length === 0 ? (
@@ -175,6 +192,7 @@ const IssuesList = ({ currentUser, basePath }) => {
                   <th>Product ID</th>
                   <th>Entity</th>
                   <th>Entity ID</th>
+                  <th>Type</th>
                   <th>Status</th>
                   <th>User</th>
                   <th>Action</th>
@@ -189,6 +207,9 @@ const IssuesList = ({ currentUser, basePath }) => {
                       <span className="badge badge-info">{issue.entity}</span>
                     </td>
                     <td>{issue.entityId}</td>
+                    <td>
+                      <span className="badge badge-secondary">{issue.issueType}</span>
+                    </td>
                     <td>{renderStatusBadge(issue.status)}</td>
                     <td>{issue.userId}</td>
                     <td>
@@ -203,7 +224,7 @@ const IssuesList = ({ currentUser, basePath }) => {
           </>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS ratings (
     user_id     BIGINT      NOT NULL,
     product_id  BIGINT      NOT NULL,
     entity      VARCHAR(20) NOT NULL,
-    entity_id   TEXT        NOT NULL,           -- ID of the entity being rated
+    entity_id   VARCHAR(50) NOT NULL,           -- ID of the entity being rated
     rating      NUMERIC(3,1) NOT NULL CHECK (rating >= 1),
     comment     TEXT,
     created_at  BIGINT      NOT NULL DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT,

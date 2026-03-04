@@ -285,6 +285,13 @@ const IssueDetail = ({ currentUser, basePath }) => {
               </div>
 
               <div className="detail-item">
+                <span className="detail-label">Issue Type</span>
+                <span className="detail-value">
+                  <span className="badge badge-secondary">{issue.issueType}</span>
+                </span>
+              </div>
+
+              <div className="detail-item">
                 <span className="detail-label">Created At</span>
                 <span className="detail-value">
                   {new Date(parseInt(issue.createdAt)).toLocaleString()}

@@ -9,9 +9,11 @@ const CreateIssue = ({ currentUser, basePath }) => {
     entity: '',
     entityId: '',
     title: '',
-    description: ''
+    description: '',
+    issueType: ''
   });
   const [issueEntities, setIssueEntities] = useState([]);
+  const [issueTypes, setIssueTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,8 +22,9 @@ const CreateIssue = ({ currentUser, basePath }) => {
       try {
         const data = await fetchIssueConfig();
         setIssueEntities(data.entities || []);
+        setIssueTypes(data.types || []);
       } catch (err) {
-        console.error('Error fetching issue entities:', err);
+        console.error('Error fetching issue config:', err);
       }
     };
     loadConfig();
@@ -101,6 +104,22 @@ const CreateIssue = ({ currentUser, basePath }) => {
               <option value="">Select Entity</option>
               {issueEntities.map(entity => (
                 <option key={entity} value={entity}>{entity}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Issue Type *</label>
+            <select
+              name="issueType"
+              className="form-select"
+              value={formData.issueType}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Type</option>
+              {issueTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
               ))}
             </select>
           </div>

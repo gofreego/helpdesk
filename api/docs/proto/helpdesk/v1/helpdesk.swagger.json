@@ -158,6 +158,12 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "issueType",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -821,6 +827,9 @@
         "status": {
           "type": "integer",
           "format": "int32"
+        },
+        "issueType": {
+          "type": "string"
         }
       }
     },
@@ -898,6 +907,9 @@
           "type": "string"
         },
         "description": {
+          "type": "string"
+        },
+        "issueType": {
           "type": "string"
         }
       }
@@ -1059,6 +1071,9 @@
         "updatedAt": {
           "type": "string",
           "format": "int64"
+        },
+        "issueType": {
+          "type": "string"
         }
       },
       "title": "Issue represents a helpdesk issue"

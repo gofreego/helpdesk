@@ -34,6 +34,7 @@ type Issue struct {
 	Status        int32                  `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"` // 1=open, 2=in_progress, 3=resolved, 4=closed
 	CreatedAt     int64                  `protobuf:"varint,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     int64                  `protobuf:"varint,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	IssueType     string                 `protobuf:"bytes,13,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -138,6 +139,13 @@ func (x *Issue) GetUpdatedAt() int64 {
 	return 0
 }
 
+func (x *Issue) GetIssueType() string {
+	if x != nil {
+		return x.IssueType
+	}
+	return ""
+}
+
 // IssueReply represents a reply in an issue conversation
 type IssueReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -238,6 +246,7 @@ type CreateIssueRequest struct {
 	EntityId      string                 `protobuf:"bytes,2,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	IssueType     string                 `protobuf:"bytes,13,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -303,6 +312,13 @@ func (x *CreateIssueRequest) GetTitle() string {
 func (x *CreateIssueRequest) GetDescription() string {
 	if x != nil {
 		return x.Description
+	}
+	return ""
+}
+
+func (x *CreateIssueRequest) GetIssueType() string {
+	if x != nil {
+		return x.IssueType
 	}
 	return ""
 }
@@ -448,6 +464,7 @@ type ListIssuesRequest struct {
 	Status        int32                  `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
 	Page          int32                  `protobuf:"varint,6,opt,name=page,proto3" json:"page,omitempty"`
 	PageSize      int32                  `protobuf:"varint,7,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	IssueType     string                 `protobuf:"bytes,13,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -531,6 +548,13 @@ func (x *ListIssuesRequest) GetPageSize() int32 {
 	return 0
 }
 
+func (x *ListIssuesRequest) GetIssueType() string {
+	if x != nil {
+		return x.IssueType
+	}
+	return ""
+}
+
 type ListIssuesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Issues        []*Issue               `protobuf:"bytes,1,rep,name=issues,proto3" json:"issues,omitempty"`
@@ -581,6 +605,7 @@ type UpdateIssueRequest struct {
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	Status        int32                  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+	IssueType     string                 `protobuf:"bytes,13,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -641,6 +666,13 @@ func (x *UpdateIssueRequest) GetStatus() int32 {
 		return x.Status
 	}
 	return 0
+}
+
+func (x *UpdateIssueRequest) GetIssueType() string {
+	if x != nil {
+		return x.IssueType
+	}
+	return ""
 }
 
 type UpdateIssueResponse struct {
@@ -1251,7 +1283,7 @@ var File_proto_helpdesk_v1_issues_proto protoreflect.FileDescriptor
 
 const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/helpdesk/v1/issues.proto\x12\x02v1\"\x92\x02\n" +
+	"\x1eproto/helpdesk/v1/issues.proto\x12\x02v1\"\xb1\x02\n" +
 	"\x05Issue\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x1d\n" +
@@ -1265,7 +1297,9 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\b \x01(\x03R\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\x03R\tupdatedAt\"\xbc\x01\n" +
+	"updated_at\x18\t \x01(\x03R\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"issue_type\x18\r \x01(\tR\tissueType\"\xbc\x01\n" +
 	"\n" +
 	"IssueReply\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
@@ -1276,20 +1310,22 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\n" +
 	"is_deleted\x18\x06 \x01(\bR\tisDeleted\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\a \x01(\x03R\tcreatedAt\"\xa0\x01\n" +
+	"created_at\x18\a \x01(\x03R\tcreatedAt\"\xbf\x01\n" +
 	"\x12CreateIssueRequest\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\v \x01(\x05R\tproductId\x12\x16\n" +
 	"\x06entity\x18\f \x01(\tR\x06entity\x12\x1b\n" +
 	"\tentity_id\x18\x02 \x01(\tR\bentityId\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\"6\n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x1d\n" +
+	"\n" +
+	"issue_type\x18\r \x01(\tR\tissueType\"6\n" +
 	"\x13CreateIssueResponse\x12\x1f\n" +
 	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"!\n" +
 	"\x0fGetIssueRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"3\n" +
 	"\x10GetIssueResponse\x12\x1f\n" +
-	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\xba\x01\n" +
+	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\xd9\x01\n" +
 	"\x11ListIssuesRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x16\n" +
@@ -1297,14 +1333,18 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\tentity_id\x18\x04 \x01(\tR\bentityId\x12\x16\n" +
 	"\x06status\x18\x05 \x01(\x05R\x06status\x12\x12\n" +
 	"\x04page\x18\x06 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\a \x01(\x05R\bpageSize\"7\n" +
+	"\tpage_size\x18\a \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"issue_type\x18\r \x01(\tR\tissueType\"7\n" +
 	"\x12ListIssuesResponse\x12!\n" +
-	"\x06issues\x18\x01 \x03(\v2\t.v1.IssueR\x06issues\"t\n" +
+	"\x06issues\x18\x01 \x03(\v2\t.v1.IssueR\x06issues\"\x93\x01\n" +
 	"\x12UpdateIssueRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\x05R\x06status\"6\n" +
+	"\x06status\x18\x04 \x01(\x05R\x06status\x12\x1d\n" +
+	"\n" +
+	"issue_type\x18\r \x01(\tR\tissueType\"6\n" +
 	"\x13UpdateIssueResponse\x12\x1f\n" +
 	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"$\n" +
 	"\x12DeleteIssueRequest\x12\x0e\n" +

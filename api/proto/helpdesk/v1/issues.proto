@@ -17,6 +17,7 @@ message Issue {
     int32 status = 7;        // 1=open, 2=in_progress, 3=resolved, 4=closed
     int64 created_at = 8;
     int64 updated_at = 9;
+    string issue_type = 13;
 }
 
 // IssueReply represents a reply in an issue conversation
@@ -38,6 +39,7 @@ message CreateIssueRequest {
     string entity_id = 2;
     string title = 3;
     string description = 4;
+    string issue_type = 13;
 }
 
 message CreateIssueResponse {
@@ -60,6 +62,7 @@ message ListIssuesRequest {
     int32 status = 5;
     int32 page = 6;
     int32 page_size = 7;
+    string issue_type = 13;
 }
 
 message ListIssuesResponse {
@@ -71,6 +74,7 @@ message UpdateIssueRequest {
     string title = 2;
     string description = 3;
     int32 status = 4;
+    string issue_type = 13;
 }
 
 message UpdateIssueResponse {

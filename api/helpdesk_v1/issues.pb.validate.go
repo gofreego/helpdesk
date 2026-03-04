@@ -76,6 +76,8 @@ func (m *Issue) validate(all bool) error {
 
 	// no validation rules for UpdatedAt
 
+	// no validation rules for IssueType
+
 	if len(errors) > 0 {
 		return IssueMultiError(errors)
 	}
@@ -297,6 +299,8 @@ func (m *CreateIssueRequest) validate(all bool) error {
 	// no validation rules for Title
 
 	// no validation rules for Description
+
+	// no validation rules for IssueType
 
 	if len(errors) > 0 {
 		return CreateIssueRequestMultiError(errors)
@@ -776,6 +780,8 @@ func (m *ListIssuesRequest) validate(all bool) error {
 
 	// no validation rules for PageSize
 
+	// no validation rules for IssueType
+
 	if len(errors) > 0 {
 		return ListIssuesRequestMultiError(errors)
 	}
@@ -1021,6 +1027,8 @@ func (m *UpdateIssueRequest) validate(all bool) error {
 	// no validation rules for Description
 
 	// no validation rules for Status
+
+	// no validation rules for IssueType
 
 	if len(errors) > 0 {
 		return UpdateIssueRequestMultiError(errors)

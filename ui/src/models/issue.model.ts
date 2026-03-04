@@ -18,6 +18,7 @@ export interface Issue {
   status: number;
   createdAt?: string;
   updatedAt?: string;
+  issueType: string;
 }
 
 export interface IssueReply {
@@ -44,12 +45,14 @@ export interface CreateIssueRequestData {
   entityId: string;
   title: string;
   description: string;
+  issueType: string;
 }
 
 export interface UpdateIssueRequestData {
   title?: string;
   description?: string;
   status?: number;
+  issueType?: string;
 }
 
 export interface UpdateIssueStatusRequestData {
@@ -67,6 +70,7 @@ export interface FetchIssuesFilters {
   status?: string;
   page?: number;
   pageSize?: number;
+  issueType?: string;
 }
 
 // ============================================
@@ -105,6 +109,7 @@ export class CreateIssueRequest implements CreateIssueRequestData {
   entityId: string;
   title: string;
   description: string;
+  issueType: string;
 
   constructor(data: CreateIssueRequestData) {
     this.productId = data.productId;
@@ -112,11 +117,12 @@ export class CreateIssueRequest implements CreateIssueRequestData {
     this.entityId = data.entityId;
     this.title = data.title;
     this.description = data.description;
+    this.issueType = data.issueType;
   }
 
   validate(): boolean {
-    if (!this.productId || !this.entity || !this.entityId || !this.title || !this.description) {
-      throw new Error('All fields are required for creating an issue (ProductId, entity, entityId, title, description)');
+    if (!this.productId || !this.entity || !this.entityId || !this.title || !this.description || !this.issueType) {
+      throw new Error('All fields are required for creating an issue (ProductId, entity, entityId, title, description, issueType)');
     }
     return true;
   }
@@ -127,7 +133,8 @@ export class CreateIssueRequest implements CreateIssueRequestData {
       entity: this.entity,
       entityId: this.entityId,
       title: this.title,
-      description: this.description
+      description: this.description,
+      issueType: this.issueType
     };
   }
 }
@@ -136,11 +143,13 @@ export class UpdateIssueRequest implements UpdateIssueRequestData {
   title?: string;
   description?: string;
   status?: number;
+  issueType?: string;
 
   constructor(data: UpdateIssueRequestData) {
     this.title = data.title;
     this.description = data.description;
     this.status = data.status;
+    this.issueType = data.issueType;
   }
 
   toJSON(): UpdateIssueRequestData {
@@ -148,6 +157,7 @@ export class UpdateIssueRequest implements UpdateIssueRequestData {
     if (this.title !== undefined) data.title = this.title;
     if (this.description !== undefined) data.description = this.description;
     if (this.status !== undefined) data.status = this.status;
+    if (this.issueType !== undefined) data.issueType = this.issueType;
     return data;
   }
 }
@@ -197,6 +207,7 @@ export class FetchIssuesRequest {
   status?: string;
   page?: number;
   pageSize?: number;
+  issueType?: string;
 
   constructor(filters: FetchIssuesFilters = {}) {
     this.entity = filters.entity;
@@ -205,6 +216,7 @@ export class FetchIssuesRequest {
     this.status = filters.status;
     this.page = filters.page;
     this.pageSize = filters.pageSize;
+    this.issueType = filters.issueType;
   }
 
   toQueryParams(): string {
@@ -215,6 +227,7 @@ export class FetchIssuesRequest {
     if (this.status) params.append('status', this.status);
     if (this.page) params.append('page', String(this.page));
     if (this.pageSize) params.append('pageSize', String(this.pageSize));
+    if (this.issueType) params.append('issueType', this.issueType);
     return params.toString();
   }
 }
@@ -233,7 +246,8 @@ export const transformIssue = (data: any): Issue => ({
   description: data.description,
   status: data.status,
   createdAt: data.createdAt,
-  updatedAt: data.updatedAt
+  updatedAt: data.updatedAt,
+  issueType: data.issueType
 });
 
 export const transformIssueReply = (data: any): IssueReply => ({

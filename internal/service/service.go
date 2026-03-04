@@ -218,17 +218,32 @@ func (s *Service) DeleteRatingReply(ctx context.Context, req *helpdesk_v1.Delete
 // ===== Issue Handlers =====
 
 func (s *Service) CreateIssue(ctx context.Context, req *helpdesk_v1.CreateIssueRequest) (*helpdesk_v1.CreateIssueResponse, error) {
+	if req.IssueType == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "issue_type is required")
+	}
 
-	// Validate issue entity
-	allowed := false
+	// Validate issue type
+	allowedType := false
 	for _, t := range s.cfg.IssueTypes {
-		if t == req.Entity {
-			allowed = true
+		if t == req.IssueType {
+			allowedType = true
 			break
 		}
 	}
-	if !allowed {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid issue entity: %s. allowed entities: %v", req.Entity, s.cfg.IssueTypes)
+	if !allowedType {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid issue type: %s. allowed types: %v", req.IssueType, s.cfg.IssueTypes)
+	}
+
+	// Validate issue entity
+	allowedEntity := false
+	for _, t := range s.cfg.IssueEntities {
+		if t == req.Entity {
+			allowedEntity = true
+			break
+		}
+	}
+	if !allowedEntity {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid issue entity: %s. allowed entities: %v", req.Entity, s.cfg.IssueEntities)
 	}
 
 	userID, err := auth.GetUserID(ctx)
@@ -243,6 +258,7 @@ func (s *Service) CreateIssue(ctx context.Context, req *helpdesk_v1.CreateIssueR
 		EntityID:    req.EntityId,
 		Title:       req.Title,
 		Description: req.Description,
+		IssueType:   req.IssueType,
 	}
 
 	if err := s.repo.CreateIssue(ctx, issue); err != nil {
@@ -289,6 +305,21 @@ func (s *Service) UpdateIssue(ctx context.Context, req *helpdesk_v1.UpdateIssueR
 	existing.Description = req.Description
 	existing.Status = constants.IssueStatus(req.Status)
 
+	if req.IssueType != "" {
+		// Validate issue type
+		allowedType := false
+		for _, t := range s.cfg.IssueTypes {
+			if t == req.IssueType {
+				allowedType = true
+				break
+			}
+		}
+		if !allowedType {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid issue type: %s. allowed types: %v", req.IssueType, s.cfg.IssueTypes)
+		}
+		existing.IssueType = req.IssueType
+	}
+
 	if err := s.repo.UpdateIssue(ctx, existing); err != nil {
 		return nil, err
 	}
@@ -310,7 +341,7 @@ func (s *Service) DeleteIssue(ctx context.Context, req *helpdesk_v1.DeleteIssueR
 
 func (s *Service) ListIssueConfig(ctx context.Context, req *helpdesk_v1.ListIssueConfigRequest) (*helpdesk_v1.ListIssueConfigResponse, error) {
 	return &helpdesk_v1.ListIssueConfigResponse{
-		Entities: s.cfg.IssueTypes,
+		Entities: s.cfg.IssueEntities,
 		Types:    s.cfg.IssueTypes,
 	}, nil
 }
