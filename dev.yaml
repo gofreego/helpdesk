@@ -19,8 +19,8 @@ AppNames:
 - HTTP_SERVER
 - GRPC_SERVER
 Server:
-  GRPCPort: 8086
-  HTTPPort: 8085
+  GRPCPort: 8097
+  HTTPPort: 8098
 Repository:
   Name: postgres   # postgres/memory
   Postgres:
