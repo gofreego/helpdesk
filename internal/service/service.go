@@ -64,6 +64,18 @@ func NewService(ctx context.Context, cfg *Config, repo Repository) *Service {
 // ===== Rating Handlers =====
 
 func (s *Service) CreateRating(ctx context.Context, req *helpdesk_v1.CreateRatingRequest) (*helpdesk_v1.CreateRatingResponse, error) {
+	// Validate product ID
+	allowedProduct := false
+	for _, id := range s.cfg.AllowedProductIds {
+		if int32(id) == req.ProductId {
+			allowedProduct = true
+			break
+		}
+	}
+	if !allowedProduct {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid product id: %d", req.ProductId)
+	}
+
 	// Validate rating entity
 	allowed := false
 	for _, t := range s.cfg.RatingEntities {
@@ -157,9 +169,14 @@ func (s *Service) DeleteRating(ctx context.Context, req *helpdesk_v1.DeleteRatin
 }
 
 func (s *Service) GetRatingsConfig(ctx context.Context, req *helpdesk_v1.GetRatingsConfigRequest) (*helpdesk_v1.GetRatingsConfigResponse, error) {
+	productIDs := make([]int32, len(s.cfg.AllowedProductIds))
+	for i, id := range s.cfg.AllowedProductIds {
+		productIDs[i] = int32(id)
+	}
 	return &helpdesk_v1.GetRatingsConfigResponse{
-		Entities:  s.cfg.RatingEntities,
-		MaxRating: s.cfg.MaxRating,
+		Entities:   s.cfg.RatingEntities,
+		MaxRating:  s.cfg.MaxRating,
+		ProductIds: productIDs,
 	}, nil
 }
 
@@ -218,6 +235,18 @@ func (s *Service) DeleteRatingReply(ctx context.Context, req *helpdesk_v1.Delete
 // ===== Issue Handlers =====
 
 func (s *Service) CreateIssue(ctx context.Context, req *helpdesk_v1.CreateIssueRequest) (*helpdesk_v1.CreateIssueResponse, error) {
+	// Validate product ID
+	allowedProduct := false
+	for _, id := range s.cfg.AllowedProductIds {
+		if int32(id) == req.ProductId {
+			allowedProduct = true
+			break
+		}
+	}
+	if !allowedProduct {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid product id: %d", req.ProductId)
+	}
+
 	if req.IssueType == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "issue_type is required")
 	}
@@ -340,9 +369,14 @@ func (s *Service) DeleteIssue(ctx context.Context, req *helpdesk_v1.DeleteIssueR
 }
 
 func (s *Service) ListIssueConfig(ctx context.Context, req *helpdesk_v1.ListIssueConfigRequest) (*helpdesk_v1.ListIssueConfigResponse, error) {
+	productIDs := make([]int32, len(s.cfg.AllowedProductIds))
+	for i, id := range s.cfg.AllowedProductIds {
+		productIDs[i] = int32(id)
+	}
 	return &helpdesk_v1.ListIssueConfigResponse{
-		Entities: s.cfg.IssueEntities,
-		Types:    s.cfg.IssueTypes,
+		Entities:   s.cfg.IssueEntities,
+		Types:      s.cfg.IssueTypes,
+		ProductIds: productIDs,
 	}, nil
 }
 

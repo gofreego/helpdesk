@@ -117,4 +117,5 @@ message GetRatingsConfigRequest {
 message GetRatingsConfigResponse {
     repeated string entities = 1;
     float max_rating = 2;
+    repeated int32 product_ids = 3;
 }

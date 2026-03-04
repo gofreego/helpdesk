@@ -1231,6 +1231,7 @@ type ListIssueConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Entities      []string               `protobuf:"bytes,1,rep,name=entities,proto3" json:"entities,omitempty"`
 	Types         []string               `protobuf:"bytes,2,rep,name=types,proto3" json:"types,omitempty"`
+	ProductIds    []int32                `protobuf:"varint,3,rep,packed,name=product_ids,json=productIds,proto3" json:"product_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1275,6 +1276,13 @@ func (x *ListIssueConfigResponse) GetEntities() []string {
 func (x *ListIssueConfigResponse) GetTypes() []string {
 	if x != nil {
 		return x.Types
+	}
+	return nil
+}
+
+func (x *ListIssueConfigResponse) GetProductIds() []int32 {
+	if x != nil {
+		return x.ProductIds
 	}
 	return nil
 }
@@ -1371,10 +1379,12 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\x06status\x18\x02 \x01(\x05R\x06status\"<\n" +
 	"\x19UpdateIssueStatusResponse\x12\x1f\n" +
 	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\x18\n" +
-	"\x16ListIssueConfigRequest\"K\n" +
+	"\x16ListIssueConfigRequest\"l\n" +
 	"\x17ListIssueConfigResponse\x12\x1a\n" +
 	"\bentities\x18\x01 \x03(\tR\bentities\x12\x14\n" +
-	"\x05types\x18\x02 \x03(\tR\x05typesB\x0fZ\r./helpdesk_v1b\x06proto3"
+	"\x05types\x18\x02 \x03(\tR\x05types\x12\x1f\n" +
+	"\vproduct_ids\x18\x03 \x03(\x05R\n" +
+	"productIdsB\x0fZ\r./helpdesk_v1b\x06proto3"
 
 var (
 	file_proto_helpdesk_v1_issues_proto_rawDescOnce sync.Once

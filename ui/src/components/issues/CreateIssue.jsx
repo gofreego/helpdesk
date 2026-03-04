@@ -14,6 +14,7 @@ const CreateIssue = ({ currentUser, basePath }) => {
   });
   const [issueEntities, setIssueEntities] = useState([]);
   const [issueTypes, setIssueTypes] = useState([]);
+  const [productIds, setProductIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,6 +24,7 @@ const CreateIssue = ({ currentUser, basePath }) => {
         const data = await fetchIssueConfig();
         setIssueEntities(data.entities || []);
         setIssueTypes(data.types || []);
+        setProductIds(data.productIds || []);
       } catch (err) {
         console.error('Error fetching issue config:', err);
       }
@@ -81,15 +83,18 @@ const CreateIssue = ({ currentUser, basePath }) => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Product ID *</label>
-            <input
-              type="number"
+            <select
               name="productId"
-              className="form-input"
+              className="form-select"
               value={formData.productId}
               onChange={handleChange}
-              placeholder="e.g., 101"
               required
-            />
+            >
+              <option value="">Select Product ID</option>
+              {productIds.map(id => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">

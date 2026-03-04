@@ -131,4 +131,5 @@ message ListIssueConfigRequest {}
 message ListIssueConfigResponse {
     repeated string entities = 1;
     repeated string types = 2;
+    repeated int32 product_ids = 3;
 }

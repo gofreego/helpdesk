@@ -1020,6 +1020,13 @@
         "maxRating": {
           "type": "number",
           "format": "float"
+        },
+        "productIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },
@@ -1121,6 +1128,13 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "productIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       }

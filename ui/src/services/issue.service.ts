@@ -22,7 +22,7 @@ import {
   transformCreateIssueResponse,
   transformUpdateIssueResponse,
   transformIssueConfig
-} from '@/models/issue.model';
+} from '../models/issue.model';
 
 /**
  * Fetch all issues with optional filters
@@ -30,13 +30,13 @@ import {
 export const fetchIssues = async (
   filters?: FetchIssuesRequest | Record<string, any>
 ): Promise<FetchIssuesResponse> => {
-  const request = filters instanceof FetchIssuesRequest 
-    ? filters 
+  const request = filters instanceof FetchIssuesRequest
+    ? filters
     : new FetchIssuesRequest(filters);
-  
+
   const queryString = request.toQueryParams();
   const endpoint = queryString ? `/issues?${queryString}` : '/issues';
-  
+
   const data = await apiService.get(endpoint);
   return transformFetchIssuesResponse(data);
 };
@@ -72,9 +72,9 @@ export const createIssue = async (
   const request = issueData instanceof CreateIssueRequest
     ? issueData
     : new CreateIssueRequest(issueData as any);
-  
+
   request.validate();
-  
+
   const data = await apiService.post('/issues', request.toJSON());
   return transformCreateIssueResponse(data);
 };
@@ -89,7 +89,7 @@ export const updateIssue = async (
   const request = updates instanceof UpdateIssueRequest
     ? updates
     : new UpdateIssueRequest(updates);
-  
+
   const data = await apiService.put(`/issues/${issueId}`, request.toJSON());
   return transformUpdateIssueResponse(data);
 };
@@ -103,7 +103,7 @@ export const updateIssueStatus = async (
 ): Promise<UpdateIssueResponse> => {
   const request = new UpdateIssueStatusRequest({ status });
   request.validate();
-  
+
   const data = await apiService.patch(`/issues/${issueId}/status`, request.toJSON());
   return transformUpdateIssueResponse(data);
 };
@@ -125,9 +125,9 @@ export const createIssueReply = async (
   const request = replyData instanceof CreateIssueReplyRequest
     ? replyData
     : new CreateIssueReplyRequest(replyData as any);
-  
+
   request.validate();
-  
+
   return await apiService.post(`/issues/${issueId}/replies`, request.toJSON());
 };
 

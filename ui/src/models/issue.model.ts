@@ -33,6 +33,7 @@ export interface IssueReply {
 export interface IssueConfig {
   entities: string[];
   types: string[];
+  productIds: number[];
 }
 
 // ============================================
@@ -283,5 +284,6 @@ export const transformUpdateIssueResponse = (data: any): UpdateIssueResponse => 
 
 export const transformIssueConfig = (data: any): IssueConfig => ({
   entities: data.entities || [],
-  types: data.types || []
+  types: data.types || [],
+  productIds: data.productIds || []
 });

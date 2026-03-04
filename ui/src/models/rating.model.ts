@@ -31,6 +31,7 @@ export interface RatingReply {
 export interface RatingsConfig {
   entities: string[];
   maxRating: number;
+  productIds: number[];
 }
 
 // ============================================
@@ -246,5 +247,6 @@ export const transformUpdateRatingResponse = (data: any): UpdateRatingResponse =
 
 export const transformRatingsConfig = (data: any): RatingsConfig => ({
   entities: data.entities || [],
-  maxRating: data.maxRating || 10
+  maxRating: data.maxRating || 10,
+  productIds: data.productIds || []
 });

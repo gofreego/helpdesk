@@ -12,6 +12,7 @@ const CreateRating = ({ currentUser, basePath }) => {
     comment: ''
   });
   const [ratingEntities, setRatingEntities] = useState([]);
+  const [productIds, setProductIds] = useState([]);
   const [maxRating, setMaxRating] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,8 +23,10 @@ const CreateRating = ({ currentUser, basePath }) => {
         const data = await fetchRatingTypes();
         const entities = data.entities || [];
         const max = data.maxRating || 10;
+        const products = data.productIds || [];
         setRatingEntities(entities);
         setMaxRating(max);
+        setProductIds(products);
         if (entities.length > 0 && !formData.entity) {
           setFormData(prev => ({ ...prev, entity: entities[0] }));
         }
@@ -85,15 +88,18 @@ const CreateRating = ({ currentUser, basePath }) => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Product ID *</label>
-            <input
-              type="number"
+            <select
               name="productId"
-              className="form-input"
+              className="form-select"
               value={formData.productId}
               onChange={handleChange}
-              placeholder="e.g., 101"
               required
-            />
+            >
+              <option value="">Select Product ID</option>
+              {productIds.map(id => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">

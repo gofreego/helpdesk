@@ -16,6 +16,7 @@ const IssuesList = ({ currentUser, basePath }) => {
     issueType: ''
   });
   const [issueTypes, setIssueTypes] = useState([]);
+  const [productIds, setProductIds] = useState([]);
 
   useEffect(() => {
     loadIssues();
@@ -27,6 +28,7 @@ const IssuesList = ({ currentUser, basePath }) => {
       const data = await fetchIssueConfig();
       setIssueEntities(data.entities || []);
       setIssueTypes(data.types || []);
+      setProductIds(data.productIds || []);
     } catch (err) {
       console.error('Error fetching issue config:', err);
     }
@@ -89,14 +91,17 @@ const IssuesList = ({ currentUser, basePath }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
           <div>
             <label className="form-label">Product ID</label>
-            <input
-              type="text"
+            <select
               name="productId"
-              className="form-input"
+              className="form-select"
               value={filters.productId}
               onChange={handleFilterChange}
-              placeholder="e.g., 101"
-            />
+            >
+              <option value="">All Products</option>
+              {productIds.map(id => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="form-label">Entity</label>

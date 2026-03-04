@@ -1079,6 +1079,7 @@ type GetRatingsConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Entities      []string               `protobuf:"bytes,1,rep,name=entities,proto3" json:"entities,omitempty"`
 	MaxRating     float32                `protobuf:"fixed32,2,opt,name=max_rating,json=maxRating,proto3" json:"max_rating,omitempty"`
+	ProductIds    []int32                `protobuf:"varint,3,rep,packed,name=product_ids,json=productIds,proto3" json:"product_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1125,6 +1126,13 @@ func (x *GetRatingsConfigResponse) GetMaxRating() float32 {
 		return x.MaxRating
 	}
 	return 0
+}
+
+func (x *GetRatingsConfigResponse) GetProductIds() []int32 {
+	if x != nil {
+		return x.ProductIds
+	}
+	return nil
 }
 
 var File_proto_helpdesk_v1_ratings_proto protoreflect.FileDescriptor
@@ -1206,11 +1214,13 @@ const file_proto_helpdesk_v1_ratings_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"5\n" +
 	"\x19DeleteRatingReplyResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x19\n" +
-	"\x17GetRatingsConfigRequest\"U\n" +
+	"\x17GetRatingsConfigRequest\"v\n" +
 	"\x18GetRatingsConfigResponse\x12\x1a\n" +
 	"\bentities\x18\x01 \x03(\tR\bentities\x12\x1d\n" +
 	"\n" +
-	"max_rating\x18\x02 \x01(\x02R\tmaxRatingB\x0fZ\r./helpdesk_v1b\x06proto3"
+	"max_rating\x18\x02 \x01(\x02R\tmaxRating\x12\x1f\n" +
+	"\vproduct_ids\x18\x03 \x03(\x05R\n" +
+	"productIdsB\x0fZ\r./helpdesk_v1b\x06proto3"
 
 var (
 	file_proto_helpdesk_v1_ratings_proto_rawDescOnce sync.Once

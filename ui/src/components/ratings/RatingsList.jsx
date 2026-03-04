@@ -6,6 +6,7 @@ import { getStarRating } from '../../utils/status.utils';
 const RatingsList = ({ currentUser, basePath }) => {
   const [ratings, setRatings] = useState([]);
   const [ratingEntities, setRatingEntities] = useState([]);
+  const [productIds, setProductIds] = useState([]);
   const [maxRating, setMaxRating] = useState(10);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -25,6 +26,7 @@ const RatingsList = ({ currentUser, basePath }) => {
       const data = await fetchRatingTypes();
       setRatingEntities(data.entities || []);
       setMaxRating(data.maxRating || 10);
+      setProductIds(data.productIds || []);
     } catch (err) {
       console.error('Error fetching rating entities:', err);
     }
@@ -82,14 +84,17 @@ const RatingsList = ({ currentUser, basePath }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
           <div>
             <label className="form-label">Product ID</label>
-            <input
-              type="text"
+            <select
               name="productId"
               className="form-input"
               value={filters.productId}
               onChange={handleFilterChange}
-              placeholder="e.g., 101"
-            />
+            >
+              <option value="">All Products</option>
+              {productIds.map(id => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="form-label">Entity</label>

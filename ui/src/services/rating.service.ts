@@ -21,7 +21,7 @@ import {
   transformCreateRatingResponse,
   transformUpdateRatingResponse,
   transformRatingsConfig
-} from '@/models/rating.model';
+} from '../models/rating.model';
 
 /**
  * Fetch all ratings with optional filters
