@@ -14,7 +14,7 @@ run: build-ui
 test:
 	go test -v ./...
 migrate:
-	sql-migrator up -config deployments/migrations/migrations.yml
+	docker compose -f deployments/migrations/docker-compose.yml up migrate
 
 clean: clean-ui
 	rm -f application
