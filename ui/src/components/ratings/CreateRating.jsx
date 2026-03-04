@@ -6,7 +6,7 @@ const CreateRating = ({ currentUser, basePath }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     type: '',
-    entity_id: '',
+    entityId: '',
     rating: 5,
     comment: ''
   });
@@ -20,7 +20,7 @@ const CreateRating = ({ currentUser, basePath }) => {
       try {
         const data = await fetchRatingTypes();
         const types = data.types || [];
-        const max = data.max_rating || 10;
+        const max = data.maxRating || 10;
         setRatingTypes(types);
         setMaxRating(max);
         if (types.length > 0 && !formData.type) {
@@ -102,9 +102,9 @@ const CreateRating = ({ currentUser, basePath }) => {
             <label className="form-label">Entity ID *</label>
             <input
               type="text"
-              name="entity_id"
+              name="entityId"
               className="form-input"
-              value={formData.entity_id}
+              value={formData.entityId}
               onChange={handleChange}
               placeholder="e.g., 12345"
               required

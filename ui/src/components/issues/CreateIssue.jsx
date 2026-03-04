@@ -6,7 +6,7 @@ const CreateIssue = ({ currentUser, basePath }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     type: '',
-    entity_id: '',
+    entityId: '',
     title: '',
     description: ''
   });
@@ -95,9 +95,9 @@ const CreateIssue = ({ currentUser, basePath }) => {
             <label className="form-label">Entity ID *</label>
             <input
               type="text"
-              name="entity_id"
+              name="entityId"
               className="form-input"
-              value={formData.entity_id}
+              value={formData.entityId}
               onChange={handleChange}
               placeholder="e.g., 12345"
               required

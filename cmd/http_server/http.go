@@ -83,7 +83,7 @@ func (a *HTTPServer) Run(ctx context.Context) error {
 	mux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 			MarshalOptions: protojson.MarshalOptions{
-				UseProtoNames: true,
+				UseProtoNames: false,
 			},
 			UnmarshalOptions: protojson.UnmarshalOptions{
 				DiscardUnknown: true,

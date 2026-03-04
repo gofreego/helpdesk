@@ -10,8 +10,8 @@ const RatingsList = ({ currentUser, basePath }) => {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     type: '',
-    entity_id: '',
-    user_id: ''
+    entityId: '',
+    userId: ''
   });
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const RatingsList = ({ currentUser, basePath }) => {
     try {
       const data = await fetchRatingTypes();
       setRatingTypes(data.types || []);
-      setMaxRating(data.max_rating || 10);
+      setMaxRating(data.maxRating || 10);
     } catch (err) {
       console.error('Error fetching rating types:', err);
     }
@@ -50,7 +50,7 @@ const RatingsList = ({ currentUser, basePath }) => {
   };
 
   const handleClearFilters = () => {
-    setFilters({ type: '', entity_id: '', user_id: '' });
+    setFilters({ type: '', entityId: '', userId: '' });
     setLoading(true);
     setTimeout(() => loadRatings(), 100);
   };
@@ -97,9 +97,9 @@ const RatingsList = ({ currentUser, basePath }) => {
             <label className="form-label">Entity ID</label>
             <input
               type="text"
-              name="entity_id"
+              name="entityId"
               className="form-input"
-              value={filters.entity_id}
+              value={filters.entityId}
               onChange={handleFilterChange}
               placeholder="e.g., 12345"
             />
@@ -108,9 +108,9 @@ const RatingsList = ({ currentUser, basePath }) => {
             <label className="form-label">User ID</label>
             <input
               type="text"
-              name="user_id"
+              name="userId"
               className="form-input"
-              value={filters.user_id}
+              value={filters.userId}
               onChange={handleFilterChange}
               placeholder="e.g., user123"
             />
@@ -154,14 +154,14 @@ const RatingsList = ({ currentUser, basePath }) => {
                     <td>
                       <span className="badge badge-info">{rating.type}</span>
                     </td>
-                    <td>{rating.entity_id}</td>
+                    <td>{rating.entityId}</td>
                     <td style={{ fontWeight: 600, fontSize: '1.1rem' }}>
                       {rating.rating} <small style={{ color: '#94a3b8', fontWeight: 400 }}>/ {maxRating}</small>
                     </td>
                     <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {rating.comment || '-'}
                     </td>
-                    <td>{rating.user_id}</td>
+                    <td>{rating.userId}</td>
                     <td>
                       <Link to={`/ratings/${rating.id}`} className="btn btn-secondary" style={{ padding: '0.5rem 1rem' }}>
                         View Details

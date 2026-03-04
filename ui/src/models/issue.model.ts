@@ -10,22 +10,22 @@
 export interface Issue {
   id: string;
   type: string;
-  entity_id: string;
-  user_id: string;
+  entityId: string;
+  userId: string;
   title: string;
   description: string;
   status: number;
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface IssueReply {
   id: string;
-  issue_id: string;
-  user_id: string;
+  issueId: string;
+  userId: string;
   message: string;
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface IssueConfig {
@@ -38,7 +38,7 @@ export interface IssueConfig {
 
 export interface CreateIssueRequestData {
   type: string;
-  entity_id: string;
+  entityId: string;
   title: string;
   description: string;
 }
@@ -59,11 +59,11 @@ export interface CreateIssueReplyRequestData {
 
 export interface FetchIssuesFilters {
   type?: string;
-  entity_id?: string;
-  user_id?: string;
+  entityId?: string;
+  userId?: string;
   status?: string;
   page?: number;
-  page_size?: number;
+  pageSize?: number;
 }
 
 // ============================================
@@ -98,19 +98,19 @@ export interface UpdateIssueResponse {
 
 export class CreateIssueRequest implements CreateIssueRequestData {
   type: string;
-  entity_id: string;
+  entityId: string;
   title: string;
   description: string;
 
   constructor(data: CreateIssueRequestData) {
     this.type = data.type;
-    this.entity_id = data.entity_id;
+    this.entityId = data.entityId;
     this.title = data.title;
     this.description = data.description;
   }
 
   validate(): boolean {
-    if (!this.type || !this.entity_id || !this.title || !this.description) {
+    if (!this.type || !this.entityId || !this.title || !this.description) {
       throw new Error('All fields are required for creating an issue');
     }
     return true;
@@ -119,7 +119,7 @@ export class CreateIssueRequest implements CreateIssueRequestData {
   toJSON(): CreateIssueRequestData {
     return {
       type: this.type,
-      entity_id: this.entity_id,
+      entityId: this.entityId,
       title: this.title,
       description: this.description
     };
@@ -186,29 +186,29 @@ export class CreateIssueReplyRequest implements CreateIssueReplyRequestData {
 
 export class FetchIssuesRequest {
   type?: string;
-  entity_id?: string;
-  user_id?: string;
+  entityId?: string;
+  userId?: string;
   status?: string;
   page?: number;
-  page_size?: number;
+  pageSize?: number;
 
   constructor(filters: FetchIssuesFilters = {}) {
     this.type = filters.type;
-    this.entity_id = filters.entity_id;
-    this.user_id = filters.user_id;
+    this.entityId = filters.entityId;
+    this.userId = filters.userId;
     this.status = filters.status;
     this.page = filters.page;
-    this.page_size = filters.page_size;
+    this.pageSize = filters.pageSize;
   }
 
   toQueryParams(): string {
     const params = new URLSearchParams();
     if (this.type) params.append('type', this.type);
-    if (this.entity_id) params.append('entity_id', this.entity_id);
-    if (this.user_id) params.append('user_id', this.user_id);
+    if (this.entityId) params.append('entityId', this.entityId);
+    if (this.userId) params.append('userId', this.userId);
     if (this.status) params.append('status', this.status);
     if (this.page) params.append('page', String(this.page));
-    if (this.page_size) params.append('page_size', String(this.page_size));
+    if (this.pageSize) params.append('pageSize', String(this.pageSize));
     return params.toString();
   }
 }
@@ -220,22 +220,22 @@ export class FetchIssuesRequest {
 export const transformIssue = (data: any): Issue => ({
   id: data.id,
   type: data.type,
-  entity_id: data.entity_id,
-  user_id: data.user_id,
+  entityId: data.entityId,
+  userId: data.userId,
   title: data.title,
   description: data.description,
   status: data.status,
-  created_at: data.created_at,
-  updated_at: data.updated_at
+  createdAt: data.createdAt,
+  updatedAt: data.updatedAt
 });
 
 export const transformIssueReply = (data: any): IssueReply => ({
   id: data.id,
-  issue_id: data.issue_id,
-  user_id: data.user_id,
+  issueId: data.issueId,
+  userId: data.userId,
   message: data.message,
-  created_at: data.created_at,
-  updated_at: data.updated_at
+  createdAt: data.createdAt,
+  updatedAt: data.updatedAt
 });
 
 export const transformFetchIssuesResponse = (data: any): FetchIssuesResponse => ({

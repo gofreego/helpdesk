@@ -96,7 +96,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
   };
 
   const handleLongPressStart = (reply) => {
-    if (currentUser.role !== 'admin' && reply.user_id !== currentUser.id) return;
+    if (currentUser.role !== 'admin' && reply.userId !== currentUser.id) return;
     longPressTimer.current = setTimeout(() => {
       setSelectedMessageForActions(reply);
     }, 600);
@@ -262,7 +262,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
 
               <div className="detail-item">
                 <span className="detail-label">User ID</span>
-                <span className="detail-value">{issue.user_id}</span>
+                <span className="detail-value">{issue.userId}</span>
               </div>
 
               <div className="detail-item">
@@ -274,7 +274,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
 
               <div className="detail-item">
                 <span className="detail-label">Entity ID</span>
-                <span className="detail-value">{issue.entity_id}</span>
+                <span className="detail-value">{issue.entityId}</span>
               </div>
 
               <div className="detail-item">
@@ -285,7 +285,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
               <div className="detail-item">
                 <span className="detail-label">Created At</span>
                 <span className="detail-value">
-                  {new Date(parseInt(issue.created_at)).toLocaleString()}
+                  {new Date(parseInt(issue.createdAt)).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -352,7 +352,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
                 replies.map(reply => (
                   <div
                     key={reply.id}
-                    className={`chat-bubble ${reply.user_id === currentUser.id ? 'bubble-sent' : 'bubble-received'}`}
+                    className={`chat-bubble ${reply.userId === currentUser.id ? 'bubble-sent' : 'bubble-received'}`}
                     style={{ marginBottom: '1rem', cursor: 'pointer', userSelect: 'none' }}
                     onMouseDown={() => handleLongPressStart(reply)}
                     onMouseUp={handleLongPressEnd}
@@ -361,11 +361,11 @@ const IssueDetail = ({ currentUser, basePath }) => {
                     onTouchEnd={handleLongPressEnd}
                   >
                     <div className="bubble-header">
-                      <span>User: {reply.user_id} ({reply.role})</span>
+                      <span>User: {reply.userId} ({reply.role})</span>
                     </div>
                     <p>{reply.message}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', fontSize: '0.7rem', opacity: 0.6 }}>
-                      <span>{new Date(parseInt(reply.created_at)).toLocaleString()}</span>
+                      <span>{new Date(parseInt(reply.createdAt)).toLocaleString()}</span>
                     </div>
                   </div>
                 ))

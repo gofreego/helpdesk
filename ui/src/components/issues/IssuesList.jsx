@@ -9,8 +9,8 @@ const IssuesList = ({ currentUser, basePath }) => {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     type: '',
-    entity_id: '',
-    user_id: '',
+    entityId: '',
+    userId: '',
     status: ''
   });
 
@@ -50,7 +50,7 @@ const IssuesList = ({ currentUser, basePath }) => {
 
 
   const handleClearFilters = () => {
-    setFilters({ type: '', entity_id: '', user_id: '', status: '' });
+    setFilters({ type: '', entityId: '', userId: '', status: '' });
     setLoading(true);
     setTimeout(() => loadIssues(), 100);
   };
@@ -101,9 +101,9 @@ const IssuesList = ({ currentUser, basePath }) => {
             <label className="form-label">Entity ID</label>
             <input
               type="text"
-              name="entity_id"
+              name="entityId"
               className="form-input"
-              value={filters.entity_id}
+              value={filters.entityId}
               onChange={handleFilterChange}
               placeholder="e.g., 12345"
             />
@@ -112,9 +112,9 @@ const IssuesList = ({ currentUser, basePath }) => {
             <label className="form-label">User ID</label>
             <input
               type="text"
-              name="user_id"
+              name="userId"
               className="form-input"
-              value={filters.user_id}
+              value={filters.userId}
               onChange={handleFilterChange}
               placeholder="e.g., user123"
             />
@@ -174,9 +174,9 @@ const IssuesList = ({ currentUser, basePath }) => {
                     <td>
                       <span className="badge badge-info">{issue.type}</span>
                     </td>
-                    <td>{issue.entity_id}</td>
+                    <td>{issue.entityId}</td>
                     <td>{renderStatusBadge(issue.status)}</td>
-                    <td>{issue.user_id}</td>
+                    <td>{issue.userId}</td>
                     <td>
                       <Link to={`/issues/${issue.id}`} className="btn btn-secondary" style={{ padding: '0.5rem 1rem' }}>
                         View Details

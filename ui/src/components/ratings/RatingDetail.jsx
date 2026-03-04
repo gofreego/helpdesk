@@ -34,7 +34,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
           fetchRatingById(id, currentUser),
           fetchRatingTypes()
         ]);
-        const max = typesData.max_rating || 10;
+        const max = typesData.maxRating || 10;
         setMaxRating(max);
 
         setRating(ratingData.rating);
@@ -104,7 +104,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
   };
 
   const handleLongPressStart = (reply) => {
-    if (currentUser.role !== 'admin' && reply.user_id !== currentUser.id) return;
+    if (currentUser.role !== 'admin' && reply.userId !== currentUser.id) return;
     longPressTimer.current = setTimeout(() => {
       setSelectedMessageForActions(reply);
     }, 600); // 600ms for long press
@@ -251,7 +251,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
 
               <div className="detail-item">
                 <span className="detail-label">User ID</span>
-                <span className="detail-value">{rating.user_id}</span>
+                <span className="detail-value">{rating.userId}</span>
               </div>
 
               <div className="detail-item">
@@ -263,7 +263,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
 
               <div className="detail-item">
                 <span className="detail-label">Entity ID</span>
-                <span className="detail-value">{rating.entity_id}</span>
+                <span className="detail-value">{rating.entityId}</span>
               </div>
 
               <div className="detail-item">
@@ -276,7 +276,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
               <div className="detail-item">
                 <span className="detail-label">Created At</span>
                 <span className="detail-value">
-                  {new Date(parseInt(rating.created_at)).toLocaleString()}
+                  {new Date(parseInt(rating.createdAt)).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -314,7 +314,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
                 replies.map(reply => (
                   <div
                     key={reply.id}
-                    className={`chat-bubble ${reply.user_id === currentUser.id ? 'bubble-sent' : 'bubble-received'}`}
+                    className={`chat-bubble ${reply.userId === currentUser.id ? 'bubble-sent' : 'bubble-received'}`}
                     style={{ marginBottom: '1rem', cursor: 'pointer', userSelect: 'none' }}
                     onMouseDown={() => handleLongPressStart(reply)}
                     onMouseUp={handleLongPressEnd}
@@ -323,11 +323,11 @@ const RatingDetail = ({ currentUser, basePath }) => {
                     onTouchEnd={handleLongPressEnd}
                   >
                     <div className="bubble-header">
-                      <span>User: {reply.user_id}</span>
+                      <span>User: {reply.userId}</span>
                     </div>
                     <p>{reply.message}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', fontSize: '0.7rem', opacity: 0.6 }}>
-                      <span>{new Date(parseInt(reply.created_at)).toLocaleString()}</span>
+                      <span>{new Date(parseInt(reply.createdAt)).toLocaleString()}</span>
                     </div>
                   </div>
                 ))
