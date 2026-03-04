@@ -109,10 +109,10 @@ message DeleteRatingReplyResponse {
     bool success = 1;
 }
 
-message ListRatingTypesRequest {
+message GetRatingsConfigRequest {
 }
 
-message ListRatingTypesResponse {
+message GetRatingsConfigResponse {
     repeated string types = 1;
     float max_rating = 2;
 }

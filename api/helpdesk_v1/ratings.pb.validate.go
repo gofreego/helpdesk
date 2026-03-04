@@ -2122,22 +2122,22 @@ var _ interface {
 	ErrorName() string
 } = DeleteRatingReplyResponseValidationError{}
 
-// Validate checks the field values on ListRatingTypesRequest with the rules
+// Validate checks the field values on GetRatingsConfigRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListRatingTypesRequest) Validate() error {
+func (m *GetRatingsConfigRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListRatingTypesRequest with the rules
-// defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on GetRatingsConfigRequest with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ListRatingTypesRequestMultiError, or nil if none found.
-func (m *ListRatingTypesRequest) ValidateAll() error {
+// GetRatingsConfigRequestMultiError, or nil if none found.
+func (m *GetRatingsConfigRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListRatingTypesRequest) validate(all bool) error {
+func (m *GetRatingsConfigRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2145,19 +2145,19 @@ func (m *ListRatingTypesRequest) validate(all bool) error {
 	var errors []error
 
 	if len(errors) > 0 {
-		return ListRatingTypesRequestMultiError(errors)
+		return GetRatingsConfigRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListRatingTypesRequestMultiError is an error wrapping multiple validation
-// errors returned by ListRatingTypesRequest.ValidateAll() if the designated
+// GetRatingsConfigRequestMultiError is an error wrapping multiple validation
+// errors returned by GetRatingsConfigRequest.ValidateAll() if the designated
 // constraints aren't met.
-type ListRatingTypesRequestMultiError []error
+type GetRatingsConfigRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListRatingTypesRequestMultiError) Error() string {
+func (m GetRatingsConfigRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2166,11 +2166,11 @@ func (m ListRatingTypesRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListRatingTypesRequestMultiError) AllErrors() []error { return m }
+func (m GetRatingsConfigRequestMultiError) AllErrors() []error { return m }
 
-// ListRatingTypesRequestValidationError is the validation error returned by
-// ListRatingTypesRequest.Validate if the designated constraints aren't met.
-type ListRatingTypesRequestValidationError struct {
+// GetRatingsConfigRequestValidationError is the validation error returned by
+// GetRatingsConfigRequest.Validate if the designated constraints aren't met.
+type GetRatingsConfigRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2178,24 +2178,24 @@ type ListRatingTypesRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListRatingTypesRequestValidationError) Field() string { return e.field }
+func (e GetRatingsConfigRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListRatingTypesRequestValidationError) Reason() string { return e.reason }
+func (e GetRatingsConfigRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListRatingTypesRequestValidationError) Cause() error { return e.cause }
+func (e GetRatingsConfigRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListRatingTypesRequestValidationError) Key() bool { return e.key }
+func (e GetRatingsConfigRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListRatingTypesRequestValidationError) ErrorName() string {
-	return "ListRatingTypesRequestValidationError"
+func (e GetRatingsConfigRequestValidationError) ErrorName() string {
+	return "GetRatingsConfigRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListRatingTypesRequestValidationError) Error() string {
+func (e GetRatingsConfigRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2207,14 +2207,14 @@ func (e ListRatingTypesRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListRatingTypesRequest.%s: %s%s",
+		"invalid %sGetRatingsConfigRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListRatingTypesRequestValidationError{}
+var _ error = GetRatingsConfigRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -2222,24 +2222,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListRatingTypesRequestValidationError{}
+} = GetRatingsConfigRequestValidationError{}
 
-// Validate checks the field values on ListRatingTypesResponse with the rules
+// Validate checks the field values on GetRatingsConfigResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListRatingTypesResponse) Validate() error {
+func (m *GetRatingsConfigResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListRatingTypesResponse with the
+// ValidateAll checks the field values on GetRatingsConfigResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ListRatingTypesResponseMultiError, or nil if none found.
-func (m *ListRatingTypesResponse) ValidateAll() error {
+// GetRatingsConfigResponseMultiError, or nil if none found.
+func (m *GetRatingsConfigResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListRatingTypesResponse) validate(all bool) error {
+func (m *GetRatingsConfigResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2249,19 +2249,19 @@ func (m *ListRatingTypesResponse) validate(all bool) error {
 	// no validation rules for MaxRating
 
 	if len(errors) > 0 {
-		return ListRatingTypesResponseMultiError(errors)
+		return GetRatingsConfigResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListRatingTypesResponseMultiError is an error wrapping multiple validation
-// errors returned by ListRatingTypesResponse.ValidateAll() if the designated
+// GetRatingsConfigResponseMultiError is an error wrapping multiple validation
+// errors returned by GetRatingsConfigResponse.ValidateAll() if the designated
 // constraints aren't met.
-type ListRatingTypesResponseMultiError []error
+type GetRatingsConfigResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListRatingTypesResponseMultiError) Error() string {
+func (m GetRatingsConfigResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2270,11 +2270,11 @@ func (m ListRatingTypesResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListRatingTypesResponseMultiError) AllErrors() []error { return m }
+func (m GetRatingsConfigResponseMultiError) AllErrors() []error { return m }
 
-// ListRatingTypesResponseValidationError is the validation error returned by
-// ListRatingTypesResponse.Validate if the designated constraints aren't met.
-type ListRatingTypesResponseValidationError struct {
+// GetRatingsConfigResponseValidationError is the validation error returned by
+// GetRatingsConfigResponse.Validate if the designated constraints aren't met.
+type GetRatingsConfigResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2282,24 +2282,24 @@ type ListRatingTypesResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListRatingTypesResponseValidationError) Field() string { return e.field }
+func (e GetRatingsConfigResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListRatingTypesResponseValidationError) Reason() string { return e.reason }
+func (e GetRatingsConfigResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListRatingTypesResponseValidationError) Cause() error { return e.cause }
+func (e GetRatingsConfigResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListRatingTypesResponseValidationError) Key() bool { return e.key }
+func (e GetRatingsConfigResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListRatingTypesResponseValidationError) ErrorName() string {
-	return "ListRatingTypesResponseValidationError"
+func (e GetRatingsConfigResponseValidationError) ErrorName() string {
+	return "GetRatingsConfigResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListRatingTypesResponseValidationError) Error() string {
+func (e GetRatingsConfigResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2311,14 +2311,14 @@ func (e ListRatingTypesResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListRatingTypesResponse.%s: %s%s",
+		"invalid %sGetRatingsConfigResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListRatingTypesResponseValidationError{}
+var _ error = GetRatingsConfigResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -2326,4 +2326,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListRatingTypesResponseValidationError{}
+} = GetRatingsConfigResponseValidationError{}

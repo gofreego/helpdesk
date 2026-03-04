@@ -25,7 +25,7 @@ const (
 	BaseService_ListRatings_FullMethodName       = "/v1.BaseService/ListRatings"
 	BaseService_UpdateRating_FullMethodName      = "/v1.BaseService/UpdateRating"
 	BaseService_DeleteRating_FullMethodName      = "/v1.BaseService/DeleteRating"
-	BaseService_ListRatingTypes_FullMethodName   = "/v1.BaseService/ListRatingTypes"
+	BaseService_GetRatingsConfig_FullMethodName  = "/v1.BaseService/GetRatingsConfig"
 	BaseService_CreateRatingReply_FullMethodName = "/v1.BaseService/CreateRatingReply"
 	BaseService_ListRatingReplies_FullMethodName = "/v1.BaseService/ListRatingReplies"
 	BaseService_DeleteRatingReply_FullMethodName = "/v1.BaseService/DeleteRatingReply"
@@ -53,7 +53,7 @@ type BaseServiceClient interface {
 	ListRatings(ctx context.Context, in *ListRatingsRequest, opts ...grpc.CallOption) (*ListRatingsResponse, error)
 	UpdateRating(ctx context.Context, in *UpdateRatingRequest, opts ...grpc.CallOption) (*UpdateRatingResponse, error)
 	DeleteRating(ctx context.Context, in *DeleteRatingRequest, opts ...grpc.CallOption) (*DeleteRatingResponse, error)
-	ListRatingTypes(ctx context.Context, in *ListRatingTypesRequest, opts ...grpc.CallOption) (*ListRatingTypesResponse, error)
+	GetRatingsConfig(ctx context.Context, in *GetRatingsConfigRequest, opts ...grpc.CallOption) (*GetRatingsConfigResponse, error)
 	// --- Rating Replies ---
 	CreateRatingReply(ctx context.Context, in *CreateRatingReplyRequest, opts ...grpc.CallOption) (*CreateRatingReplyResponse, error)
 	ListRatingReplies(ctx context.Context, in *ListRatingRepliesRequest, opts ...grpc.CallOption) (*ListRatingRepliesResponse, error)
@@ -140,10 +140,10 @@ func (c *baseServiceClient) DeleteRating(ctx context.Context, in *DeleteRatingRe
 	return out, nil
 }
 
-func (c *baseServiceClient) ListRatingTypes(ctx context.Context, in *ListRatingTypesRequest, opts ...grpc.CallOption) (*ListRatingTypesResponse, error) {
+func (c *baseServiceClient) GetRatingsConfig(ctx context.Context, in *GetRatingsConfigRequest, opts ...grpc.CallOption) (*GetRatingsConfigResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListRatingTypesResponse)
-	err := c.cc.Invoke(ctx, BaseService_ListRatingTypes_FullMethodName, in, out, cOpts...)
+	out := new(GetRatingsConfigResponse)
+	err := c.cc.Invoke(ctx, BaseService_GetRatingsConfig_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -292,7 +292,7 @@ type BaseServiceServer interface {
 	ListRatings(context.Context, *ListRatingsRequest) (*ListRatingsResponse, error)
 	UpdateRating(context.Context, *UpdateRatingRequest) (*UpdateRatingResponse, error)
 	DeleteRating(context.Context, *DeleteRatingRequest) (*DeleteRatingResponse, error)
-	ListRatingTypes(context.Context, *ListRatingTypesRequest) (*ListRatingTypesResponse, error)
+	GetRatingsConfig(context.Context, *GetRatingsConfigRequest) (*GetRatingsConfigResponse, error)
 	// --- Rating Replies ---
 	CreateRatingReply(context.Context, *CreateRatingReplyRequest) (*CreateRatingReplyResponse, error)
 	ListRatingReplies(context.Context, *ListRatingRepliesRequest) (*ListRatingRepliesResponse, error)
@@ -337,8 +337,8 @@ func (UnimplementedBaseServiceServer) UpdateRating(context.Context, *UpdateRatin
 func (UnimplementedBaseServiceServer) DeleteRating(context.Context, *DeleteRatingRequest) (*DeleteRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRating not implemented")
 }
-func (UnimplementedBaseServiceServer) ListRatingTypes(context.Context, *ListRatingTypesRequest) (*ListRatingTypesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListRatingTypes not implemented")
+func (UnimplementedBaseServiceServer) GetRatingsConfig(context.Context, *GetRatingsConfigRequest) (*GetRatingsConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRatingsConfig not implemented")
 }
 func (UnimplementedBaseServiceServer) CreateRatingReply(context.Context, *CreateRatingReplyRequest) (*CreateRatingReplyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRatingReply not implemented")
@@ -508,20 +508,20 @@ func _BaseService_DeleteRating_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BaseService_ListRatingTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRatingTypesRequest)
+func _BaseService_GetRatingsConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRatingsConfigRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BaseServiceServer).ListRatingTypes(ctx, in)
+		return srv.(BaseServiceServer).GetRatingsConfig(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BaseService_ListRatingTypes_FullMethodName,
+		FullMethod: BaseService_GetRatingsConfig_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BaseServiceServer).ListRatingTypes(ctx, req.(*ListRatingTypesRequest))
+		return srv.(BaseServiceServer).GetRatingsConfig(ctx, req.(*GetRatingsConfigRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -792,8 +792,8 @@ var BaseService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BaseService_DeleteRating_Handler,
 		},
 		{
-			MethodName: "ListRatingTypes",
-			Handler:    _BaseService_ListRatingTypes_Handler,
+			MethodName: "GetRatingsConfig",
+			Handler:    _BaseService_GetRatingsConfig_Handler,
 		},
 		{
 			MethodName: "CreateRatingReply",

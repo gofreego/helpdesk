@@ -153,8 +153,8 @@ func (s *Service) DeleteRating(ctx context.Context, req *helpdesk_v1.DeleteRatin
 	}, nil
 }
 
-func (s *Service) ListRatingTypes(ctx context.Context, req *helpdesk_v1.ListRatingTypesRequest) (*helpdesk_v1.ListRatingTypesResponse, error) {
-	return &helpdesk_v1.ListRatingTypesResponse{
+func (s *Service) GetRatingsConfig(ctx context.Context, req *helpdesk_v1.GetRatingsConfigRequest) (*helpdesk_v1.GetRatingsConfigResponse, error) {
+	return &helpdesk_v1.GetRatingsConfigResponse{
 		Types:     s.cfg.RatingTypes,
 		MaxRating: s.cfg.MaxRating,
 	}, nil

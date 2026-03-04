@@ -155,14 +155,14 @@ service BaseService {
         };
     }
 
-    rpc ListRatingTypes (ListRatingTypesRequest) returns (ListRatingTypesResponse) {
+    rpc GetRatingsConfig (GetRatingsConfigRequest) returns (GetRatingsConfigResponse) {
         option (google.api.http) = {
-            get: "/helpdesk/v1/rating-types"
+            get: "/helpdesk/v1/ratings/config"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags: "Ratings"
-            summary: "List rating types"
-            description: "Get the list of allowed rating types from configuration."
+            summary: "Get ratings configuration"
+            description: "Get the list of allowed rating types and other configurations."
         };
     }
 

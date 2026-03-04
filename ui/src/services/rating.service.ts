@@ -14,13 +14,13 @@ import {
   FetchRatingRepliesResponse,
   CreateRatingResponse,
   UpdateRatingResponse,
-  RatingTypes,
+  RatingsConfig,
   transformFetchRatingsResponse,
   transformFetchRatingByIdResponse,
   transformFetchRatingRepliesResponse,
   transformCreateRatingResponse,
   transformUpdateRatingResponse,
-  transformRatingTypes
+  transformRatingsConfig
 } from '@/models/rating.model';
 
 /**
@@ -32,10 +32,10 @@ export const fetchRatings = async (
   const request = filters instanceof FetchRatingsRequest
     ? filters
     : new FetchRatingsRequest(filters);
-  
+
   const queryString = request.toQueryParams();
   const endpoint = queryString ? `/ratings?${queryString}` : '/ratings';
-  
+
   const data = await apiService.get(endpoint);
   return transformFetchRatingsResponse(data);
 };
@@ -71,9 +71,9 @@ export const createRating = async (
   const request = ratingData instanceof CreateRatingRequest
     ? ratingData
     : new CreateRatingRequest(ratingData as any);
-  
+
   request.validate();
-  
+
   const data = await apiService.post('/ratings', request.toJSON());
   return transformCreateRatingResponse(data);
 };
@@ -88,9 +88,9 @@ export const updateRating = async (
   const request = updates instanceof UpdateRatingRequest
     ? updates
     : new UpdateRatingRequest(updates);
-  
+
   request.validate();
-  
+
   const data = await apiService.put(`/ratings/${ratingId}`, request.toJSON());
   return transformUpdateRatingResponse(data);
 };
@@ -112,9 +112,9 @@ export const createRatingReply = async (
   const request = replyData instanceof CreateRatingReplyRequest
     ? replyData
     : new CreateRatingReplyRequest(replyData as any);
-  
+
   request.validate();
-  
+
   return await apiService.post(`/ratings/${ratingId}/replies`, request.toJSON());
 };
 
@@ -126,12 +126,12 @@ export const deleteRatingReply = async (replyId: string): Promise<void> => {
 };
 
 /**
- * Get rating types
+ * Get ratings configuration
  */
-export const getRatingTypes = async (): Promise<RatingTypes> => {
-  const data = await apiService.get('/rating-types');
-  return transformRatingTypes(data);
+export const getRatingsConfig = async (): Promise<RatingsConfig> => {
+  const data = await apiService.get('/ratings/config');
+  return transformRatingsConfig(data);
 };
 
 // Alias for backward compatibility
-export const fetchRatingTypes = getRatingTypes;
+export const fetchRatingTypes = getRatingsConfig;

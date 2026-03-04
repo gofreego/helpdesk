@@ -27,7 +27,7 @@ export interface RatingReply {
   updated_at?: string;
 }
 
-export interface RatingTypes {
+export interface RatingsConfig {
   types: string[];
   max_rating: number;
 }
@@ -238,7 +238,7 @@ export const transformUpdateRatingResponse = (data: any): UpdateRatingResponse =
   rating: transformRating(data.rating || data)
 });
 
-export const transformRatingTypes = (data: any): RatingTypes => ({
+export const transformRatingsConfig = (data: any): RatingsConfig => ({
   types: data.types || [],
   max_rating: data.max_rating || 10
 });

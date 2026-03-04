@@ -1023,26 +1023,26 @@ func (x *DeleteRatingReplyResponse) GetSuccess() bool {
 	return false
 }
 
-type ListRatingTypesRequest struct {
+type GetRatingsConfigRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListRatingTypesRequest) Reset() {
-	*x = ListRatingTypesRequest{}
+func (x *GetRatingsConfigRequest) Reset() {
+	*x = GetRatingsConfigRequest{}
 	mi := &file_proto_helpdesk_v1_ratings_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListRatingTypesRequest) String() string {
+func (x *GetRatingsConfigRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListRatingTypesRequest) ProtoMessage() {}
+func (*GetRatingsConfigRequest) ProtoMessage() {}
 
-func (x *ListRatingTypesRequest) ProtoReflect() protoreflect.Message {
+func (x *GetRatingsConfigRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_helpdesk_v1_ratings_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1054,12 +1054,12 @@ func (x *ListRatingTypesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListRatingTypesRequest.ProtoReflect.Descriptor instead.
-func (*ListRatingTypesRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetRatingsConfigRequest.ProtoReflect.Descriptor instead.
+func (*GetRatingsConfigRequest) Descriptor() ([]byte, []int) {
 	return file_proto_helpdesk_v1_ratings_proto_rawDescGZIP(), []int{18}
 }
 
-type ListRatingTypesResponse struct {
+type GetRatingsConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Types         []string               `protobuf:"bytes,1,rep,name=types,proto3" json:"types,omitempty"`
 	MaxRating     float32                `protobuf:"fixed32,2,opt,name=max_rating,json=maxRating,proto3" json:"max_rating,omitempty"`
@@ -1067,20 +1067,20 @@ type ListRatingTypesResponse struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListRatingTypesResponse) Reset() {
-	*x = ListRatingTypesResponse{}
+func (x *GetRatingsConfigResponse) Reset() {
+	*x = GetRatingsConfigResponse{}
 	mi := &file_proto_helpdesk_v1_ratings_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListRatingTypesResponse) String() string {
+func (x *GetRatingsConfigResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListRatingTypesResponse) ProtoMessage() {}
+func (*GetRatingsConfigResponse) ProtoMessage() {}
 
-func (x *ListRatingTypesResponse) ProtoReflect() protoreflect.Message {
+func (x *GetRatingsConfigResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_helpdesk_v1_ratings_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1092,19 +1092,19 @@ func (x *ListRatingTypesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListRatingTypesResponse.ProtoReflect.Descriptor instead.
-func (*ListRatingTypesResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetRatingsConfigResponse.ProtoReflect.Descriptor instead.
+func (*GetRatingsConfigResponse) Descriptor() ([]byte, []int) {
 	return file_proto_helpdesk_v1_ratings_proto_rawDescGZIP(), []int{19}
 }
 
-func (x *ListRatingTypesResponse) GetTypes() []string {
+func (x *GetRatingsConfigResponse) GetTypes() []string {
 	if x != nil {
 		return x.Types
 	}
 	return nil
 }
 
-func (x *ListRatingTypesResponse) GetMaxRating() float32 {
+func (x *GetRatingsConfigResponse) GetMaxRating() float32 {
 	if x != nil {
 		return x.MaxRating
 	}
@@ -1185,9 +1185,9 @@ const file_proto_helpdesk_v1_ratings_proto_rawDesc = "" +
 	"\x18DeleteRatingReplyRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"5\n" +
 	"\x19DeleteRatingReplyResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x18\n" +
-	"\x16ListRatingTypesRequest\"N\n" +
-	"\x17ListRatingTypesResponse\x12\x14\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x19\n" +
+	"\x17GetRatingsConfigRequest\"O\n" +
+	"\x18GetRatingsConfigResponse\x12\x14\n" +
 	"\x05types\x18\x01 \x03(\tR\x05types\x12\x1d\n" +
 	"\n" +
 	"max_rating\x18\x02 \x01(\x02R\tmaxRatingB\x0fZ\r./helpdesk_v1b\x06proto3"
@@ -1224,8 +1224,8 @@ var file_proto_helpdesk_v1_ratings_proto_goTypes = []any{
 	(*ListRatingRepliesResponse)(nil), // 15: v1.ListRatingRepliesResponse
 	(*DeleteRatingReplyRequest)(nil),  // 16: v1.DeleteRatingReplyRequest
 	(*DeleteRatingReplyResponse)(nil), // 17: v1.DeleteRatingReplyResponse
-	(*ListRatingTypesRequest)(nil),    // 18: v1.ListRatingTypesRequest
-	(*ListRatingTypesResponse)(nil),   // 19: v1.ListRatingTypesResponse
+	(*GetRatingsConfigRequest)(nil),   // 18: v1.GetRatingsConfigRequest
+	(*GetRatingsConfigResponse)(nil),  // 19: v1.GetRatingsConfigResponse
 }
 var file_proto_helpdesk_v1_ratings_proto_depIdxs = []int32{
 	0, // 0: v1.CreateRatingResponse.rating:type_name -> v1.Rating

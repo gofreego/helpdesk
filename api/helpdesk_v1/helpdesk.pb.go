@@ -26,7 +26,7 @@ var File_proto_helpdesk_v1_helpdesk_proto protoreflect.FileDescriptor
 
 const file_proto_helpdesk_v1_helpdesk_proto_rawDesc = "" +
 	"\n" +
-	" proto/helpdesk/v1/helpdesk.proto\x12\x02v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17proto/common/ping.proto\x1a\x1fproto/helpdesk/v1/ratings.proto\x1a\x1eproto/helpdesk/v1/issues.proto2\xc9\x1c\n" +
+	" proto/helpdesk/v1/helpdesk.proto\x12\x02v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17proto/common/ping.proto\x1a\x1fproto/helpdesk/v1/ratings.proto\x1a\x1eproto/helpdesk/v1/issues.proto2\xdd\x1c\n" +
 	"\vBaseService\x12\x81\x01\n" +
 	"\x04Ping\x12\x11.v1.HDPingRequest\x1a\x12.v1.HDPingResponse\"R\x92A6\n" +
 	"\x04Ping\x12\x0fPing the server\x1a\x1dCheck if the server is alive.\x82\xd3\xe4\x93\x02\x13\x12\x11/helpdesk/v1/ping\x12\xa3\x01\n" +
@@ -39,9 +39,9 @@ const file_proto_helpdesk_v1_helpdesk_proto_rawDesc = "" +
 	"\fUpdateRating\x12\x17.v1.UpdateRatingRequest\x1a\x18.v1.UpdateRatingResponse\"p\x92AI\n" +
 	"\aRatings\x12\x0fUpdate a rating\x1a-Update an existing rating's score or comment.\x82\xd3\xe4\x93\x02\x1e:\x01*\x1a\x19/helpdesk/v1/ratings/{id}\x12\x9f\x01\n" +
 	"\fDeleteRating\x12\x17.v1.DeleteRatingRequest\x1a\x18.v1.DeleteRatingResponse\"\\\x92A8\n" +
-	"\aRatings\x12\x0fDelete a rating\x1a\x1cDelete a rating permanently.\x82\xd3\xe4\x93\x02\x1b*\x19/helpdesk/v1/ratings/{id}\x12\xc6\x01\n" +
-	"\x0fListRatingTypes\x12\x1a.v1.ListRatingTypesRequest\x1a\x1b.v1.ListRatingTypesResponse\"z\x92AV\n" +
-	"\aRatings\x12\x11List rating types\x1a8Get the list of allowed rating types from configuration.\x82\xd3\xe4\x93\x02\x1b\x12\x19/helpdesk/v1/rating-types\x12\xe9\x01\n" +
+	"\aRatings\x12\x0fDelete a rating\x1a\x1cDelete a rating permanently.\x82\xd3\xe4\x93\x02\x1b*\x19/helpdesk/v1/ratings/{id}\x12\xda\x01\n" +
+	"\x10GetRatingsConfig\x12\x1b.v1.GetRatingsConfigRequest\x1a\x1c.v1.GetRatingsConfigResponse\"\x8a\x01\x92Ad\n" +
+	"\aRatings\x12\x19Get ratings configuration\x1a>Get the list of allowed rating types and other configurations.\x82\xd3\xe4\x93\x02\x1d\x12\x1b/helpdesk/v1/ratings/config\x12\xe9\x01\n" +
 	"\x11CreateRatingReply\x12\x1c.v1.CreateRatingReplyRequest\x1a\x1d.v1.CreateRatingReplyResponse\"\x96\x01\x92A`\n" +
 	"\rRatingReplies\x12\x1aCreate a reply to a rating\x1a3Post a reply to acknowledge or respond to a rating.\x82\xd3\xe4\x93\x02-:\x01*\"(/helpdesk/v1/ratings/{rating_id}/replies\x12\xdc\x01\n" +
 	"\x11ListRatingReplies\x12\x1c.v1.ListRatingRepliesRequest\x1a\x1d.v1.ListRatingRepliesResponse\"\x89\x01\x92AV\n" +
@@ -97,7 +97,7 @@ var file_proto_helpdesk_v1_helpdesk_proto_goTypes = []any{
 	(*ListRatingsRequest)(nil),        // 3: v1.ListRatingsRequest
 	(*UpdateRatingRequest)(nil),       // 4: v1.UpdateRatingRequest
 	(*DeleteRatingRequest)(nil),       // 5: v1.DeleteRatingRequest
-	(*ListRatingTypesRequest)(nil),    // 6: v1.ListRatingTypesRequest
+	(*GetRatingsConfigRequest)(nil),   // 6: v1.GetRatingsConfigRequest
 	(*CreateRatingReplyRequest)(nil),  // 7: v1.CreateRatingReplyRequest
 	(*ListRatingRepliesRequest)(nil),  // 8: v1.ListRatingRepliesRequest
 	(*DeleteRatingReplyRequest)(nil),  // 9: v1.DeleteRatingReplyRequest
@@ -117,7 +117,7 @@ var file_proto_helpdesk_v1_helpdesk_proto_goTypes = []any{
 	(*ListRatingsResponse)(nil),       // 23: v1.ListRatingsResponse
 	(*UpdateRatingResponse)(nil),      // 24: v1.UpdateRatingResponse
 	(*DeleteRatingResponse)(nil),      // 25: v1.DeleteRatingResponse
-	(*ListRatingTypesResponse)(nil),   // 26: v1.ListRatingTypesResponse
+	(*GetRatingsConfigResponse)(nil),  // 26: v1.GetRatingsConfigResponse
 	(*CreateRatingReplyResponse)(nil), // 27: v1.CreateRatingReplyResponse
 	(*ListRatingRepliesResponse)(nil), // 28: v1.ListRatingRepliesResponse
 	(*DeleteRatingReplyResponse)(nil), // 29: v1.DeleteRatingReplyResponse
@@ -139,7 +139,7 @@ var file_proto_helpdesk_v1_helpdesk_proto_depIdxs = []int32{
 	3,  // 3: v1.BaseService.ListRatings:input_type -> v1.ListRatingsRequest
 	4,  // 4: v1.BaseService.UpdateRating:input_type -> v1.UpdateRatingRequest
 	5,  // 5: v1.BaseService.DeleteRating:input_type -> v1.DeleteRatingRequest
-	6,  // 6: v1.BaseService.ListRatingTypes:input_type -> v1.ListRatingTypesRequest
+	6,  // 6: v1.BaseService.GetRatingsConfig:input_type -> v1.GetRatingsConfigRequest
 	7,  // 7: v1.BaseService.CreateRatingReply:input_type -> v1.CreateRatingReplyRequest
 	8,  // 8: v1.BaseService.ListRatingReplies:input_type -> v1.ListRatingRepliesRequest
 	9,  // 9: v1.BaseService.DeleteRatingReply:input_type -> v1.DeleteRatingReplyRequest
@@ -159,7 +159,7 @@ var file_proto_helpdesk_v1_helpdesk_proto_depIdxs = []int32{
 	23, // 23: v1.BaseService.ListRatings:output_type -> v1.ListRatingsResponse
 	24, // 24: v1.BaseService.UpdateRating:output_type -> v1.UpdateRatingResponse
 	25, // 25: v1.BaseService.DeleteRating:output_type -> v1.DeleteRatingResponse
-	26, // 26: v1.BaseService.ListRatingTypes:output_type -> v1.ListRatingTypesResponse
+	26, // 26: v1.BaseService.GetRatingsConfig:output_type -> v1.GetRatingsConfigResponse
 	27, // 27: v1.BaseService.CreateRatingReply:output_type -> v1.CreateRatingReplyResponse
 	28, // 28: v1.BaseService.ListRatingReplies:output_type -> v1.ListRatingRepliesResponse
 	29, // 29: v1.BaseService.DeleteRatingReply:output_type -> v1.DeleteRatingReplyResponse

@@ -486,30 +486,6 @@
         ]
       }
     },
-    "/helpdesk/v1/rating-types": {
-      "get": {
-        "summary": "List rating types",
-        "description": "Get the list of allowed rating types from configuration.",
-        "operationId": "BaseService_ListRatingTypes",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListRatingTypesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "Ratings"
-        ]
-      }
-    },
     "/helpdesk/v1/ratings": {
       "get": {
         "summary": "List ratings",
@@ -602,6 +578,30 @@
             }
           }
         ],
+        "tags": [
+          "Ratings"
+        ]
+      }
+    },
+    "/helpdesk/v1/ratings/config": {
+      "get": {
+        "summary": "Get ratings configuration",
+        "description": "Get the list of allowed rating types and other configurations.",
+        "operationId": "BaseService_GetRatingsConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetRatingsConfigResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
         "tags": [
           "Ratings"
         ]
@@ -988,6 +988,21 @@
         }
       }
     },
+    "v1GetRatingsConfigResponse": {
+      "type": "object",
+      "properties": {
+        "types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxRating": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "v1HDPingResponse": {
       "type": "object",
       "properties": {
@@ -1111,21 +1126,6 @@
             "type": "object",
             "$ref": "#/definitions/v1RatingReply"
           }
-        }
-      }
-    },
-    "v1ListRatingTypesResponse": {
-      "type": "object",
-      "properties": {
-        "types": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "maxRating": {
-          "type": "number",
-          "format": "float"
         }
       }
     },
