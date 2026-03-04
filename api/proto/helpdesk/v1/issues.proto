@@ -1,0 +1,127 @@
+syntax = "proto3";
+package v1;
+
+option go_package = "./helpdesk_v1";
+
+// ===== Issue Domain Messages =====
+
+// Issue represents a helpdesk issue
+message Issue {
+    string id = 1;
+    int32 user_id = 2;
+    string type = 3;         // entity type
+    string entity_id = 4;    // ID of the entity
+    string title = 5;
+    string description = 6;
+    int32 status = 7;        // 1=open, 2=in_progress, 3=resolved, 4=closed
+    int64 created_at = 8;
+    int64 updated_at = 9;
+}
+
+// IssueReply represents a reply in an issue conversation
+message IssueReply {
+    string id = 1;
+    string issue_id = 2;
+    int32 user_id = 3;
+    string role = 4;         // "user" | "admin"
+    string message = 5;
+    bool is_deleted = 6;
+    int64 created_at = 7;
+}
+
+// ===== Issue Request/Response Messages =====
+
+message CreateIssueRequest {
+    string type = 1;
+    string entity_id = 2;
+    string title = 3;
+    string description = 4;
+}
+
+message CreateIssueResponse {
+    Issue issue = 1;
+}
+
+message GetIssueRequest {
+    string id = 1;
+}
+
+message GetIssueResponse {
+    Issue issue = 1;
+}
+
+message ListIssuesRequest {
+    string id = 1;
+    int32 user_id = 2;
+    string type = 3;
+    string entity_id = 4;
+    int32 status = 5;
+    int32 page = 6;
+    int32 page_size = 7;
+}
+
+message ListIssuesResponse {
+    repeated Issue issues = 1;
+}
+
+message UpdateIssueRequest {
+    string id = 1;
+    string title = 2;
+    string description = 3;
+    int32 status = 4;
+}
+
+message UpdateIssueResponse {
+    Issue issue = 1;
+}
+
+message DeleteIssueRequest {
+    string id = 1;
+}
+
+message DeleteIssueResponse {
+    bool success = 1;
+}
+
+// ===== Issue Reply Request/Response Messages =====
+
+message CreateIssueReplyRequest {
+    string issue_id = 1;
+    string message = 2;
+}
+
+message CreateIssueReplyResponse {
+    IssueReply reply = 1;
+}
+
+message ListIssueRepliesRequest {
+    string issue_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message ListIssueRepliesResponse {
+    repeated IssueReply replies = 1;
+}
+
+message DeleteIssueReplyRequest {
+    string id = 1;
+}
+
+message DeleteIssueReplyResponse {
+    bool success = 1;
+}
+message UpdateIssueStatusRequest {
+    string id = 1;
+    int32 status = 2;
+}
+
+message UpdateIssueStatusResponse {
+    Issue issue = 1;
+}
+
+message ListIssueConfigRequest {}
+
+message ListIssueConfigResponse {
+    repeated string types = 1;
+}

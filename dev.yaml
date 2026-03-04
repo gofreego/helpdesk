@@ -1,0 +1,43 @@
+LogConfig: true
+Logger:
+  AppName: helpdesk
+  Build: dev
+  Level: debug
+ConfigReader:
+  Name: ""
+  Format: ""
+  Consul:
+    Address: ""
+    Token: ""
+    Path: ""
+  Zookeeper:
+    Address: ""
+    Path: ""
+    Username: ""
+    Password: ""
+AppNames:
+- HTTP_SERVER
+- GRPC_SERVER
+Server:
+  GRPCPort: 8086
+  HTTPPort: 8085
+Repository:
+  Name: postgres   # postgres/memory
+  Postgres:
+    Host: 192.168.1.100
+    Port: 5432
+    Username: admin
+    Password: OSwfiTlc1r5W7Z
+    DBName: helpdesk
+    SSLMode: disable
+    MaxOpenConns: 20
+    MaxIdleConns: 10
+    ConnMaxLifetime: 30m
+    ConnMaxIdleTime: 5m
+Service:
+  RatingTypes: ["product", "order", "service", "it-support"]
+  IssueTypes: ["bug", "feature", "improvement", "support"]
+  MaxRating: 5
+Debug:
+  Enabled: true
+  EnablePprof: true

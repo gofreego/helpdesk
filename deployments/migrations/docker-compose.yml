@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  migrate:
+    image: migrate/migrate:v4.15.2
+    volumes:
+      - ../../resources/migrations:/migrations
+    env_file:
+      - .env
+    command: -path /migrations -database $DATABASE_URL up

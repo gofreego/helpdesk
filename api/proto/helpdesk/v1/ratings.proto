@@ -1,0 +1,118 @@
+syntax = "proto3";
+package v1;
+
+option go_package = "./helpdesk_v1";
+
+// ===== Rating Domain Messages =====
+
+// Rating represents a user's rating of an entity
+message Rating {
+    string id = 1;
+    int32 user_id = 2;
+    string type = 3;         // entity type: "product", "order", "service", etc.
+    string entity_id = 4;    // ID of the rated entity
+    float rating = 5;        // numeric score (e.g. 1.0, 2.5, 5.0)
+    string comment = 6;      // optional free-text feedback
+    int64 created_at = 7;    // Unix epoch milliseconds
+    int64 updated_at = 8;    // Unix epoch milliseconds
+}
+
+// RatingReply represents a response to a rating (from admin/owner)
+message RatingReply {
+    string id = 1;
+    string rating_id = 2;
+    int32 user_id = 3;
+    string role = 4;         // "user" | "admin"
+    string message = 5;
+    bool is_deleted = 6;
+    int64 created_at = 7;
+}
+
+// ===== Rating Request/Response Messages =====
+
+message CreateRatingRequest {
+    string type = 1;
+    string entity_id = 2;
+    float rating = 3;
+    string comment = 4;
+}
+
+message CreateRatingResponse {
+    Rating rating = 1;
+}
+
+message GetRatingRequest {
+    string id = 1;
+}
+
+message GetRatingResponse {
+    Rating rating = 1;
+}
+
+message ListRatingsRequest {
+    string id = 1;
+    int32 user_id = 2;
+    string type = 3;
+    string entity_id = 4;
+    int32 page = 5;
+    int32 page_size = 6;
+}
+
+message ListRatingsResponse {
+    repeated Rating ratings = 1;
+}
+
+message UpdateRatingRequest {
+    string id = 1;
+    float rating = 2;
+    string comment = 3;
+}
+
+message UpdateRatingResponse {
+    Rating rating = 1;
+}
+
+message DeleteRatingRequest {
+    string id = 1;
+}
+
+message DeleteRatingResponse {
+    bool success = 1;
+}
+
+// ===== Rating Reply Request/Response Messages =====
+
+message CreateRatingReplyRequest {
+    string rating_id = 1;
+    string message = 2;
+}
+
+message CreateRatingReplyResponse {
+    RatingReply reply = 1;
+}
+
+message ListRatingRepliesRequest {
+    string rating_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message ListRatingRepliesResponse {
+    repeated RatingReply replies = 1;
+}
+
+message DeleteRatingReplyRequest {
+    string id = 1;
+}
+
+message DeleteRatingReplyResponse {
+    bool success = 1;
+}
+
+message ListRatingTypesRequest {
+}
+
+message ListRatingTypesResponse {
+    repeated string types = 1;
+    float max_rating = 2;
+}

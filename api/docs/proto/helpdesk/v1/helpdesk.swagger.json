@@ -1,0 +1,1257 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "HelpDesk API",
+    "description": "HelpDesk Service exposes two core domains:\n\n1. **Ratings** — Users can rate any entity (product, order, service, etc.) identified by a `type` and `entity_id`. Each rating captures the user, a numeric score (validated against the configured max scale, e.g. 1–5 or 1–10), and an optional free-text comment. Admins or entity owners can reply to any rating to acknowledge feedback (especially poor ratings).\n\n2. **Issues \u0026 Conversations** — Users can report issues against any entity. Admins and users exchange replies in a threaded conversation attached to the issue until it is marked resolved or closed. Issue status transitions: open → in_progress → resolved → closed.",
+    "version": "v1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Ping",
+      "description": "Health check endpoints"
+    },
+    {
+      "name": "Ratings",
+      "description": "Submit, retrieve, update, and delete ratings for any entity. A rating belongs to a user and targets a specific entity identified by type + entity_id. The allowed score range is controlled by the Ratings.MaxScale configuration value."
+    },
+    {
+      "name": "RatingReplies",
+      "description": "Responses to ratings. Admins or entity owners can reply to a rating to acknowledge feedback — particularly useful for poor ratings. Each rating can have multiple replies, returned in chronological order."
+    },
+    {
+      "name": "Issues",
+      "description": "Report and manage helpdesk issues for any entity. Each issue has a title, description, and a lifecycle status (open, in_progress, resolved, closed)."
+    },
+    {
+      "name": "Replies",
+      "description": "Threaded conversation on an issue. Both users and admins can post replies. Replies are returned in chronological order. The conversation continues across status changes until the issue is closed."
+    },
+    {
+      "name": "BaseService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/helpdesk/v1/issue-config": {
+      "get": {
+        "summary": "List issue configuration",
+        "description": "Get the list of allowed issue types from configuration.",
+        "operationId": "BaseService_ListIssueConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListIssueConfigResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Issues"
+        ]
+      }
+    },
+    "/helpdesk/v1/issue-replies/{id}": {
+      "delete": {
+        "summary": "Delete an issue reply",
+        "description": "Soft delete a reply in an issue conversation.",
+        "operationId": "BaseService_DeleteIssueReply",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteIssueReplyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Replies"
+        ]
+      }
+    },
+    "/helpdesk/v1/issues": {
+      "get": {
+        "summary": "List issues",
+        "description": "List issues with optional filters.",
+        "operationId": "BaseService_ListIssues",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListIssuesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "Issues"
+        ]
+      },
+      "post": {
+        "summary": "Create an issue",
+        "description": "Report a new helpdesk issue.",
+        "operationId": "BaseService_CreateIssue",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateIssueResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateIssueRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Issues"
+        ]
+      }
+    },
+    "/helpdesk/v1/issues/{id}": {
+      "get": {
+        "summary": "Get an issue",
+        "description": "Retrieve a specific issue by ID.",
+        "operationId": "BaseService_GetIssue",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetIssueResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Issues"
+        ]
+      },
+      "delete": {
+        "summary": "Delete an issue",
+        "description": "Delete an issue permanently.",
+        "operationId": "BaseService_DeleteIssue",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteIssueResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Issues"
+        ]
+      },
+      "put": {
+        "summary": "Update an issue",
+        "description": "Update issue title, description, or status.",
+        "operationId": "BaseService_UpdateIssue",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateIssueResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceUpdateIssueBody"
+            }
+          }
+        ],
+        "tags": [
+          "Issues"
+        ]
+      }
+    },
+    "/helpdesk/v1/issues/{id}/status": {
+      "patch": {
+        "summary": "Update issue status",
+        "description": "Update the status of an issue (Admin only).",
+        "operationId": "BaseService_UpdateIssueStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateIssueStatusResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceUpdateIssueStatusBody"
+            }
+          }
+        ],
+        "tags": [
+          "Issues"
+        ]
+      }
+    },
+    "/helpdesk/v1/issues/{issueId}/replies": {
+      "get": {
+        "summary": "List replies to an issue",
+        "description": "Retrieve the threaded conversation for an issue.",
+        "operationId": "BaseService_ListIssueReplies",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListIssueRepliesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "Replies"
+        ]
+      },
+      "post": {
+        "summary": "Create a reply to an issue",
+        "description": "Post a reply in an issue conversation.",
+        "operationId": "BaseService_CreateIssueReply",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateIssueReplyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceCreateIssueReplyBody"
+            }
+          }
+        ],
+        "tags": [
+          "Replies"
+        ]
+      }
+    },
+    "/helpdesk/v1/ping": {
+      "get": {
+        "summary": "Ping the server",
+        "description": "Check if the server is alive.",
+        "operationId": "BaseService_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1HDPingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "message",
+            "description": "Message must be non-empty and between 1-100 characters",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Ping"
+        ]
+      }
+    },
+    "/helpdesk/v1/rating-replies/{id}": {
+      "delete": {
+        "summary": "Delete a rating reply",
+        "description": "Soft delete a reply to a rating.",
+        "operationId": "BaseService_DeleteRatingReply",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteRatingReplyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RatingReplies"
+        ]
+      }
+    },
+    "/helpdesk/v1/rating-types": {
+      "get": {
+        "summary": "List rating types",
+        "description": "Get the list of allowed rating types from configuration.",
+        "operationId": "BaseService_ListRatingTypes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListRatingTypesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Ratings"
+        ]
+      }
+    },
+    "/helpdesk/v1/ratings": {
+      "get": {
+        "summary": "List ratings",
+        "description": "List ratings with optional filters.",
+        "operationId": "BaseService_ListRatings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListRatingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "Ratings"
+        ]
+      },
+      "post": {
+        "summary": "Create a rating",
+        "description": "Submit a new rating for an entity.",
+        "operationId": "BaseService_CreateRating",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateRatingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateRatingRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Ratings"
+        ]
+      }
+    },
+    "/helpdesk/v1/ratings/{id}": {
+      "get": {
+        "summary": "Get a rating",
+        "description": "Retrieve a specific rating by ID.",
+        "operationId": "BaseService_GetRating",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetRatingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Ratings"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a rating",
+        "description": "Delete a rating permanently.",
+        "operationId": "BaseService_DeleteRating",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteRatingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Ratings"
+        ]
+      },
+      "put": {
+        "summary": "Update a rating",
+        "description": "Update an existing rating's score or comment.",
+        "operationId": "BaseService_UpdateRating",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateRatingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceUpdateRatingBody"
+            }
+          }
+        ],
+        "tags": [
+          "Ratings"
+        ]
+      }
+    },
+    "/helpdesk/v1/ratings/{ratingId}/replies": {
+      "get": {
+        "summary": "List replies to a rating",
+        "description": "Retrieve all replies for a specific rating.",
+        "operationId": "BaseService_ListRatingReplies",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListRatingRepliesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ratingId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "RatingReplies"
+        ]
+      },
+      "post": {
+        "summary": "Create a reply to a rating",
+        "description": "Post a reply to acknowledge or respond to a rating.",
+        "operationId": "BaseService_CreateRatingReply",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateRatingReplyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ratingId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceCreateRatingReplyBody"
+            }
+          }
+        ],
+        "tags": [
+          "RatingReplies"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "BaseServiceCreateIssueReplyBody": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "BaseServiceCreateRatingReplyBody": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "BaseServiceUpdateIssueBody": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "BaseServiceUpdateIssueStatusBody": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "BaseServiceUpdateRatingBody": {
+      "type": "object",
+      "properties": {
+        "rating": {
+          "type": "number",
+          "format": "float"
+        },
+        "comment": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CreateIssueReplyResponse": {
+      "type": "object",
+      "properties": {
+        "reply": {
+          "$ref": "#/definitions/v1IssueReply"
+        }
+      }
+    },
+    "v1CreateIssueRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateIssueResponse": {
+      "type": "object",
+      "properties": {
+        "issue": {
+          "$ref": "#/definitions/v1Issue"
+        }
+      }
+    },
+    "v1CreateRatingReplyResponse": {
+      "type": "object",
+      "properties": {
+        "reply": {
+          "$ref": "#/definitions/v1RatingReply"
+        }
+      }
+    },
+    "v1CreateRatingRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number",
+          "format": "float"
+        },
+        "comment": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateRatingResponse": {
+      "type": "object",
+      "properties": {
+        "rating": {
+          "$ref": "#/definitions/v1Rating"
+        }
+      }
+    },
+    "v1DeleteIssueReplyResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1DeleteIssueResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1DeleteRatingReplyResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1DeleteRatingResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1GetIssueResponse": {
+      "type": "object",
+      "properties": {
+        "issue": {
+          "$ref": "#/definitions/v1Issue"
+        }
+      }
+    },
+    "v1GetRatingResponse": {
+      "type": "object",
+      "properties": {
+        "rating": {
+          "$ref": "#/definitions/v1Rating"
+        }
+      }
+    },
+    "v1HDPingResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "description": "PingResponse is the response message for the Ping RPC method."
+    },
+    "v1Issue": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string",
+          "title": "entity type"
+        },
+        "entityId": {
+          "type": "string",
+          "title": "ID of the entity"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "title": "1=open, 2=in_progress, 3=resolved, 4=closed"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "Issue represents a helpdesk issue"
+    },
+    "v1IssueReply": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "issueId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "role": {
+          "type": "string",
+          "title": "\"user\" | \"admin\""
+        },
+        "message": {
+          "type": "string"
+        },
+        "isDeleted": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "IssueReply represents a reply in an issue conversation"
+    },
+    "v1ListIssueConfigResponse": {
+      "type": "object",
+      "properties": {
+        "types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1ListIssueRepliesResponse": {
+      "type": "object",
+      "properties": {
+        "replies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1IssueReply"
+          }
+        }
+      }
+    },
+    "v1ListIssuesResponse": {
+      "type": "object",
+      "properties": {
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Issue"
+          }
+        }
+      }
+    },
+    "v1ListRatingRepliesResponse": {
+      "type": "object",
+      "properties": {
+        "replies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1RatingReply"
+          }
+        }
+      }
+    },
+    "v1ListRatingTypesResponse": {
+      "type": "object",
+      "properties": {
+        "types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxRating": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "v1ListRatingsResponse": {
+      "type": "object",
+      "properties": {
+        "ratings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Rating"
+          }
+        }
+      }
+    },
+    "v1Rating": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string",
+          "description": "entity type: \"product\", \"order\", \"service\", etc."
+        },
+        "entityId": {
+          "type": "string",
+          "title": "ID of the rated entity"
+        },
+        "rating": {
+          "type": "number",
+          "format": "float",
+          "title": "numeric score (e.g. 1.0, 2.5, 5.0)"
+        },
+        "comment": {
+          "type": "string",
+          "title": "optional free-text feedback"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "Unix epoch milliseconds"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "Unix epoch milliseconds"
+        }
+      },
+      "title": "Rating represents a user's rating of an entity"
+    },
+    "v1RatingReply": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "ratingId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "role": {
+          "type": "string",
+          "title": "\"user\" | \"admin\""
+        },
+        "message": {
+          "type": "string"
+        },
+        "isDeleted": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "RatingReply represents a response to a rating (from admin/owner)"
+    },
+    "v1UpdateIssueResponse": {
+      "type": "object",
+      "properties": {
+        "issue": {
+          "$ref": "#/definitions/v1Issue"
+        }
+      }
+    },
+    "v1UpdateIssueStatusResponse": {
+      "type": "object",
+      "properties": {
+        "issue": {
+          "$ref": "#/definitions/v1Issue"
+        }
+      }
+    },
+    "v1UpdateRatingResponse": {
+      "type": "object",
+      "properties": {
+        "rating": {
+          "$ref": "#/definitions/v1Rating"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "name": "x-user-id",
+      "in": "header"
+    },
+    "ApiKeyPerms": {
+      "type": "apiKey",
+      "name": "x-user-perms",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": [],
+      "ApiKeyPerms": []
+    }
+  ]
+}

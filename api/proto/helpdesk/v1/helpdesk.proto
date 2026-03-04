@@ -1,0 +1,320 @@
+syntax = "proto3";
+package v1;
+
+option go_package = "./helpdesk_v1";
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "proto/common/ping.proto";
+import "proto/helpdesk/v1/ratings.proto";
+import "proto/helpdesk/v1/issues.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "HelpDesk API"
+    version: "v1.0.0"
+    description: "HelpDesk Service exposes two core domains:\n\n"
+                 "1. **Ratings** — Users can rate any entity (product, order, service, etc.) "
+                 "identified by a `type` and `entity_id`. Each rating captures the user, a "
+                 "numeric score (validated against the configured max scale, e.g. 1–5 or 1–10), "
+                 "and an optional free-text comment. Admins or entity owners can reply to any "
+                 "rating to acknowledge feedback (especially poor ratings).\n\n"
+                 "2. **Issues & Conversations** — Users can report issues against any entity. "
+                 "Admins and users exchange replies in a threaded conversation attached to the "
+                 "issue until it is marked resolved or closed. Issue status transitions: "
+                 "open → in_progress → resolved → closed."
+  }
+  tags: [
+    {
+      name: "Ping"
+      description: "Health check endpoints"
+    },
+    {
+      name: "Ratings"
+      description: "Submit, retrieve, update, and delete ratings for any entity. "
+                   "A rating belongs to a user and targets a specific entity identified by "
+                   "type + entity_id. The allowed score range is controlled by the "
+                   "Ratings.MaxScale configuration value."
+    },
+    {
+      name: "RatingReplies"
+      description: "Responses to ratings. Admins or entity owners can reply to a rating to "
+                   "acknowledge feedback — particularly useful for poor ratings. Each rating "
+                   "can have multiple replies, returned in chronological order."
+    },
+    {
+      name: "Issues"
+      description: "Report and manage helpdesk issues for any entity. "
+                   "Each issue has a title, description, and a lifecycle status "
+                   "(open, in_progress, resolved, closed)."
+    },
+    {
+      name: "Replies"
+      description: "Threaded conversation on an issue. Both users and admins can post replies. "
+                   "Replies are returned in chronological order. The conversation continues "
+                   "across status changes until the issue is closed."
+    }
+  ]
+  security_definitions: {
+    security: {
+      key: "ApiKeyAuth"
+      value: {
+        type: TYPE_API_KEY
+        in: IN_HEADER
+        name: "x-user-id"
+      }
+    }
+    security: {
+      key: "ApiKeyPerms"
+      value: {
+        type: TYPE_API_KEY
+        in: IN_HEADER
+        name: "x-user-perms"
+      }
+    }
+  }
+  security: {
+    security_requirement: {
+      key: "ApiKeyAuth"
+    }
+    security_requirement: {
+      key: "ApiKeyPerms"
+    }
+  }
+};
+
+service BaseService {
+    
+    // Ping is a simple GET request that returns a Pong message.
+    rpc Ping (HDPingRequest) returns (HDPingResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/ping"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Ping"
+            summary: "Ping the server"
+            description: "Check if the server is alive."
+        };
+    }
+
+    // --- Ratings ---
+    rpc CreateRating (CreateRatingRequest) returns (CreateRatingResponse) {
+        option (google.api.http) = {
+            post: "/helpdesk/v1/ratings"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Ratings"
+            summary: "Create a rating"
+            description: "Submit a new rating for an entity."
+        };
+    }
+
+    rpc GetRating (GetRatingRequest) returns (GetRatingResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/ratings/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Ratings"
+            summary: "Get a rating"
+            description: "Retrieve a specific rating by ID."
+        };
+    }
+
+    rpc ListRatings (ListRatingsRequest) returns (ListRatingsResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/ratings"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Ratings"
+            summary: "List ratings"
+            description: "List ratings with optional filters."
+        };
+    }
+
+    rpc UpdateRating (UpdateRatingRequest) returns (UpdateRatingResponse) {
+        option (google.api.http) = {
+            put: "/helpdesk/v1/ratings/{id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Ratings"
+            summary: "Update a rating"
+            description: "Update an existing rating's score or comment."
+        };
+    }
+
+    rpc DeleteRating (DeleteRatingRequest) returns (DeleteRatingResponse) {
+        option (google.api.http) = {
+            delete: "/helpdesk/v1/ratings/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Ratings"
+            summary: "Delete a rating"
+            description: "Delete a rating permanently."
+        };
+    }
+
+    rpc ListRatingTypes (ListRatingTypesRequest) returns (ListRatingTypesResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/rating-types"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Ratings"
+            summary: "List rating types"
+            description: "Get the list of allowed rating types from configuration."
+        };
+    }
+
+    // --- Rating Replies ---
+    rpc CreateRatingReply (CreateRatingReplyRequest) returns (CreateRatingReplyResponse) {
+        option (google.api.http) = {
+            post: "/helpdesk/v1/ratings/{rating_id}/replies"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "RatingReplies"
+            summary: "Create a reply to a rating"
+            description: "Post a reply to acknowledge or respond to a rating."
+        };
+    }
+
+    rpc ListRatingReplies (ListRatingRepliesRequest) returns (ListRatingRepliesResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/ratings/{rating_id}/replies"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "RatingReplies"
+            summary: "List replies to a rating"
+            description: "Retrieve all replies for a specific rating."
+        };
+    }
+
+    rpc DeleteRatingReply (DeleteRatingReplyRequest) returns (DeleteRatingReplyResponse) {
+        option (google.api.http) = {
+            delete: "/helpdesk/v1/rating-replies/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "RatingReplies"
+            summary: "Delete a rating reply"
+            description: "Soft delete a reply to a rating."
+        };
+    }
+
+    // --- Issues ---
+    rpc CreateIssue (CreateIssueRequest) returns (CreateIssueResponse) {
+        option (google.api.http) = {
+            post: "/helpdesk/v1/issues"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "Create an issue"
+            description: "Report a new helpdesk issue."
+        };
+    }
+
+    rpc GetIssue (GetIssueRequest) returns (GetIssueResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/issues/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "Get an issue"
+            description: "Retrieve a specific issue by ID."
+        };
+    }
+
+    rpc ListIssues (ListIssuesRequest) returns (ListIssuesResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/issues"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "List issues"
+            description: "List issues with optional filters."
+        };
+    }
+
+    rpc UpdateIssue (UpdateIssueRequest) returns (UpdateIssueResponse) {
+        option (google.api.http) = {
+            put: "/helpdesk/v1/issues/{id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "Update an issue"
+            description: "Update issue title, description, or status."
+        };
+    }
+
+    rpc DeleteIssue (DeleteIssueRequest) returns (DeleteIssueResponse) {
+        option (google.api.http) = {
+            delete: "/helpdesk/v1/issues/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "Delete an issue"
+            description: "Delete an issue permanently."
+        };
+    }
+
+    rpc UpdateIssueStatus (UpdateIssueStatusRequest) returns (UpdateIssueStatusResponse) {
+        option (google.api.http) = {
+            patch: "/helpdesk/v1/issues/{id}/status"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "Update issue status"
+            description: "Update the status of an issue (Admin only)."
+        };
+    }
+
+    rpc ListIssueConfig (ListIssueConfigRequest) returns (ListIssueConfigResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/issue-config"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "List issue configuration"
+            description: "Get the list of allowed issue types from configuration."
+        };
+    }
+
+    // --- Issue Replies ---
+    rpc CreateIssueReply (CreateIssueReplyRequest) returns (CreateIssueReplyResponse) {
+        option (google.api.http) = {
+            post: "/helpdesk/v1/issues/{issue_id}/replies"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Replies"
+            summary: "Create a reply to an issue"
+            description: "Post a reply in an issue conversation."
+        };
+    }
+
+    rpc ListIssueReplies (ListIssueRepliesRequest) returns (ListIssueRepliesResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/issues/{issue_id}/replies"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Replies"
+            summary: "List replies to an issue"
+            description: "Retrieve the threaded conversation for an issue."
+        };
+    }
+
+    rpc DeleteIssueReply (DeleteIssueReplyRequest) returns (DeleteIssueReplyResponse) {
+        option (google.api.http) = {
+            delete: "/helpdesk/v1/issue-replies/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Replies"
+            summary: "Delete an issue reply"
+            description: "Soft delete a reply in an issue conversation."
+        };
+    }
+}
+

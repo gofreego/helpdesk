@@ -1,0 +1,69 @@
+package dao
+
+import (
+	"github.com/gofreego/helpdesk/api/helpdesk_v1"
+	"github.com/gofreego/helpdesk/internal/constants"
+)
+
+type Issue struct {
+	ID          string
+	UserID      int32
+	Type        string // entity type: "product", "order", "service", etc.
+	EntityID    string
+	Title       string
+	Description string
+	Status      constants.IssueStatus // 1=open, 2=in_progress, 3=resolved, 4=closed
+	CreatedAt   int64                 // Unix epoch milliseconds
+	UpdatedAt   int64                 // Unix epoch milliseconds
+}
+
+func (i *Issue) Scan(row interface {
+	Scan(dest ...interface{}) error
+}) error {
+	return row.Scan(&i.ID, &i.UserID, &i.Type, &i.EntityID, &i.Title, &i.Description, &i.Status, &i.CreatedAt, &i.UpdatedAt)
+}
+
+// ToProto converts DAO Issue to proto Issue
+func (i *Issue) ToProto() *helpdesk_v1.Issue {
+	if i == nil {
+		return nil
+	}
+	return &helpdesk_v1.Issue{
+		Id:          i.ID,
+		UserId:      i.UserID,
+		Type:        i.Type,
+		EntityId:    i.EntityID,
+		Title:       i.Title,
+		Description: i.Description,
+		Status:      int32(i.Status),
+		CreatedAt:   i.CreatedAt,
+		UpdatedAt:   i.UpdatedAt,
+	}
+}
+
+// FromProtoIssue converts proto Issue to DAO Issue
+func FromProtoIssue(p *helpdesk_v1.Issue) *Issue {
+	if p == nil {
+		return nil
+	}
+	return &Issue{
+		ID:          p.Id,
+		UserID:      p.UserId,
+		Type:        p.Type,
+		EntityID:    p.EntityId,
+		Title:       p.Title,
+		Description: p.Description,
+		Status:      constants.IssueStatus(p.Status),
+		CreatedAt:   p.CreatedAt,
+		UpdatedAt:   p.UpdatedAt,
+	}
+}
+
+// ToProtoList converts slice of DAO Issues to proto Issues
+func ToProtoIssues(issues []*Issue) []*helpdesk_v1.Issue {
+	result := make([]*helpdesk_v1.Issue, 0, len(issues))
+	for _, i := range issues {
+		result = append(result, i.ToProto())
+	}
+	return result
+}

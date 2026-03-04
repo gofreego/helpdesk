@@ -1,0 +1,4 @@
+database_url: postgres://admin:OSwfiTlc1r5W7Z@192.168.1.100:5432/helpdesk?sslmode=disable
+
+migrations:
+  path: ../../resources/migrations
