@@ -9,7 +9,8 @@
 
 export interface Rating {
   id: string;
-  type: string;
+  productId: number;
+  entity: string;
   entityId: string;
   userId: string;
   rating: number;
@@ -28,7 +29,7 @@ export interface RatingReply {
 }
 
 export interface RatingsConfig {
-  types: string[];
+  entities: string[];
   maxRating: number;
 }
 
@@ -37,7 +38,8 @@ export interface RatingsConfig {
 // ============================================
 
 export interface CreateRatingRequestData {
-  type: string;
+  productId: number;
+  entity: string;
   entityId: string;
   rating: number;
   comment?: string;
@@ -53,7 +55,7 @@ export interface CreateRatingReplyRequestData {
 }
 
 export interface FetchRatingsFilters {
-  type?: string;
+  entity?: string;
   entityId?: string;
   userId?: string;
   page?: number;
@@ -91,21 +93,23 @@ export interface UpdateRatingResponse {
 // ============================================
 
 export class CreateRatingRequest implements CreateRatingRequestData {
-  type: string;
+  productId: number;
+  entity: string;
   entityId: string;
   rating: number;
   comment: string;
 
   constructor(data: CreateRatingRequestData) {
-    this.type = data.type;
+    this.productId = data.productId;
+    this.entity = data.entity;
     this.entityId = data.entityId;
     this.rating = parseFloat(String(data.rating));
     this.comment = data.comment || '';
   }
 
   validate(): boolean {
-    if (!this.type || !this.entityId || this.rating === undefined) {
-      throw new Error('Type, entityId, and rating are required');
+    if (!this.productId || !this.entity || !this.entityId || this.rating === undefined) {
+      throw new Error('ProductId, entity, entityId, and rating are required');
     }
     if (this.rating < 0 || this.rating > 10) {
       throw new Error('Rating must be between 0 and 10');
@@ -115,7 +119,8 @@ export class CreateRatingRequest implements CreateRatingRequestData {
 
   toJSON(): CreateRatingRequestData {
     return {
-      type: this.type,
+      productId: this.productId,
+      entity: this.entity,
       entityId: this.entityId,
       rating: this.rating,
       comment: this.comment
@@ -167,14 +172,14 @@ export class CreateRatingReplyRequest implements CreateRatingReplyRequestData {
 }
 
 export class FetchRatingsRequest {
-  type?: string;
+  entity?: string;
   entityId?: string;
   userId?: string;
   page?: number;
   pageSize?: number;
 
   constructor(filters: FetchRatingsFilters = {}) {
-    this.type = filters.type;
+    this.entity = filters.entity;
     this.entityId = filters.entityId;
     this.userId = filters.userId;
     this.page = filters.page;
@@ -183,7 +188,7 @@ export class FetchRatingsRequest {
 
   toQueryParams(): string {
     const params = new URLSearchParams();
-    if (this.type) params.append('type', this.type);
+    if (this.entity) params.append('entity', this.entity);
     if (this.entityId) params.append('entityId', this.entityId);
     if (this.userId) params.append('userId', this.userId);
     if (this.page) params.append('page', String(this.page));
@@ -198,7 +203,8 @@ export class FetchRatingsRequest {
 
 export const transformRating = (data: any): Rating => ({
   id: data.id,
-  type: data.type,
+  productId: data.productId,
+  entity: data.entity,
   entityId: data.entityId,
   userId: data.userId,
   rating: data.rating,
@@ -239,6 +245,6 @@ export const transformUpdateRatingResponse = (data: any): UpdateRatingResponse =
 });
 
 export const transformRatingsConfig = (data: any): RatingsConfig => ({
-  types: data.types || [],
+  entities: data.entities || [],
   maxRating: data.maxRating || 10
 });

@@ -8,7 +8,8 @@ import (
 type Issue struct {
 	ID          string
 	UserID      int32
-	Type        string // entity type: "product", "order", "service", etc.
+	ProductID   int32
+	Entity      string
 	EntityID    string
 	Title       string
 	Description string
@@ -20,7 +21,7 @@ type Issue struct {
 func (i *Issue) Scan(row interface {
 	Scan(dest ...interface{}) error
 }) error {
-	return row.Scan(&i.ID, &i.UserID, &i.Type, &i.EntityID, &i.Title, &i.Description, &i.Status, &i.CreatedAt, &i.UpdatedAt)
+	return row.Scan(&i.ID, &i.UserID, &i.ProductID, &i.Entity, &i.EntityID, &i.Title, &i.Description, &i.Status, &i.CreatedAt, &i.UpdatedAt)
 }
 
 // ToProto converts DAO Issue to proto Issue
@@ -31,7 +32,8 @@ func (i *Issue) ToProto() *helpdesk_v1.Issue {
 	return &helpdesk_v1.Issue{
 		Id:          i.ID,
 		UserId:      i.UserID,
-		Type:        i.Type,
+		ProductId:   i.ProductID,
+		Entity:      i.Entity,
 		EntityId:    i.EntityID,
 		Title:       i.Title,
 		Description: i.Description,
@@ -49,7 +51,8 @@ func FromProtoIssue(p *helpdesk_v1.Issue) *Issue {
 	return &Issue{
 		ID:          p.Id,
 		UserID:      p.UserId,
-		Type:        p.Type,
+		ProductID:   p.ProductId,
+		Entity:      p.Entity,
 		EntityID:    p.EntityId,
 		Title:       p.Title,
 		Description: p.Description,

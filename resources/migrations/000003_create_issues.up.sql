@@ -5,7 +5,8 @@
 CREATE TABLE IF NOT EXISTS issues (
     id          UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id     BIGINT         NOT NULL,
-    type        TEXT         NOT NULL,           -- entity type: 'product', 'order', 'service', etc.
+    product_id  BIGINT         NOT NULL,
+    entity      VARCHAR(20)    NOT NULL,
     entity_id   TEXT         NOT NULL,           -- ID of the entity the issue is about
     title       TEXT         NOT NULL,
     description TEXT         NOT NULL,
@@ -15,6 +16,6 @@ CREATE TABLE IF NOT EXISTS issues (
 );
 
 -- Common query patterns
-CREATE INDEX IF NOT EXISTS idx_issues_entity    ON issues (type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_issues_entity    ON issues (entity, entity_id);
 CREATE INDEX IF NOT EXISTS idx_issues_user_id   ON issues (user_id);
 CREATE INDEX IF NOT EXISTS idx_issues_status    ON issues (status);

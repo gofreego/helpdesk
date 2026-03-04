@@ -8,7 +8,7 @@ import (
 type RatingFilter struct {
 	ID       string
 	UserID   int32
-	Type     string
+	Entity   string
 	EntityID string
 	Page     int
 	PageSize int
@@ -38,7 +38,7 @@ func FromProtoListRatingsRequest(req *helpdesk_v1.ListRatingsRequest) *RatingFil
 	return &RatingFilter{
 		ID:       req.Id,
 		UserID:   req.UserId,
-		Type:     req.Type,
+		Entity:   req.Entity,
 		EntityID: req.EntityId,
 		Page:     int(req.Page),
 		PageSize: int(req.PageSize),

@@ -26,11 +26,11 @@ func (r *PostgresRepository) CreateIssue(ctx context.Context, issue *dao.Issue) 
 	}
 
 	query := `
-		INSERT INTO issues (id, user_id, type, entity_id, title, description, status, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+		INSERT INTO issues (id, user_id, product_id, entity, entity_id, title, description, status, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	_, err := r.db.ExecContext(ctx, query,
-		issue.ID, issue.UserID, issue.Type, issue.EntityID,
+		issue.ID, issue.UserID, issue.ProductID, issue.Entity, issue.EntityID,
 		issue.Title, issue.Description, issue.Status,
 		issue.CreatedAt, issue.UpdatedAt,
 	)
@@ -43,7 +43,7 @@ func (r *PostgresRepository) CreateIssue(ctx context.Context, issue *dao.Issue) 
 
 func (r *PostgresRepository) GetIssue(ctx context.Context, id string) (*dao.Issue, error) {
 	query := `
-		SELECT id, user_id, type, entity_id, title, description, status, created_at, updated_at
+		SELECT id, user_id, product_id, entity, entity_id, title, description, status, created_at, updated_at
 		FROM issues
 		WHERE id::text = $1`
 
@@ -64,18 +64,18 @@ func (r *PostgresRepository) ListIssues(ctx context.Context, f *filter.IssueFilt
 	f.WithDefaults()
 
 	query := `
-		SELECT id, user_id, type, entity_id, title, description, status, created_at, updated_at
+		SELECT id, user_id, product_id, entity, entity_id, title, description, status, created_at, updated_at
 		FROM issues
 		WHERE ($1::text = '' OR id::text = $1)
 		  AND ($2::bigint = 0 OR user_id = $2)
-		  AND ($3::text = '' OR type = $3)
+		  AND ($3::text = '' OR entity = $3)
 		  AND ($4::text = '' OR entity_id = $4)
 		  AND ($5 = 0 OR status = $5)
 		ORDER BY created_at DESC
 		LIMIT $6 OFFSET $7`
 
 	rows, err := r.db.QueryContext(ctx, query,
-		f.ID, f.UserID, f.Type, f.EntityID, f.Status, f.PageSize, f.Offset())
+		f.ID, f.UserID, f.Entity, f.EntityID, f.Status, f.PageSize, f.Offset())
 	if err != nil {
 		logger.Error(ctx, "failed to list issues: %v", err)
 		return nil, status.Errorf(codes.Internal, "failed to list issues: %v", err)

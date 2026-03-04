@@ -22,11 +22,11 @@ func (r *PostgresRepository) CreateRating(ctx context.Context, rating *dao.Ratin
 	rating.UpdatedAt = now
 
 	query := `
-		INSERT INTO ratings (id, user_id, type, entity_id, rating, comment, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+		INSERT INTO ratings (id, user_id, product_id, entity, entity_id, rating, comment, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
 	_, err := r.db.ExecContext(ctx, query,
-		rating.ID, rating.UserID, rating.Type, rating.EntityID,
+		rating.ID, rating.UserID, rating.ProductID, rating.Entity, rating.EntityID,
 		rating.Rating, rating.Comment, rating.CreatedAt, rating.UpdatedAt)
 
 	if err != nil {
@@ -39,7 +39,7 @@ func (r *PostgresRepository) CreateRating(ctx context.Context, rating *dao.Ratin
 
 func (r *PostgresRepository) GetRating(ctx context.Context, id string) (*dao.Rating, error) {
 	query := `
-		SELECT id, user_id, type, entity_id, rating, comment, created_at, updated_at
+		SELECT id, user_id, product_id, entity, entity_id, rating, comment, created_at, updated_at
 		FROM ratings
 		WHERE id::text = $1`
 
@@ -65,17 +65,17 @@ func (r *PostgresRepository) ListRatings(ctx context.Context, f *filter.RatingFi
 	f.WithDefaults()
 
 	query := `
-		SELECT id, user_id, type, entity_id, rating, comment, created_at, updated_at
+		SELECT id, user_id, product_id, entity, entity_id, rating, comment, created_at, updated_at
 		FROM ratings
 		WHERE ($1::text = '' OR id::text = $1)
 		  AND ($2::bigint = 0 OR user_id = $2)
-		  AND ($3::text = '' OR type = $3)
+		  AND ($3::text = '' OR entity = $3)
 		  AND ($4::text = '' OR entity_id = $4)
 		ORDER BY created_at DESC
 		LIMIT $5 OFFSET $6`
 
 	rows, err := r.db.QueryContext(ctx, query,
-		f.ID, f.UserID, f.Type, f.EntityID, f.PageSize, f.Offset())
+		f.ID, f.UserID, f.Entity, f.EntityID, f.PageSize, f.Offset())
 
 	if err != nil {
 		logger.Error(ctx, "failed to list ratings: %v", err)

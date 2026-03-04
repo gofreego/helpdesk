@@ -5,10 +5,11 @@ import { getIssueStatusBadge } from '../../utils/status.utils';
 
 const IssuesList = ({ currentUser, basePath }) => {
   const [issues, setIssues] = useState([]);
-  const [issueTypes, setIssueTypes] = useState([]);
+  const [issueEntities, setIssueEntities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    type: '',
+    productId: '',
+    entity: '',
     entityId: '',
     userId: '',
     status: ''
@@ -22,9 +23,9 @@ const IssuesList = ({ currentUser, basePath }) => {
   const loadIssueConfig = async () => {
     try {
       const data = await fetchIssueConfig();
-      setIssueTypes(data.types || []);
+      setIssueEntities(data.entities || []);
     } catch (err) {
-      console.error('Error fetching issue types:', err);
+      console.error('Error fetching issue entities:', err);
     }
   };
 
@@ -50,7 +51,7 @@ const IssuesList = ({ currentUser, basePath }) => {
 
 
   const handleClearFilters = () => {
-    setFilters({ type: '', entityId: '', userId: '', status: '' });
+    setFilters({ productId: '', entity: '', entityId: '', userId: '', status: '' });
     setLoading(true);
     setTimeout(() => loadIssues(), 100);
   };
@@ -82,18 +83,29 @@ const IssuesList = ({ currentUser, basePath }) => {
       </div>
 
       <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
           <div>
-            <label className="form-label">Type</label>
+            <label className="form-label">Product ID</label>
+            <input
+              type="text"
+              name="productId"
+              className="form-input"
+              value={filters.productId}
+              onChange={handleFilterChange}
+              placeholder="e.g., 101"
+            />
+          </div>
+          <div>
+            <label className="form-label">Entity</label>
             <select
-              name="type"
+              name="entity"
               className="form-select"
-              value={filters.type}
+              value={filters.entity}
               onChange={handleFilterChange}
             >
-              <option value="">All Types</option>
-              {issueTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
+              <option value="">All Entities</option>
+              {issueEntities.map(entity => (
+                <option key={entity} value={entity}>{entity}</option>
               ))}
             </select>
           </div>
@@ -160,7 +172,8 @@ const IssuesList = ({ currentUser, basePath }) => {
               <thead>
                 <tr>
                   <th>Title</th>
-                  <th>Type</th>
+                  <th>Product ID</th>
+                  <th>Entity</th>
                   <th>Entity ID</th>
                   <th>Status</th>
                   <th>User</th>
@@ -171,8 +184,9 @@ const IssuesList = ({ currentUser, basePath }) => {
                 {issues.map(issue => (
                   <tr key={issue.id}>
                     <td style={{ fontWeight: 600 }}>{issue.title}</td>
+                    <td>{issue.productId}</td>
                     <td>
-                      <span className="badge badge-info">{issue.type}</span>
+                      <span className="badge badge-info">{issue.entity}</span>
                     </td>
                     <td>{issue.entityId}</td>
                     <td>{renderStatusBadge(issue.status)}</td>

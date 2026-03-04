@@ -8,7 +8,7 @@ import (
 type IssueFilter struct {
 	ID       string
 	UserID   int32
-	Type     string
+	Entity   string
 	EntityID string
 	Status   int // 0 means no filter, otherwise use status constants
 	Page     int
@@ -39,7 +39,7 @@ func FromProtoListIssuesRequest(req *helpdesk_v1.ListIssuesRequest) *IssueFilter
 	return &IssueFilter{
 		ID:       req.Id,
 		UserID:   req.UserId,
-		Type:     req.Type,
+		Entity:   req.Entity,
 		EntityID: req.EntityId,
 		Status:   int(req.Status),
 		Page:     int(req.Page),

@@ -127,7 +127,7 @@
             "format": "int32"
           },
           {
-            "name": "type",
+            "name": "entity",
             "in": "query",
             "required": false,
             "type": "string"
@@ -454,6 +454,30 @@
         ]
       }
     },
+    "/helpdesk/v1/rating-config": {
+      "get": {
+        "summary": "Get ratings configuration",
+        "description": "Get the list of allowed rating types and other configurations.",
+        "operationId": "BaseService_GetRatingsConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetRatingsConfigResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Ratings"
+        ]
+      }
+    },
     "/helpdesk/v1/rating-replies/{id}": {
       "delete": {
         "summary": "Delete a rating reply",
@@ -520,7 +544,7 @@
             "format": "int32"
           },
           {
-            "name": "type",
+            "name": "entity",
             "in": "query",
             "required": false,
             "type": "string"
@@ -578,30 +602,6 @@
             }
           }
         ],
-        "tags": [
-          "Ratings"
-        ]
-      }
-    },
-    "/helpdesk/v1/ratings/config": {
-      "get": {
-        "summary": "Get ratings configuration",
-        "description": "Get the list of allowed rating types and other configurations.",
-        "operationId": "BaseService_GetRatingsConfig",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetRatingsConfigResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
         "tags": [
           "Ratings"
         ]
@@ -884,7 +884,11 @@
     "v1CreateIssueRequest": {
       "type": "object",
       "properties": {
-        "type": {
+        "productId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entity": {
           "type": "string"
         },
         "entityId": {
@@ -917,7 +921,11 @@
     "v1CreateRatingRequest": {
       "type": "object",
       "properties": {
-        "type": {
+        "productId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entity": {
           "type": "string"
         },
         "entityId": {
@@ -991,7 +999,7 @@
     "v1GetRatingsConfigResponse": {
       "type": "object",
       "properties": {
-        "types": {
+        "entities": {
           "type": "array",
           "items": {
             "type": "string"
@@ -1022,9 +1030,12 @@
           "type": "integer",
           "format": "int32"
         },
-        "type": {
-          "type": "string",
-          "title": "entity type"
+        "productId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entity": {
+          "type": "string"
         },
         "entityId": {
           "type": "string",
@@ -1085,6 +1096,12 @@
     "v1ListIssueConfigResponse": {
       "type": "object",
       "properties": {
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "types": {
           "type": "array",
           "items": {
@@ -1151,9 +1168,12 @@
           "type": "integer",
           "format": "int32"
         },
-        "type": {
-          "type": "string",
-          "description": "entity type: \"product\", \"order\", \"service\", etc."
+        "productId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entity": {
+          "type": "string"
         },
         "entityId": {
           "type": "string",

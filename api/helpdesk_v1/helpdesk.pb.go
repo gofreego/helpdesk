@@ -26,7 +26,7 @@ var File_proto_helpdesk_v1_helpdesk_proto protoreflect.FileDescriptor
 
 const file_proto_helpdesk_v1_helpdesk_proto_rawDesc = "" +
 	"\n" +
-	" proto/helpdesk/v1/helpdesk.proto\x12\x02v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17proto/common/ping.proto\x1a\x1fproto/helpdesk/v1/ratings.proto\x1a\x1eproto/helpdesk/v1/issues.proto2\xdd\x1c\n" +
+	" proto/helpdesk/v1/helpdesk.proto\x12\x02v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17proto/common/ping.proto\x1a\x1fproto/helpdesk/v1/ratings.proto\x1a\x1eproto/helpdesk/v1/issues.proto2\xdc\x1c\n" +
 	"\vBaseService\x12\x81\x01\n" +
 	"\x04Ping\x12\x11.v1.HDPingRequest\x1a\x12.v1.HDPingResponse\"R\x92A6\n" +
 	"\x04Ping\x12\x0fPing the server\x1a\x1dCheck if the server is alive.\x82\xd3\xe4\x93\x02\x13\x12\x11/helpdesk/v1/ping\x12\xa3\x01\n" +
@@ -39,9 +39,9 @@ const file_proto_helpdesk_v1_helpdesk_proto_rawDesc = "" +
 	"\fUpdateRating\x12\x17.v1.UpdateRatingRequest\x1a\x18.v1.UpdateRatingResponse\"p\x92AI\n" +
 	"\aRatings\x12\x0fUpdate a rating\x1a-Update an existing rating's score or comment.\x82\xd3\xe4\x93\x02\x1e:\x01*\x1a\x19/helpdesk/v1/ratings/{id}\x12\x9f\x01\n" +
 	"\fDeleteRating\x12\x17.v1.DeleteRatingRequest\x1a\x18.v1.DeleteRatingResponse\"\\\x92A8\n" +
-	"\aRatings\x12\x0fDelete a rating\x1a\x1cDelete a rating permanently.\x82\xd3\xe4\x93\x02\x1b*\x19/helpdesk/v1/ratings/{id}\x12\xda\x01\n" +
-	"\x10GetRatingsConfig\x12\x1b.v1.GetRatingsConfigRequest\x1a\x1c.v1.GetRatingsConfigResponse\"\x8a\x01\x92Ad\n" +
-	"\aRatings\x12\x19Get ratings configuration\x1a>Get the list of allowed rating types and other configurations.\x82\xd3\xe4\x93\x02\x1d\x12\x1b/helpdesk/v1/ratings/config\x12\xe9\x01\n" +
+	"\aRatings\x12\x0fDelete a rating\x1a\x1cDelete a rating permanently.\x82\xd3\xe4\x93\x02\x1b*\x19/helpdesk/v1/ratings/{id}\x12\xd9\x01\n" +
+	"\x10GetRatingsConfig\x12\x1b.v1.GetRatingsConfigRequest\x1a\x1c.v1.GetRatingsConfigResponse\"\x89\x01\x92Ad\n" +
+	"\aRatings\x12\x19Get ratings configuration\x1a>Get the list of allowed rating types and other configurations.\x82\xd3\xe4\x93\x02\x1c\x12\x1a/helpdesk/v1/rating-config\x12\xe9\x01\n" +
 	"\x11CreateRatingReply\x12\x1c.v1.CreateRatingReplyRequest\x1a\x1d.v1.CreateRatingReplyResponse\"\x96\x01\x92A`\n" +
 	"\rRatingReplies\x12\x1aCreate a reply to a rating\x1a3Post a reply to acknowledge or respond to a rating.\x82\xd3\xe4\x93\x02-:\x01*\"(/helpdesk/v1/ratings/{rating_id}/replies\x12\xdc\x01\n" +
 	"\x11ListRatingReplies\x12\x1c.v1.ListRatingRepliesRequest\x1a\x1d.v1.ListRatingRepliesResponse\"\x89\x01\x92AV\n" +

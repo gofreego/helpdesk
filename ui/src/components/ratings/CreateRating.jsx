@@ -5,12 +5,13 @@ import { createRating, fetchRatingTypes } from '../../services/rating.service';
 const CreateRating = ({ currentUser, basePath }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    type: '',
+    productId: '',
+    entity: '',
     entityId: '',
     rating: 5,
     comment: ''
   });
-  const [ratingTypes, setRatingTypes] = useState([]);
+  const [ratingEntities, setRatingEntities] = useState([]);
   const [maxRating, setMaxRating] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -19,12 +20,12 @@ const CreateRating = ({ currentUser, basePath }) => {
     const loadRatingConfig = async () => {
       try {
         const data = await fetchRatingTypes();
-        const types = data.types || [];
+        const entities = data.entities || [];
         const max = data.maxRating || 10;
-        setRatingTypes(types);
+        setRatingEntities(entities);
         setMaxRating(max);
-        if (types.length > 0 && !formData.type) {
-          setFormData(prev => ({ ...prev, type: types[0] }));
+        if (entities.length > 0 && !formData.entity) {
+          setFormData(prev => ({ ...prev, entity: entities[0] }));
         }
       } catch (err) {
         console.error('Error fetching rating config:', err);
@@ -37,7 +38,7 @@ const CreateRating = ({ currentUser, basePath }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'rating' ? parseFloat(value) : value
+      [name]: (name === 'rating' || name === 'productId') ? parseFloat(value) : value
     }));
   };
 
@@ -83,17 +84,30 @@ const CreateRating = ({ currentUser, basePath }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Type *</label>
-            <select
-              name="type"
+            <label className="form-label">Product ID *</label>
+            <input
+              type="number"
+              name="productId"
               className="form-input"
-              value={formData.type}
+              value={formData.productId}
+              onChange={handleChange}
+              placeholder="e.g., 101"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Entity *</label>
+            <select
+              name="entity"
+              className="form-input"
+              value={formData.entity}
               onChange={handleChange}
               required
             >
-              <option value="" disabled>Select Type</option>
-              {ratingTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
+              <option value="" disabled>Select Entity</option>
+              {ratingEntities.map(entity => (
+                <option key={entity} value={entity}>{entity}</option>
               ))}
             </select>
           </div>
@@ -112,7 +126,7 @@ const CreateRating = ({ currentUser, basePath }) => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Rating * (1-10)</label>
+            <label className="form-label">Rating * (1-{maxRating})</label>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <input
                 type="range"

@@ -933,7 +933,7 @@ func RegisterBaseServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/v1.BaseService/GetRatingsConfig", runtime.WithHTTPPathPattern("/helpdesk/v1/ratings/config"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/v1.BaseService/GetRatingsConfig", runtime.WithHTTPPathPattern("/helpdesk/v1/rating-config"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1353,7 +1353,7 @@ func RegisterBaseServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/v1.BaseService/GetRatingsConfig", runtime.WithHTTPPathPattern("/helpdesk/v1/ratings/config"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/v1.BaseService/GetRatingsConfig", runtime.WithHTTPPathPattern("/helpdesk/v1/rating-config"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1597,7 +1597,7 @@ var (
 	pattern_BaseService_ListRatings_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"helpdesk", "v1", "ratings"}, ""))
 	pattern_BaseService_UpdateRating_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"helpdesk", "v1", "ratings", "id"}, ""))
 	pattern_BaseService_DeleteRating_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"helpdesk", "v1", "ratings", "id"}, ""))
-	pattern_BaseService_GetRatingsConfig_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"helpdesk", "v1", "ratings", "config"}, ""))
+	pattern_BaseService_GetRatingsConfig_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"helpdesk", "v1", "rating-config"}, ""))
 	pattern_BaseService_CreateRatingReply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"helpdesk", "v1", "ratings", "rating_id", "replies"}, ""))
 	pattern_BaseService_ListRatingReplies_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"helpdesk", "v1", "ratings", "rating_id", "replies"}, ""))
 	pattern_BaseService_DeleteRatingReply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"helpdesk", "v1", "rating-replies", "id"}, ""))

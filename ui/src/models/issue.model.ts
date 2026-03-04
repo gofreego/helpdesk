@@ -9,7 +9,8 @@
 
 export interface Issue {
   id: string;
-  type: string;
+  productId: number;
+  entity: string;
   entityId: string;
   userId: string;
   title: string;
@@ -29,6 +30,7 @@ export interface IssueReply {
 }
 
 export interface IssueConfig {
+  entities: string[];
   types: string[];
 }
 
@@ -37,7 +39,8 @@ export interface IssueConfig {
 // ============================================
 
 export interface CreateIssueRequestData {
-  type: string;
+  productId: number;
+  entity: string;
   entityId: string;
   title: string;
   description: string;
@@ -58,7 +61,7 @@ export interface CreateIssueReplyRequestData {
 }
 
 export interface FetchIssuesFilters {
-  type?: string;
+  entity?: string;
   entityId?: string;
   userId?: string;
   status?: string;
@@ -97,28 +100,31 @@ export interface UpdateIssueResponse {
 // ============================================
 
 export class CreateIssueRequest implements CreateIssueRequestData {
-  type: string;
+  productId: number;
+  entity: string;
   entityId: string;
   title: string;
   description: string;
 
   constructor(data: CreateIssueRequestData) {
-    this.type = data.type;
+    this.productId = data.productId;
+    this.entity = data.entity;
     this.entityId = data.entityId;
     this.title = data.title;
     this.description = data.description;
   }
 
   validate(): boolean {
-    if (!this.type || !this.entityId || !this.title || !this.description) {
-      throw new Error('All fields are required for creating an issue');
+    if (!this.productId || !this.entity || !this.entityId || !this.title || !this.description) {
+      throw new Error('All fields are required for creating an issue (ProductId, entity, entityId, title, description)');
     }
     return true;
   }
 
   toJSON(): CreateIssueRequestData {
     return {
-      type: this.type,
+      productId: this.productId,
+      entity: this.entity,
       entityId: this.entityId,
       title: this.title,
       description: this.description
@@ -185,7 +191,7 @@ export class CreateIssueReplyRequest implements CreateIssueReplyRequestData {
 }
 
 export class FetchIssuesRequest {
-  type?: string;
+  entity?: string;
   entityId?: string;
   userId?: string;
   status?: string;
@@ -193,7 +199,7 @@ export class FetchIssuesRequest {
   pageSize?: number;
 
   constructor(filters: FetchIssuesFilters = {}) {
-    this.type = filters.type;
+    this.entity = filters.entity;
     this.entityId = filters.entityId;
     this.userId = filters.userId;
     this.status = filters.status;
@@ -203,7 +209,7 @@ export class FetchIssuesRequest {
 
   toQueryParams(): string {
     const params = new URLSearchParams();
-    if (this.type) params.append('type', this.type);
+    if (this.entity) params.append('entity', this.entity);
     if (this.entityId) params.append('entityId', this.entityId);
     if (this.userId) params.append('userId', this.userId);
     if (this.status) params.append('status', this.status);
@@ -219,7 +225,8 @@ export class FetchIssuesRequest {
 
 export const transformIssue = (data: any): Issue => ({
   id: data.id,
-  type: data.type,
+  productId: data.productId,
+  entity: data.entity,
   entityId: data.entityId,
   userId: data.userId,
   title: data.title,
@@ -261,5 +268,6 @@ export const transformUpdateIssueResponse = (data: any): UpdateIssueResponse => 
 });
 
 export const transformIssueConfig = (data: any): IssueConfig => ({
+  entities: data.entities || [],
   types: data.types || []
 });

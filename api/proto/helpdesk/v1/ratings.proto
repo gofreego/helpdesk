@@ -9,7 +9,8 @@ option go_package = "./helpdesk_v1";
 message Rating {
     string id = 1;
     int32 user_id = 2;
-    string type = 3;         // entity type: "product", "order", "service", etc.
+    int32 product_id = 11;
+    string entity = 12;
     string entity_id = 4;    // ID of the rated entity
     float rating = 5;        // numeric score (e.g. 1.0, 2.5, 5.0)
     string comment = 6;      // optional free-text feedback
@@ -31,7 +32,8 @@ message RatingReply {
 // ===== Rating Request/Response Messages =====
 
 message CreateRatingRequest {
-    string type = 1;
+    int32 product_id = 11;
+    string entity = 12;
     string entity_id = 2;
     float rating = 3;
     string comment = 4;
@@ -52,7 +54,7 @@ message GetRatingResponse {
 message ListRatingsRequest {
     string id = 1;
     int32 user_id = 2;
-    string type = 3;
+    string entity = 12;
     string entity_id = 4;
     int32 page = 5;
     int32 page_size = 6;
@@ -113,6 +115,6 @@ message GetRatingsConfigRequest {
 }
 
 message GetRatingsConfigResponse {
-    repeated string types = 1;
+    repeated string entities = 1;
     float max_rating = 2;
 }

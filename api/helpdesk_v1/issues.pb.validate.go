@@ -60,7 +60,9 @@ func (m *Issue) validate(all bool) error {
 
 	// no validation rules for UserId
 
-	// no validation rules for Type
+	// no validation rules for ProductId
+
+	// no validation rules for Entity
 
 	// no validation rules for EntityId
 
@@ -286,7 +288,9 @@ func (m *CreateIssueRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Type
+	// no validation rules for ProductId
+
+	// no validation rules for Entity
 
 	// no validation rules for EntityId
 
@@ -762,7 +766,7 @@ func (m *ListIssuesRequest) validate(all bool) error {
 
 	// no validation rules for UserId
 
-	// no validation rules for Type
+	// no validation rules for Entity
 
 	// no validation rules for EntityId
 

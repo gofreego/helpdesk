@@ -30,11 +30,11 @@ const RatingDetail = ({ currentUser, basePath }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ratingData, typesData] = await Promise.all([
+        const [ratingData, entitiesData] = await Promise.all([
           fetchRatingById(id, currentUser),
           fetchRatingTypes()
         ]);
-        const max = typesData.maxRating || 10;
+        const max = entitiesData.maxRating || 10;
         setMaxRating(max);
 
         setRating(ratingData.rating);
@@ -82,9 +82,6 @@ const RatingDetail = ({ currentUser, basePath }) => {
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    // In column-reverse, some browsers use negative scrollTop up to -(scrollHeight - clientHeight).
-    // Others use positive scrollTop from 0 (bottom) up to (scrollHeight - clientHeight).
-    // Math.abs handles both.
     if (Math.abs(scrollTop) + clientHeight >= scrollHeight - 50) {
       fetchReplies(true);
     }
@@ -92,8 +89,6 @@ const RatingDetail = ({ currentUser, basePath }) => {
 
   useEffect(() => {
     if (showChat && scrollRef.current && page === 1) {
-      // With column-reverse, scrollTop 0 is already the bottom.
-      // But we can force it just in case of race conditions.
       scrollRef.current.scrollTop = 0;
     }
   }, [showChat, replies, page]);
@@ -107,7 +102,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
     if (currentUser.role !== 'admin' && reply.userId !== currentUser.id) return;
     longPressTimer.current = setTimeout(() => {
       setSelectedMessageForActions(reply);
-    }, 600); // 600ms for long press
+    }, 600);
   };
 
   const handleLongPressEnd = () => {
@@ -123,7 +118,6 @@ const RatingDetail = ({ currentUser, basePath }) => {
     try {
       await createRatingReply(id, { message: newReply }, currentUser);
       setNewReply('');
-      // Refresh first page
       fetchReplies(false);
     } catch (error) {
       console.error('Error posting reply:', error);
@@ -161,7 +155,6 @@ const RatingDetail = ({ currentUser, basePath }) => {
       await deleteRatingReply(replyId, currentUser);
       setFeedbackMessage({ type: 'success', text: 'Reply deleted successfully!' });
       setTimeout(() => setFeedbackMessage({ type: '', text: '' }), 3000);
-      // Refresh replies
       fetchReplies(false);
     } catch (error) {
       console.error('Error deleting reply:', error);
@@ -207,7 +200,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
           <div>
             <h3 style={{ marginBottom: '1.5rem' }}>Edit Rating</h3>
             <div className="form-group">
-              <label className="form-label">Rating (1-10)</label>
+              <label className="form-label">Rating (1-{maxRating})</label>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <input
                   type="range"
@@ -255,9 +248,14 @@ const RatingDetail = ({ currentUser, basePath }) => {
               </div>
 
               <div className="detail-item">
-                <span className="detail-label">Type</span>
+                <span className="detail-label">Product ID</span>
+                <span className="detail-value">{rating.productId}</span>
+              </div>
+
+              <div className="detail-item">
+                <span className="detail-label">Entity</span>
                 <span className="detail-value">
-                  <span className="badge badge-info">{rating.type}</span>
+                  <span className="badge badge-info">{rating.entity}</span>
                 </span>
               </div>
 

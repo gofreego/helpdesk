@@ -26,7 +26,8 @@ type Issue struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	UserId        int32                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`                         // entity type
+	ProductId     int32                  `protobuf:"varint,11,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Entity        string                 `protobuf:"bytes,12,opt,name=entity,proto3" json:"entity,omitempty"`
 	EntityId      string                 `protobuf:"bytes,4,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"` // ID of the entity
 	Title         string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
@@ -81,9 +82,16 @@ func (x *Issue) GetUserId() int32 {
 	return 0
 }
 
-func (x *Issue) GetType() string {
+func (x *Issue) GetProductId() int32 {
 	if x != nil {
-		return x.Type
+		return x.ProductId
+	}
+	return 0
+}
+
+func (x *Issue) GetEntity() string {
+	if x != nil {
+		return x.Entity
 	}
 	return ""
 }
@@ -225,7 +233,8 @@ func (x *IssueReply) GetCreatedAt() int64 {
 
 type CreateIssueRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	ProductId     int32                  `protobuf:"varint,11,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Entity        string                 `protobuf:"bytes,12,opt,name=entity,proto3" json:"entity,omitempty"`
 	EntityId      string                 `protobuf:"bytes,2,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
@@ -263,9 +272,16 @@ func (*CreateIssueRequest) Descriptor() ([]byte, []int) {
 	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CreateIssueRequest) GetType() string {
+func (x *CreateIssueRequest) GetProductId() int32 {
 	if x != nil {
-		return x.Type
+		return x.ProductId
+	}
+	return 0
+}
+
+func (x *CreateIssueRequest) GetEntity() string {
+	if x != nil {
+		return x.Entity
 	}
 	return ""
 }
@@ -427,7 +443,7 @@ type ListIssuesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	UserId        int32                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
+	Entity        string                 `protobuf:"bytes,12,opt,name=entity,proto3" json:"entity,omitempty"`
 	EntityId      string                 `protobuf:"bytes,4,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
 	Status        int32                  `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
 	Page          int32                  `protobuf:"varint,6,opt,name=page,proto3" json:"page,omitempty"`
@@ -480,9 +496,9 @@ func (x *ListIssuesRequest) GetUserId() int32 {
 	return 0
 }
 
-func (x *ListIssuesRequest) GetType() string {
+func (x *ListIssuesRequest) GetEntity() string {
 	if x != nil {
-		return x.Type
+		return x.Entity
 	}
 	return ""
 }
@@ -1181,7 +1197,8 @@ func (*ListIssueConfigRequest) Descriptor() ([]byte, []int) {
 
 type ListIssueConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Types         []string               `protobuf:"bytes,1,rep,name=types,proto3" json:"types,omitempty"`
+	Entities      []string               `protobuf:"bytes,1,rep,name=entities,proto3" json:"entities,omitempty"`
+	Types         []string               `protobuf:"bytes,2,rep,name=types,proto3" json:"types,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1216,6 +1233,13 @@ func (*ListIssueConfigResponse) Descriptor() ([]byte, []int) {
 	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{21}
 }
 
+func (x *ListIssueConfigResponse) GetEntities() []string {
+	if x != nil {
+		return x.Entities
+	}
+	return nil
+}
+
 func (x *ListIssueConfigResponse) GetTypes() []string {
 	if x != nil {
 		return x.Types
@@ -1227,11 +1251,13 @@ var File_proto_helpdesk_v1_issues_proto protoreflect.FileDescriptor
 
 const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/helpdesk/v1/issues.proto\x12\x02v1\"\xef\x01\n" +
+	"\x1eproto/helpdesk/v1/issues.proto\x12\x02v1\"\x92\x02\n" +
 	"\x05Issue\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\x12\x1b\n" +
+	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\v \x01(\x05R\tproductId\x12\x16\n" +
+	"\x06entity\x18\f \x01(\tR\x06entity\x12\x1b\n" +
 	"\tentity_id\x18\x04 \x01(\tR\bentityId\x12\x14\n" +
 	"\x05title\x18\x05 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x06 \x01(\tR\vdescription\x12\x16\n" +
@@ -1250,9 +1276,11 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\n" +
 	"is_deleted\x18\x06 \x01(\bR\tisDeleted\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\a \x01(\x03R\tcreatedAt\"}\n" +
-	"\x12CreateIssueRequest\x12\x12\n" +
-	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1b\n" +
+	"created_at\x18\a \x01(\x03R\tcreatedAt\"\xa0\x01\n" +
+	"\x12CreateIssueRequest\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\v \x01(\x05R\tproductId\x12\x16\n" +
+	"\x06entity\x18\f \x01(\tR\x06entity\x12\x1b\n" +
 	"\tentity_id\x18\x02 \x01(\tR\bentityId\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\"6\n" +
@@ -1261,11 +1289,11 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\x0fGetIssueRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"3\n" +
 	"\x10GetIssueResponse\x12\x1f\n" +
-	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\xb6\x01\n" +
+	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\xba\x01\n" +
 	"\x11ListIssuesRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\x12\x1b\n" +
+	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x16\n" +
+	"\x06entity\x18\f \x01(\tR\x06entity\x12\x1b\n" +
 	"\tentity_id\x18\x04 \x01(\tR\bentityId\x12\x16\n" +
 	"\x06status\x18\x05 \x01(\x05R\x06status\x12\x12\n" +
 	"\x04page\x18\x06 \x01(\x05R\x04page\x12\x1b\n" +
@@ -1303,9 +1331,10 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\x06status\x18\x02 \x01(\x05R\x06status\"<\n" +
 	"\x19UpdateIssueStatusResponse\x12\x1f\n" +
 	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\x18\n" +
-	"\x16ListIssueConfigRequest\"/\n" +
-	"\x17ListIssueConfigResponse\x12\x14\n" +
-	"\x05types\x18\x01 \x03(\tR\x05typesB\x0fZ\r./helpdesk_v1b\x06proto3"
+	"\x16ListIssueConfigRequest\"K\n" +
+	"\x17ListIssueConfigResponse\x12\x1a\n" +
+	"\bentities\x18\x01 \x03(\tR\bentities\x12\x14\n" +
+	"\x05types\x18\x02 \x03(\tR\x05typesB\x0fZ\r./helpdesk_v1b\x06proto3"
 
 var (
 	file_proto_helpdesk_v1_issues_proto_rawDescOnce sync.Once

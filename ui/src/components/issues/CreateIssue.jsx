@@ -5,12 +5,13 @@ import { createIssue, fetchIssueConfig } from '../../services/issue.service';
 const CreateIssue = ({ currentUser, basePath }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    type: '',
+    productId: '',
+    entity: '',
     entityId: '',
     title: '',
     description: ''
   });
-  const [issueTypes, setIssueTypes] = useState([]);
+  const [issueEntities, setIssueEntities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,9 +19,9 @@ const CreateIssue = ({ currentUser, basePath }) => {
     const loadConfig = async () => {
       try {
         const data = await fetchIssueConfig();
-        setIssueTypes(data.types || []);
+        setIssueEntities(data.entities || []);
       } catch (err) {
-        console.error('Error fetching issue types:', err);
+        console.error('Error fetching issue entities:', err);
       }
     };
     loadConfig();
@@ -30,7 +31,7 @@ const CreateIssue = ({ currentUser, basePath }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'productId' ? parseFloat(value) : value
     }));
   };
 
@@ -76,17 +77,30 @@ const CreateIssue = ({ currentUser, basePath }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Type *</label>
+            <label className="form-label">Product ID *</label>
+            <input
+              type="number"
+              name="productId"
+              className="form-input"
+              value={formData.productId}
+              onChange={handleChange}
+              placeholder="e.g., 101"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Entity *</label>
             <select
-              name="type"
+              name="entity"
               className="form-select"
-              value={formData.type}
+              value={formData.entity}
               onChange={handleChange}
               required
             >
-              <option value="">Select Type</option>
-              {issueTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
+              <option value="">Select Entity</option>
+              {issueEntities.map(entity => (
+                <option key={entity} value={entity}>{entity}</option>
               ))}
             </select>
           </div>

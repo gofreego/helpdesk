@@ -26,7 +26,8 @@ type Rating struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	UserId        int32                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`                             // entity type: "product", "order", "service", etc.
+	ProductId     int32                  `protobuf:"varint,11,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Entity        string                 `protobuf:"bytes,12,opt,name=entity,proto3" json:"entity,omitempty"`
 	EntityId      string                 `protobuf:"bytes,4,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`     // ID of the rated entity
 	Rating        float32                `protobuf:"fixed32,5,opt,name=rating,proto3" json:"rating,omitempty"`                       // numeric score (e.g. 1.0, 2.5, 5.0)
 	Comment       string                 `protobuf:"bytes,6,opt,name=comment,proto3" json:"comment,omitempty"`                       // optional free-text feedback
@@ -80,9 +81,16 @@ func (x *Rating) GetUserId() int32 {
 	return 0
 }
 
-func (x *Rating) GetType() string {
+func (x *Rating) GetProductId() int32 {
 	if x != nil {
-		return x.Type
+		return x.ProductId
+	}
+	return 0
+}
+
+func (x *Rating) GetEntity() string {
+	if x != nil {
+		return x.Entity
 	}
 	return ""
 }
@@ -217,7 +225,8 @@ func (x *RatingReply) GetCreatedAt() int64 {
 
 type CreateRatingRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	ProductId     int32                  `protobuf:"varint,11,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Entity        string                 `protobuf:"bytes,12,opt,name=entity,proto3" json:"entity,omitempty"`
 	EntityId      string                 `protobuf:"bytes,2,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
 	Rating        float32                `protobuf:"fixed32,3,opt,name=rating,proto3" json:"rating,omitempty"`
 	Comment       string                 `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`
@@ -255,9 +264,16 @@ func (*CreateRatingRequest) Descriptor() ([]byte, []int) {
 	return file_proto_helpdesk_v1_ratings_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CreateRatingRequest) GetType() string {
+func (x *CreateRatingRequest) GetProductId() int32 {
 	if x != nil {
-		return x.Type
+		return x.ProductId
+	}
+	return 0
+}
+
+func (x *CreateRatingRequest) GetEntity() string {
+	if x != nil {
+		return x.Entity
 	}
 	return ""
 }
@@ -419,7 +435,7 @@ type ListRatingsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	UserId        int32                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
+	Entity        string                 `protobuf:"bytes,12,opt,name=entity,proto3" json:"entity,omitempty"`
 	EntityId      string                 `protobuf:"bytes,4,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
 	Page          int32                  `protobuf:"varint,5,opt,name=page,proto3" json:"page,omitempty"`
 	PageSize      int32                  `protobuf:"varint,6,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -471,9 +487,9 @@ func (x *ListRatingsRequest) GetUserId() int32 {
 	return 0
 }
 
-func (x *ListRatingsRequest) GetType() string {
+func (x *ListRatingsRequest) GetEntity() string {
 	if x != nil {
-		return x.Type
+		return x.Entity
 	}
 	return ""
 }
@@ -1061,7 +1077,7 @@ func (*GetRatingsConfigRequest) Descriptor() ([]byte, []int) {
 
 type GetRatingsConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Types         []string               `protobuf:"bytes,1,rep,name=types,proto3" json:"types,omitempty"`
+	Entities      []string               `protobuf:"bytes,1,rep,name=entities,proto3" json:"entities,omitempty"`
 	MaxRating     float32                `protobuf:"fixed32,2,opt,name=max_rating,json=maxRating,proto3" json:"max_rating,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1097,9 +1113,9 @@ func (*GetRatingsConfigResponse) Descriptor() ([]byte, []int) {
 	return file_proto_helpdesk_v1_ratings_proto_rawDescGZIP(), []int{19}
 }
 
-func (x *GetRatingsConfigResponse) GetTypes() []string {
+func (x *GetRatingsConfigResponse) GetEntities() []string {
 	if x != nil {
-		return x.Types
+		return x.Entities
 	}
 	return nil
 }
@@ -1115,11 +1131,13 @@ var File_proto_helpdesk_v1_ratings_proto protoreflect.FileDescriptor
 
 const file_proto_helpdesk_v1_ratings_proto_rawDesc = "" +
 	"\n" +
-	"\x1fproto/helpdesk/v1/ratings.proto\x12\x02v1\"\xd2\x01\n" +
+	"\x1fproto/helpdesk/v1/ratings.proto\x12\x02v1\"\xf5\x01\n" +
 	"\x06Rating\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\x12\x1b\n" +
+	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\v \x01(\x05R\tproductId\x12\x16\n" +
+	"\x06entity\x18\f \x01(\tR\x06entity\x12\x1b\n" +
 	"\tentity_id\x18\x04 \x01(\tR\bentityId\x12\x16\n" +
 	"\x06rating\x18\x05 \x01(\x02R\x06rating\x12\x18\n" +
 	"\acomment\x18\x06 \x01(\tR\acomment\x12\x1d\n" +
@@ -1136,9 +1154,11 @@ const file_proto_helpdesk_v1_ratings_proto_rawDesc = "" +
 	"\n" +
 	"is_deleted\x18\x06 \x01(\bR\tisDeleted\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\a \x01(\x03R\tcreatedAt\"x\n" +
-	"\x13CreateRatingRequest\x12\x12\n" +
-	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1b\n" +
+	"created_at\x18\a \x01(\x03R\tcreatedAt\"\x9b\x01\n" +
+	"\x13CreateRatingRequest\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\v \x01(\x05R\tproductId\x12\x16\n" +
+	"\x06entity\x18\f \x01(\tR\x06entity\x12\x1b\n" +
 	"\tentity_id\x18\x02 \x01(\tR\bentityId\x12\x16\n" +
 	"\x06rating\x18\x03 \x01(\x02R\x06rating\x12\x18\n" +
 	"\acomment\x18\x04 \x01(\tR\acomment\":\n" +
@@ -1149,11 +1169,11 @@ const file_proto_helpdesk_v1_ratings_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"7\n" +
 	"\x11GetRatingResponse\x12\"\n" +
 	"\x06rating\x18\x01 \x01(\v2\n" +
-	".v1.RatingR\x06rating\"\x9f\x01\n" +
+	".v1.RatingR\x06rating\"\xa3\x01\n" +
 	"\x12ListRatingsRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\x12\x1b\n" +
+	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x16\n" +
+	"\x06entity\x18\f \x01(\tR\x06entity\x12\x1b\n" +
 	"\tentity_id\x18\x04 \x01(\tR\bentityId\x12\x12\n" +
 	"\x04page\x18\x05 \x01(\x05R\x04page\x12\x1b\n" +
 	"\tpage_size\x18\x06 \x01(\x05R\bpageSize\";\n" +
@@ -1186,9 +1206,9 @@ const file_proto_helpdesk_v1_ratings_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"5\n" +
 	"\x19DeleteRatingReplyResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x19\n" +
-	"\x17GetRatingsConfigRequest\"O\n" +
-	"\x18GetRatingsConfigResponse\x12\x14\n" +
-	"\x05types\x18\x01 \x03(\tR\x05types\x12\x1d\n" +
+	"\x17GetRatingsConfigRequest\"U\n" +
+	"\x18GetRatingsConfigResponse\x12\x1a\n" +
+	"\bentities\x18\x01 \x03(\tR\bentities\x12\x1d\n" +
 	"\n" +
 	"max_rating\x18\x02 \x01(\x02R\tmaxRatingB\x0fZ\r./helpdesk_v1b\x06proto3"
 

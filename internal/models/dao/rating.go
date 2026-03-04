@@ -5,7 +5,8 @@ import "github.com/gofreego/helpdesk/api/helpdesk_v1"
 type Rating struct {
 	ID        string
 	UserID    int32
-	Type      string // entity type: "product", "order", "service", etc.
+	ProductID int32
+	Entity    string
 	EntityID  string
 	Rating    float32
 	Comment   string
@@ -16,7 +17,7 @@ type Rating struct {
 func (r *Rating) Scan(row interface {
 	Scan(dest ...interface{}) error
 }) error {
-	return row.Scan(&r.ID, &r.UserID, &r.Type, &r.EntityID, &r.Rating, &r.Comment, &r.CreatedAt, &r.UpdatedAt)
+	return row.Scan(&r.ID, &r.UserID, &r.ProductID, &r.Entity, &r.EntityID, &r.Rating, &r.Comment, &r.CreatedAt, &r.UpdatedAt)
 }
 
 // ToProto converts DAO Rating to proto Rating
@@ -27,7 +28,8 @@ func (r *Rating) ToProto() *helpdesk_v1.Rating {
 	return &helpdesk_v1.Rating{
 		Id:        r.ID,
 		UserId:    r.UserID,
-		Type:      r.Type,
+		ProductId: r.ProductID,
+		Entity:    r.Entity,
 		EntityId:  r.EntityID,
 		Rating:    r.Rating,
 		Comment:   r.Comment,
@@ -44,7 +46,8 @@ func FromProtoRating(p *helpdesk_v1.Rating) *Rating {
 	return &Rating{
 		ID:        p.Id,
 		UserID:    p.UserId,
-		Type:      p.Type,
+		ProductID: p.ProductId,
+		Entity:    p.Entity,
 		EntityID:  p.EntityId,
 		Rating:    p.Rating,
 		Comment:   p.Comment,

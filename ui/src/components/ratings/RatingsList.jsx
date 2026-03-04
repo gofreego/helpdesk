@@ -5,34 +5,35 @@ import { getStarRating } from '../../utils/status.utils';
 
 const RatingsList = ({ currentUser, basePath }) => {
   const [ratings, setRatings] = useState([]);
-  const [ratingTypes, setRatingTypes] = useState([]);
+  const [ratingEntities, setRatingEntities] = useState([]);
   const [maxRating, setMaxRating] = useState(10);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    type: '',
+    productId: '',
+    entity: '',
     entityId: '',
     userId: ''
   });
 
   useEffect(() => {
     loadRatings();
-    loadRatingTypes();
+    loadRatingEntities();
   }, [currentUser]);
 
-  const loadRatingTypes = async () => {
+  const loadRatingEntities = async () => {
     try {
       const data = await fetchRatingTypes();
-      setRatingTypes(data.types || []);
+      setRatingEntities(data.entities || []);
       setMaxRating(data.maxRating || 10);
     } catch (err) {
-      console.error('Error fetching rating types:', err);
+      console.error('Error fetching rating entities:', err);
     }
   };
 
   const loadRatings = async () => {
     try {
       const response = await fetchRatings(filters, currentUser);
-      setRatings(response.ratings);
+      setRatings(response.ratings || []);
     } catch (error) {
       console.error('Error fetching ratings:', error);
     } finally {
@@ -50,7 +51,7 @@ const RatingsList = ({ currentUser, basePath }) => {
   };
 
   const handleClearFilters = () => {
-    setFilters({ type: '', entityId: '', userId: '' });
+    setFilters({ productId: '', entity: '', entityId: '', userId: '' });
     setLoading(true);
     setTimeout(() => loadRatings(), 100);
   };
@@ -78,18 +79,29 @@ const RatingsList = ({ currentUser, basePath }) => {
       </div>
 
       <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
           <div>
-            <label className="form-label">Type</label>
-            <select
-              name="type"
+            <label className="form-label">Product ID</label>
+            <input
+              type="text"
+              name="productId"
               className="form-input"
-              value={filters.type}
+              value={filters.productId}
+              onChange={handleFilterChange}
+              placeholder="e.g., 101"
+            />
+          </div>
+          <div>
+            <label className="form-label">Entity</label>
+            <select
+              name="entity"
+              className="form-input"
+              value={filters.entity}
               onChange={handleFilterChange}
             >
-              <option value="">All Types</option>
-              {ratingTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
+              <option value="">All Entities</option>
+              {ratingEntities.map(entity => (
+                <option key={entity} value={entity}>{entity}</option>
               ))}
             </select>
           </div>
@@ -140,7 +152,8 @@ const RatingsList = ({ currentUser, basePath }) => {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Type</th>
+                  <th>Product ID</th>
+                  <th>Entity</th>
                   <th>Entity ID</th>
                   <th>Rating</th>
                   <th>Comment</th>
@@ -151,8 +164,9 @@ const RatingsList = ({ currentUser, basePath }) => {
               <tbody>
                 {ratings.map(rating => (
                   <tr key={rating.id}>
+                    <td>{rating.productId}</td>
                     <td>
-                      <span className="badge badge-info">{rating.type}</span>
+                      <span className="badge badge-info">{rating.entity}</span>
                     </td>
                     <td>{rating.entityId}</td>
                     <td style={{ fontWeight: 600, fontSize: '1.1rem' }}>

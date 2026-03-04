@@ -62,16 +62,16 @@ func NewService(ctx context.Context, cfg *Config, repo Repository) *Service {
 // ===== Rating Handlers =====
 
 func (s *Service) CreateRating(ctx context.Context, req *helpdesk_v1.CreateRatingRequest) (*helpdesk_v1.CreateRatingResponse, error) {
-	// Validate rating type
+	// Validate rating entity
 	allowed := false
 	for _, t := range s.cfg.RatingTypes {
-		if t == req.Type {
+		if t == req.Entity {
 			allowed = true
 			break
 		}
 	}
 	if !allowed {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid rating type: %s. allowed types: %v", req.Type, s.cfg.RatingTypes)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid rating entity: %s. allowed entities: %v", req.Entity, s.cfg.RatingTypes)
 	}
 
 	if req.Rating < 1 || req.Rating > s.cfg.MaxRating {
@@ -84,11 +84,12 @@ func (s *Service) CreateRating(ctx context.Context, req *helpdesk_v1.CreateRatin
 	}
 
 	rating := &dao.Rating{
-		UserID:   userID,
-		Type:     req.Type,
-		EntityID: req.EntityId,
-		Rating:   req.Rating,
-		Comment:  req.Comment,
+		UserID:    userID,
+		ProductID: req.ProductId,
+		Entity:    req.Entity,
+		EntityID:  req.EntityId,
+		Rating:    req.Rating,
+		Comment:   req.Comment,
 	}
 
 	if err := s.repo.CreateRating(ctx, rating); err != nil {
@@ -155,7 +156,7 @@ func (s *Service) DeleteRating(ctx context.Context, req *helpdesk_v1.DeleteRatin
 
 func (s *Service) GetRatingsConfig(ctx context.Context, req *helpdesk_v1.GetRatingsConfigRequest) (*helpdesk_v1.GetRatingsConfigResponse, error) {
 	return &helpdesk_v1.GetRatingsConfigResponse{
-		Types:     s.cfg.RatingTypes,
+		Entities:  s.cfg.RatingTypes,
 		MaxRating: s.cfg.MaxRating,
 	}, nil
 }
@@ -216,16 +217,16 @@ func (s *Service) DeleteRatingReply(ctx context.Context, req *helpdesk_v1.Delete
 
 func (s *Service) CreateIssue(ctx context.Context, req *helpdesk_v1.CreateIssueRequest) (*helpdesk_v1.CreateIssueResponse, error) {
 
-	// Validate issue type
+	// Validate issue entity
 	allowed := false
 	for _, t := range s.cfg.IssueTypes {
-		if t == req.Type {
+		if t == req.Entity {
 			allowed = true
 			break
 		}
 	}
 	if !allowed {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid issue type: %s. allowed types: %v", req.Type, s.cfg.IssueTypes)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid issue entity: %s. allowed entities: %v", req.Entity, s.cfg.IssueTypes)
 	}
 
 	userID, err := auth.GetUserID(ctx)
@@ -235,7 +236,8 @@ func (s *Service) CreateIssue(ctx context.Context, req *helpdesk_v1.CreateIssueR
 
 	issue := &dao.Issue{
 		UserID:      userID,
-		Type:        req.Type,
+		ProductID:   req.ProductId,
+		Entity:      req.Entity,
 		EntityID:    req.EntityId,
 		Title:       req.Title,
 		Description: req.Description,
@@ -306,7 +308,8 @@ func (s *Service) DeleteIssue(ctx context.Context, req *helpdesk_v1.DeleteIssueR
 
 func (s *Service) ListIssueConfig(ctx context.Context, req *helpdesk_v1.ListIssueConfigRequest) (*helpdesk_v1.ListIssueConfigResponse, error) {
 	return &helpdesk_v1.ListIssueConfigResponse{
-		Types: s.cfg.IssueTypes,
+		Entities: s.cfg.IssueTypes,
+		Types:    s.cfg.IssueTypes,
 	}, nil
 }
 

@@ -129,7 +129,7 @@ export const deleteRatingReply = async (replyId: string): Promise<void> => {
  * Get ratings configuration
  */
 export const getRatingsConfig = async (): Promise<RatingsConfig> => {
-  const data = await apiService.get('/ratings/config');
+  const data = await apiService.get('/rating-config');
   return transformRatingsConfig(data);
 };
 

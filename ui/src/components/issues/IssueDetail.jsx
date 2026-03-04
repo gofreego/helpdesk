@@ -115,7 +115,6 @@ const IssueDetail = ({ currentUser, basePath }) => {
     try {
       await createIssueReply(id, { message: newReply }, currentUser);
       setNewReply('');
-      // Refresh first page
       fetchReplies(false);
     } catch (error) {
       console.error('Error posting reply:', error);
@@ -168,9 +167,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
     try {
       await deleteIssueReply(replyId, currentUser);
       setFeedbackMessage({ type: 'success', text: 'Reply deleted successfully!' });
-      // Clear message after 3 seconds
       setTimeout(() => setFeedbackMessage({ type: '', text: '' }), 3000);
-      // Refresh replies
       fetchReplies(false);
     } catch (error) {
       console.error('Error deleting reply:', error);
@@ -266,9 +263,14 @@ const IssueDetail = ({ currentUser, basePath }) => {
               </div>
 
               <div className="detail-item">
-                <span className="detail-label">Type</span>
+                <span className="detail-label">Product ID</span>
+                <span className="detail-value">{issue.productId}</span>
+              </div>
+
+              <div className="detail-item">
+                <span className="detail-label">Entity</span>
                 <span className="detail-value">
-                  <span className="badge badge-info">{issue.type}</span>
+                  <span className="badge badge-info">{issue.entity}</span>
                 </span>
               </div>
 
