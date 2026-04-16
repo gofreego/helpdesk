@@ -38,7 +38,7 @@ Service:
   RatingEntities: ["app", "topic", "question"]
   IssueEntities: ["app", "topic", "question"]
   IssueTypes: ["issue", "improvement", "other"]
-  AllowedProductIds: [101, 102, 103, 104, 105]
+  AllowedProductIds: [1]
   MaxRating: 5
 Debug:
   Enabled: true
