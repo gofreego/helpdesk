@@ -485,19 +485,6 @@ const IssueDetail = () => {
           </div>
         </div>
       )}
-            right: '2rem',
-            padding: '1rem 2rem',
-            background: feedbackMessage.type === 'success' ? '#10b981' : '#ef4444',
-            color: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-            zIndex: 4000,
-            animation: 'slideUp 0.3s ease-out'
-          }}
-        >
-          {feedbackMessage.text}
-        </div>
-      )}
     </Container>
   );
 };
