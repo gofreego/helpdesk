@@ -5,11 +5,13 @@ import { getIssueStatusBadge } from '../../utils/status.utils';
 import { formatDate } from '../../utils/format.utils';
 import { hasPermission, PERMISSIONS } from '../../constants/permissions.constants';
 import { sessionManager } from '../../services';
+import { useNotification } from '@gofreego/tsutils';
 import { Container } from '@mui/material';
 
 const IssueDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const currentUser = sessionManager.get()?.user || { role: '' };
   const [issue, setIssue] = useState(null);
   const [replies, setReplies] = useState([]);
@@ -21,7 +23,6 @@ const IssueDetail = () => {
   const [showChat, setShowChat] = useState(false);
   const [showStatusConfirm, setShowStatusConfirm] = useState(false);
   const [showDeleteIssueConfirm, setShowDeleteIssueConfirm] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState({ type: '', text: '' });
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -42,12 +43,13 @@ const IssueDetail = () => {
         });
       } catch (error) {
         console.error('Error fetching issue:', error);
+        showNotification(error.message || 'Failed to fetch issue details', 'error');
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [id, currentUser]);
+  }, [id, currentUser, showNotification]);
 
   const fetchReplies = async (isLoadMore = false) => {
     if (isLoadMore && (loadingMore || !hasMore)) return;
@@ -73,6 +75,7 @@ const IssueDetail = () => {
       }
     } catch (error) {
       console.error('Error fetching replies:', error);
+      showNotification(error.message || 'Failed to fetch replies', 'error');
     } finally {
       if (isLoadMore) setLoadingMore(false);
     }
@@ -121,7 +124,7 @@ const IssueDetail = () => {
       fetchReplies(false);
     } catch (error) {
       console.error('Error posting reply:', error);
-      alert('Failed to post reply');
+      showNotification(error.message || 'Failed to post reply', 'error');
     }
   };
 
@@ -133,10 +136,10 @@ const IssueDetail = () => {
       });
       setIssue(data.issue);
       setEditMode(false);
-      alert('Issue updated successfully!');
+      showNotification('Issue updated successfully!', 'success');
     } catch (error) {
       console.error('Error updating issue:', error);
-      alert('Failed to update issue');
+      showNotification(error.message || 'Failed to update issue', 'error');
     }
   };
 
@@ -146,11 +149,11 @@ const IssueDetail = () => {
         status: parseInt(newStatus)
       });
       setShowStatusConfirm(false);
-      setFeedbackMessage({ type: 'success', text: 'Status updated successfully!' });
+      showNotification('Status updated successfully!', 'success');
       setTimeout(() => navigate('/helpdesk/issues'), 1500);
     } catch (error) {
       console.error('Error updating status:', error);
-      setFeedbackMessage({ type: 'error', text: 'Failed to update status' });
+      showNotification(error.message || 'Failed to update status', 'error');
     }
   };
 
@@ -158,23 +161,22 @@ const IssueDetail = () => {
     try {
       await deleteIssue(id);
       setShowDeleteIssueConfirm(false);
-      setFeedbackMessage({ type: 'success', text: 'Issue deleted successfully!' });
+      showNotification('Issue deleted successfully!', 'success');
       setTimeout(() => navigate('/helpdesk/issues'), 1500);
     } catch (error) {
       console.error('Error deleting issue:', error);
-      setFeedbackMessage({ type: 'error', text: 'Failed to delete issue' });
+      showNotification(error.message || 'Failed to delete issue', 'error');
     }
   };
 
   const handleDeleteReply = async (replyId) => {
     try {
       await deleteIssueReply(replyId);
-      setFeedbackMessage({ type: 'success', text: 'Reply deleted successfully!' });
-      setTimeout(() => setFeedbackMessage({ type: '', text: '' }), 3000);
+      showNotification('Reply deleted successfully!', 'success');
       fetchReplies(false);
     } catch (error) {
       console.error('Error deleting reply:', error);
-      setFeedbackMessage({ type: 'error', text: 'Failed to delete reply' });
+      showNotification(error.message || 'Failed to delete reply', 'error');
     }
   };
 
@@ -483,12 +485,6 @@ const IssueDetail = () => {
           </div>
         </div>
       )}
-
-      {feedbackMessage.text && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '2rem',
             right: '2rem',
             padding: '1rem 2rem',
             background: feedbackMessage.type === 'success' ? '#10b981' : '#ef4444',
