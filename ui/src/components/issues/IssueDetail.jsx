@@ -1,18 +1,119 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { fetchIssueById, updateIssue, deleteIssue, createIssueReply, deleteIssueReply, fetchIssueReplies, updateIssueStatus } from '../../services/issue.service';
-import { getIssueStatusBadge } from '../../utils/status.utils';
-import { formatDate } from '../../utils/format.utils';
-import { hasPermission, PERMISSIONS } from '../../constants/permissions.constants';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  fetchIssueById, updateIssue, deleteIssue,
+  createIssueReply, deleteIssueReply, fetchIssueReplies, updateIssueStatus
+} from '../../services/issue.service';
 import { sessionManager } from '../../services';
 import { useNotification } from '@gofreego/tsutils';
-import { Container } from '@mui/material';
+import {
+  Container, Box, Typography, Button, Card, CardContent, Grid, Chip, Divider,
+  Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText,
+  TextField, MenuItem, CircularProgress, IconButton, Paper, Alert, Avatar, Tooltip, Menu, ListItemIcon, ListItemText
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import CloseIcon from '@mui/icons-material/Close';
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import UpdateIcon from '@mui/icons-material/Update';
+import BugReportOutlinedIcon from '@mui/icons-material/BugReportOutlined';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const STATUS_MAP = {
+  1: { label: 'Open',        color: 'error' },
+  2: { label: 'In Progress', color: 'warning' },
+  3: { label: 'Resolved',    color: 'success' },
+  4: { label: 'Closed',      color: 'default' },
+};
+
+const STATUS_OPTIONS = [
+  { value: 1, label: 'Open' },
+  { value: 2, label: 'In Progress' },
+  { value: 3, label: 'Resolved' },
+  { value: 4, label: 'Closed' },
+];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+const STATUS_ICON = {
+  1: '🔴',
+  2: '🟡',
+  3: '🟢',
+  4: '⚫',
+};
+
+const ClickableStatusChip = ({ status, anchorEl, onOpen, onClose, onChange }) => {
+  const s = STATUS_MAP[status] || { label: 'Unknown', color: 'default' };
+  return (
+    <>
+      <Chip
+        label={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {s.label}
+            <KeyboardArrowDownIcon sx={{ fontSize: 14, opacity: 0.7 }} />
+          </Box>
+        }
+        color={s.color}
+        size="small"
+        variant="outlined"
+        onClick={onOpen}
+        sx={{ fontWeight: 600, cursor: 'pointer' }}
+      />
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={onClose}
+        PaperProps={{ sx: { borderRadius: 2, minWidth: 160 } }}
+      >
+        {STATUS_OPTIONS.map(opt => (
+          <MenuItem
+            key={opt.value}
+            selected={opt.value === status}
+            onClick={() => { onChange(opt.value); onClose(); }}
+            sx={{ gap: 1.5 }}
+          >
+            <ListItemText primary={opt.label} />
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+};
+
+const InfoRow = ({ label, children }) => (
+  <Box>
+    <Typography
+      variant="caption"
+      color="text.secondary"
+      sx={{ textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, display: 'block', mb: 0.5 }}
+    >
+      {label}
+    </Typography>
+    {children}
+  </Box>
+);
+
+const initials = (id = '') => String(id).slice(0, 2).toUpperCase() || '?';
+
+const formatDate = (ts) => {
+  if (!ts) return '—';
+  return new Date(parseInt(ts)).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 const IssueDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const currentUser = sessionManager.get()?.user || { role: '' };
+
   const [issue, setIssue] = useState(null);
   const [replies, setReplies] = useState([]);
   const [newReply, setNewReply] = useState('');
@@ -27,9 +128,17 @@ const IssueDetail = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [selectedMessageForActions, setSelectedMessageForActions] = useState(null);
+  const [statusAnchorEl, setStatusAnchorEl] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [sendingReply, setSendingReply] = useState(false);
+
   const longPressTimer = useRef(null);
   const scrollRef = useRef(null);
   const LIMIT = 10;
+
+  const hasManagePermission = currentUser.role?.split(',').some(p => p === 'admin' || p === 'issue:manage');
+
+  // ── Fetch ─────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,10 +146,7 @@ const IssueDetail = () => {
         const data = await fetchIssueById(id);
         setIssue(data.issue);
         setNewStatus(data.issue.status);
-        setEditData({
-          title: data.issue.title,
-          description: data.issue.description
-        });
+        setEditData({ title: data.issue.title, description: data.issue.description });
       } catch (error) {
         console.error('Error fetching issue:', error);
         showNotification(error.message || 'Failed to fetch issue details', 'error');
@@ -49,18 +155,15 @@ const IssueDetail = () => {
       }
     };
     fetchData();
-  }, [id, currentUser, showNotification]);
+  }, [id, showNotification]);
 
   const fetchReplies = async (isLoadMore = false) => {
     if (isLoadMore && (loadingMore || !hasMore)) return;
     if (isLoadMore) setLoadingMore(true);
-
     const nextPage = isLoadMore ? page + 1 : 1;
-
     try {
       const data = await fetchIssueReplies(id, nextPage, LIMIT);
       const newReplies = data.replies || [];
-
       if (isLoadMore) {
         setReplies(prev => [...prev, ...newReplies]);
         setPage(nextPage);
@@ -69,10 +172,7 @@ const IssueDetail = () => {
         setPage(1);
         setHasMore(true);
       }
-
-      if (newReplies.length < LIMIT) {
-        setHasMore(false);
-      }
+      if (newReplies.length < LIMIT) setHasMore(false);
     } catch (error) {
       console.error('Error fetching replies:', error);
       showNotification(error.message || 'Failed to fetch replies', 'error');
@@ -94,7 +194,7 @@ const IssueDetail = () => {
     }
   }, [showChat, replies, page]);
 
-  const hasManagePermission = currentUser.role.split(',').some(p => p === 'admin' || p === 'issue:manage');
+  // ── Actions ───────────────────────────────────────────────────────────────
 
   const handleShowChat = () => {
     fetchReplies();
@@ -109,15 +209,13 @@ const IssueDetail = () => {
   };
 
   const handleLongPressEnd = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-    }
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
   };
 
   const handleReply = async (e) => {
     e.preventDefault();
     if (!newReply.trim()) return;
-
+    setSendingReply(true);
     try {
       await createIssueReply(id, { message: newReply });
       setNewReply('');
@@ -125,32 +223,32 @@ const IssueDetail = () => {
     } catch (error) {
       console.error('Error posting reply:', error);
       showNotification(error.message || 'Failed to post reply', 'error');
+    } finally {
+      setSendingReply(false);
     }
   };
 
   const handleUpdate = async () => {
+    setSavingEdit(true);
     try {
-      const data = await updateIssue(id, {
-        ...editData,
-        status: issue.status
-      });
+      const data = await updateIssue(id, { ...editData, status: issue.status });
       setIssue(data.issue);
       setEditMode(false);
       showNotification('Issue updated successfully!', 'success');
     } catch (error) {
       console.error('Error updating issue:', error);
       showNotification(error.message || 'Failed to update issue', 'error');
+    } finally {
+      setSavingEdit(false);
     }
   };
 
-  const handleStatusUpdate = async () => {
+  const handleStatusChange = async (newStatusValue) => {
     try {
-      await updateIssueStatus(id, {
-        status: parseInt(newStatus)
-      });
-      setShowStatusConfirm(false);
-      showNotification('Status updated successfully!', 'success');
-      setTimeout(() => navigate('/helpdesk/issues'), 1500);
+      await updateIssueStatus(id, { status: parseInt(newStatusValue) });
+      setIssue(prev => ({ ...prev, status: newStatusValue }));
+      setNewStatus(newStatusValue);
+      showNotification('Status updated!', 'success');
     } catch (error) {
       console.error('Error updating status:', error);
       showNotification(error.message || 'Failed to update status', 'error');
@@ -172,7 +270,7 @@ const IssueDetail = () => {
   const handleDeleteReply = async (replyId) => {
     try {
       await deleteIssueReply(replyId);
-      showNotification('Reply deleted successfully!', 'success');
+      showNotification('Reply deleted.', 'success');
       fetchReplies(false);
     } catch (error) {
       console.error('Error deleting reply:', error);
@@ -180,311 +278,455 @@ const IssueDetail = () => {
     }
   };
 
-  const getStatusBadge = (status) => {
-    const statusMap = {
-      1: { text: 'Open', class: 'badge-danger' },
-      2: { text: 'In Progress', class: 'badge-warning' },
-      3: { text: 'Resolved', class: 'badge-success' },
-      4: { text: 'Closed', class: 'badge-info' }
-    };
-    const statusInfo = statusMap[status] || { text: 'Unknown', class: 'badge-info' };
-    return <span className={`badge ${statusInfo.class}`}>{statusInfo.text}</span>;
-  };
+  // ── Render ────────────────────────────────────────────────────────────────
 
   if (loading) {
-    return <div className="card"><p>Loading...</p></div>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (!issue) {
-    return <div className="card"><p>Issue not found.</p></div>;
+    return (
+      <Container sx={{ py: 4 }}>
+        <Alert severity="warning">Issue not found.</Alert>
+      </Container>
+    );
   }
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <div className="detail-header">
-        <div>
-          <h1>Issue Details</h1>
-          <Link to='/helpdesk/issues' className="link">← Back to Issues</Link>
-        </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          {!editMode && (
-            <>
-              <button onClick={handleShowChat} className="btn btn-secondary">
-                Chat
-              </button>
-              <button onClick={() => setEditMode(true)} className="btn btn-primary">
-                Edit Issue
-              </button>
-              <button onClick={() => setShowDeleteIssueConfirm(true)} className="btn btn-danger">
-                Delete Issue
-              </button>
-            </>
-          )}
-        </div>
-      </div>
 
-      <div className="card">
-        {editMode ? (
-          <div>
-            <h3 style={{ marginBottom: '1.5rem' }}>Edit Issue</h3>
-            <div className="form-group">
-              <label className="form-label">Title</label>
-              <input
-                type="text"
-                className="form-input"
-                value={editData.title}
-                onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Description</label>
-              <textarea
-                className="form-textarea"
-                value={editData.description}
-                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                rows="6"
-              />
-            </div>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button onClick={handleUpdate} className="btn btn-primary">
-                Save Changes
-              </button>
-              <button onClick={() => setEditMode(false)} className="btn btn-secondary">
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="detail-grid">
-              <div className="detail-item">
-                <span className="detail-label">Issue ID</span>
-                <span className="detail-value">{issue.id}</span>
-              </div>
+      {/* ── Page Header ── */}
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
+        <Box>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/helpdesk/issues')}
+            color="inherit" size="small"
+            sx={{ mb: 1, color: 'text.secondary', pl: 0 }}
+          >
+            Back to Issues
+          </Button>
+          <Typography variant="h5" component="h1" fontWeight="700" sx={{ letterSpacing: '-0.3px' }}>
+            Issue Details
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            ID: {issue.id}
+          </Typography>
+        </Box>
 
-              <div className="detail-item">
-                <span className="detail-label">User ID</span>
-                <span className="detail-value">{issue.userId}</span>
-              </div>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Button variant="outlined" startIcon={<ChatBubbleOutlineIcon />} onClick={handleShowChat} sx={{ borderRadius: 2 }}>
+            Chat
+          </Button>
+          <Button variant="outlined" startIcon={<EditIcon />} onClick={() => setEditMode(true)} sx={{ borderRadius: 2 }}>
+            Edit
+          </Button>
+          <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => setShowDeleteIssueConfirm(true)} sx={{ borderRadius: 2 }}>
+            Delete
+          </Button>
+        </Box>
+      </Box>
 
-              <div className="detail-item">
-                <span className="detail-label">Product ID</span>
-                <span className="detail-value">{issue.productId}</span>
-              </div>
+      {/* ── Main Card ── */}
+      <Grid container spacing={3} alignItems="flex-start" sx={{ flexWrap: 'nowrap' }}>
 
-              <div className="detail-item">
-                <span className="detail-label">Entity</span>
-                <span className="detail-value">
-                  <span className="badge badge-info">{issue.entity}</span>
-                </span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Entity ID</span>
-                <span className="detail-value">{issue.entityId}</span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Status</span>
-                <span className="detail-value">{getStatusBadge(issue.status)}</span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Issue Type</span>
-                <span className="detail-value">
-                  <span className="badge badge-secondary">{issue.issueType}</span>
-                </span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Created At</span>
-                <span className="detail-value">
-                  {new Date(parseInt(issue.createdAt)).toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '1.5rem' }}>
-              <span className="detail-label">Title</span>
-              <div style={{ marginTop: '0.5rem', fontSize: '1.25rem', fontWeight: 600 }}>
+        {/* ── LEFT: Title + Description ── */}
+        <Grid item sx={{ flex: '1 1 auto', minWidth: 0 }}>
+          <Card sx={{ borderRadius: 3, boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.08)', height: '100%' }}>
+            <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+              <Typography variant="caption" fontWeight="600" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Title
+              </Typography>
+              <Typography variant="h5" fontWeight="700" sx={{ mt: 1.5, mb: 3, letterSpacing: '-0.3px', lineHeight: 1.3 }}>
                 {issue.title}
-              </div>
-            </div>
+              </Typography>
 
-            {issue.description && (
-              <div style={{ marginTop: '1.5rem' }}>
-                <span className="detail-label">Description</span>
-                <div style={{ marginTop: '0.5rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', lineHeight: 1.6 }}>
-                  {issue.description}
-                </div>
-              </div>
-            )}
+              <Divider sx={{ mb: 3 }} />
 
-            {hasManagePermission && (
-              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '2px solid #f1f5f9' }}>
-                <span className="detail-label">Update Status (Admin Only)</span>
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', alignItems: 'center' }}>
-                  <select
-                    className="form-select"
-                    value={newStatus}
-                    onChange={(e) => setNewStatus(e.target.value)}
-                    style={{ maxWidth: '200px' }}
-                  >
-                    <option value={1}>Open</option>
-                    <option value={2}>In Progress</option>
-                    <option value={3}>Resolved</option>
-                    <option value={4}>Closed</option>
-                  </select>
-                  <button onClick={() => setShowStatusConfirm(true)} className="btn btn-primary">
-                    Update Status
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+              <Typography variant="caption" fontWeight="600" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Description
+              </Typography>
 
-      {showChat && (
-        <div className="modal-overlay" onClick={() => setShowChat(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Issue Chat History</h3>
-              <button className="close-btn" onClick={() => setShowChat(false)}>&times;</button>
-            </div>
-            <div
-              className="modal-body"
-              onScroll={handleScroll}
-              ref={scrollRef}
-              style={{ display: 'flex', flexDirection: 'column-reverse' }}
-            >
-              {replies.length === 0 ? (
-                <div className="empty-state">
-                  <p>No replies yet. Start the conversation!</p>
-                </div>
+              {issue.description ? (
+                <Paper
+                  elevation={0}
+                  sx={{ mt: 1.5, p: 3, borderRadius: 2, bgcolor: 'action.hover', border: '1px solid', borderColor: 'divider', minHeight: 140 }}
+                >
+                  <Typography variant="body1" sx={{ lineHeight: 1.8, whiteSpace: 'pre-wrap', color: 'text.primary' }}>
+                    {issue.description}
+                  </Typography>
+                </Paper>
               ) : (
-                replies.map(reply => (
-                  <div
-                    key={reply.id}
-                    className={`chat-bubble ${reply.userId === currentUser.id ? 'bubble-sent' : 'bubble-received'}`}
-                    style={{ marginBottom: '1rem', cursor: 'pointer', userSelect: 'none' }}
-                    onMouseDown={() => handleLongPressStart(reply)}
-                    onMouseUp={handleLongPressEnd}
-                    onMouseLeave={handleLongPressEnd}
-                    onTouchStart={() => handleLongPressStart(reply)}
-                    onTouchEnd={handleLongPressEnd}
-                  >
-                    <div className="bubble-header">
-                      <span>User: {reply.userId} ({reply.role})</span>
-                    </div>
-                    <p>{reply.message}</p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', fontSize: '0.7rem', opacity: 0.6 }}>
-                      <span>{new Date(parseInt(reply.createdAt)).toLocaleString()}</span>
-                    </div>
-                  </div>
-                ))
+                <Box sx={{ mt: 1.5, p: 3, borderRadius: 2, border: '1px dashed', borderColor: 'divider', minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography variant="body2" color="text.disabled" fontStyle="italic">No description provided.</Typography>
+                </Box>
               )}
-              {loadingMore && (
-                <div style={{ textAlign: 'center', color: '#64748b', padding: '1rem', fontSize: '0.875rem' }}>
-                  Loading previous messages...
-                </div>
-              )}
-              {!hasMore && replies.length > 0 && (
-                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '1rem', fontSize: '0.875rem' }}>
-                  End of history
-                </div>
-              )}
-            </div>
-            <div className="modal-footer">
-              <form onSubmit={handleReply} style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={newReply}
-                  onChange={(e) => setNewReply(e.target.value)}
-                  placeholder="Type your reply..."
-                  style={{ marginBottom: 0 }}
-                  required
-                />
-                <button type="submit" className="btn btn-primary">Send</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-      {selectedMessageForActions && (
-        <div className="modal-overlay" onClick={() => setSelectedMessageForActions(null)} style={{ zIndex: 3000 }}>
-          <div className="modal-content" style={{ maxWidth: '300px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Message Actions</h3>
-            </div>
-            <div className="modal-body" style={{ padding: '1rem' }}>
-              <button
-                className="btn btn-danger"
-                style={{ width: '100%', marginBottom: '0.5rem' }}
-                onClick={() => {
-                  handleDeleteReply(selectedMessageForActions.id);
-                  setSelectedMessageForActions(null);
-                }}
-              >
-                Delete Message
-              </button>
-              <button
-                className="btn btn-secondary"
-                style={{ width: '100%' }}
-                onClick={() => setSelectedMessageForActions(null)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {showStatusConfirm && (
-        <div className="modal-overlay" onClick={() => setShowStatusConfirm(false)} style={{ zIndex: 3000 }}>
-          <div className="modal-content" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Confirm Status Change</h3>
-            </div>
-            <div className="modal-body" style={{ padding: '1.5rem', textAlign: 'center' }}>
-              <p style={{ marginBottom: '1.5rem', fontSize: '1.1rem' }}>
-                Are you sure you want to change the status of this issue?
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <button onClick={handleStatusUpdate} className="btn btn-primary" style={{ flex: 1 }}>
-                  Yes, Update
-                </button>
-                <button onClick={() => setShowStatusConfirm(false)} className="btn btn-secondary" style={{ flex: 1 }}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </CardContent>
+          </Card>
+        </Grid>
 
-      {showDeleteIssueConfirm && (
-        <div className="modal-overlay" onClick={() => setShowDeleteIssueConfirm(false)} style={{ zIndex: 3000 }}>
-          <div className="modal-content" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 style={{ color: '#ef4444' }}>Confirm Delete Issue</h3>
-            </div>
-            <div className="modal-body" style={{ padding: '1.5rem', textAlign: 'center' }}>
-              <p style={{ marginBottom: '1.5rem', fontSize: '1.1rem' }}>
-                Are you sure you want to delete this issue? This action <strong>cannot be undone</strong>.
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <button onClick={handleDelete} className="btn btn-danger" style={{ flex: 1 }}>
-                  Yes, Delete
-                </button>
-                <button onClick={() => setShowDeleteIssueConfirm(false)} className="btn btn-secondary" style={{ flex: 1 }}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        {/* ── RIGHT: Status + Details ── */}
+        <Grid item sx={{ flexShrink: 0, width: { xs: 240, sm: 280, md: 320 } }}>
+          <Card sx={{ borderRadius: 3, boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.08)' }}>
+            <CardContent sx={{ p: 3 }}>
+              {/* Chips row */}
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2.5 }}>
+                <ClickableStatusChip
+                  status={issue.status}
+                  anchorEl={statusAnchorEl}
+                  onOpen={(e) => setStatusAnchorEl(e.currentTarget)}
+                  onClose={() => setStatusAnchorEl(null)}
+                  onChange={handleStatusChange}
+                />
+                <Chip label={issue.issueType} size="small" variant="outlined" sx={{ fontWeight: 600 }} />
+              </Box>
+
+              <Divider sx={{ mb: 2.5 }} />
+
+              {/* Metadata */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                <InfoRow label="Issue ID">
+                  <Typography variant="body2" fontWeight="500" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                    {issue.id}
+                  </Typography>
+                </InfoRow>
+
+                <InfoRow label="User ID">
+                  <Typography variant="body2" fontWeight="500">{issue.userId}</Typography>
+                </InfoRow>
+
+                <InfoRow label="Product ID">
+                  <Typography variant="body2" fontWeight="500">{issue.productId}</Typography>
+                </InfoRow>
+
+                <InfoRow label="Entity">
+                  <Chip label={issue.entity} size="small" color="info" variant="outlined" sx={{ fontWeight: 600, mt: 0.25 }} />
+                </InfoRow>
+
+                <InfoRow label="Entity ID">
+                  <Typography variant="body2" fontWeight="500">{issue.entityId}</Typography>
+                </InfoRow>
+
+                <InfoRow label="Created At">
+                  <Typography variant="body2" fontWeight="500">{formatDate(issue.createdAt)}</Typography>
+                </InfoRow>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+
+
+      {/* ── Edit Issue Modal ── */}
+      <Dialog
+        open={editMode}
+        onClose={() => setEditMode(false)}
+        fullWidth maxWidth="sm"
+        PaperProps={{ sx: { borderRadius: 3, overflow: 'hidden' } }}
+      >
+        <DialogTitle sx={{ p: 0 }}>
+          <Box sx={{ px: 3, pt: 3, pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Box>
+              <Typography variant="h6" fontWeight="700" sx={{ letterSpacing: '-0.3px' }}>Edit Issue</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Update the title and description</Typography>
+            </Box>
+            <IconButton size="small" onClick={() => setEditMode(false)} sx={{ mt: -0.5, mr: -0.5, color: 'text.secondary' }}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          <Divider />
+        </DialogTitle>
+
+        <DialogContent sx={{ px: 3, py: 3 }}>
+          <Typography variant="caption" fontWeight="600" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Title
+          </Typography>
+          <TextField
+            fullWidth size="small"
+            placeholder="Brief summary of the issue"
+            value={editData.title}
+            onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+            sx={{ mt: 1.5, mb: 3 }}
+          />
+
+          <Divider sx={{ mb: 3 }} />
+
+          <Typography variant="caption" fontWeight="600" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Description <Typography component="span" variant="caption" color="text.disabled">(optional)</Typography>
+          </Typography>
+          <TextField
+            fullWidth multiline rows={5}
+            placeholder="Describe the issue in detail..."
+            value={editData.description}
+            onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+            inputProps={{ maxLength: 2000 }}
+            helperText={`${editData.description.length}/2000`}
+            sx={{ mt: 1.5 }}
+          />
+        </DialogContent>
+
+        <Divider />
+
+        <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
+          <Button variant="text" color="inherit" onClick={() => setEditMode(false)} sx={{ borderRadius: 2, color: 'text.secondary' }}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained" startIcon={<SaveIcon />}
+            onClick={handleUpdate} disabled={savingEdit}
+            sx={{ borderRadius: 2, px: 3, fontWeight: 600 }}
+          >
+            {savingEdit ? 'Saving…' : 'Save Changes'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── Delete Issue Confirm ── */}
+      <Dialog
+        open={showDeleteIssueConfirm}
+        onClose={() => setShowDeleteIssueConfirm(false)}
+        maxWidth="xs" fullWidth
+        PaperProps={{ sx: { borderRadius: 3 } }}
+      >
+        <DialogTitle sx={{ pt: 3, pb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: 'error.50', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DeleteIcon sx={{ color: 'error.main', fontSize: 22 }} />
+            </Box>
+            <Typography variant="h6" fontWeight="700">Delete Issue</Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mt: 1 }}>
+            Are you sure you want to delete this issue? This action <strong>cannot be undone</strong>.
+          </DialogContentText>
+        </DialogContent>
+        <Divider />
+        <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
+          <Button variant="text" color="inherit" onClick={() => setShowDeleteIssueConfirm(false)} sx={{ color: 'text.secondary' }}>
+            Cancel
+          </Button>
+          <Button variant="contained" color="error" onClick={handleDelete} sx={{ borderRadius: 2, fontWeight: 600 }}>
+            Delete Issue
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+
+      {/* ── Chat Dialog ── */}
+      <Dialog
+        open={showChat}
+        onClose={() => setShowChat(false)}
+        maxWidth="sm" fullWidth
+        PaperProps={{ sx: { height: '82vh', display: 'flex', flexDirection: 'column', borderRadius: 3, overflow: 'hidden' } }}
+      >
+        {/* Header */}
+        <Box sx={{ px: 3, pt: 2.5, pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <ChatBubbleOutlineIcon color="primary" />
+            <Box>
+              <Typography variant="subtitle1" fontWeight="700">Issue Chat</Typography>
+              <Typography variant="caption" color="text.secondary">
+                {replies.length} message{replies.length !== 1 ? 's' : ''}
+              </Typography>
+            </Box>
+          </Box>
+          <IconButton size="small" onClick={() => setShowChat(false)} sx={{ color: 'text.secondary' }}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
+
+        <Divider />
+
+        {/* Messages */}
+        <Box
+          ref={scrollRef}
+          onScroll={handleScroll}
+          sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column-reverse', px: 2.5, py: 2 }}
+        >
+          {replies.length === 0 ? (
+            <Box sx={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 1 }}>
+              <ChatBubbleOutlineIcon sx={{ fontSize: 48, color: 'text.disabled' }} />
+              <Typography color="text.secondary" variant="body2">No messages yet. Start the conversation!</Typography>
+            </Box>
+          ) : (
+            replies.map(reply => {
+              const isMine = reply.userId === currentUser.id;
+              const canDelete = currentUser.role === 'admin' || reply.userId === currentUser.id;
+              return (
+                <Box
+                  key={reply.id}
+                  sx={{ display: 'flex', justifyContent: isMine ? 'flex-end' : 'flex-start', mb: 2, alignItems: 'flex-end', gap: 1 }}
+                >
+                  {!isMine && (
+                    <Avatar sx={{ width: 28, height: 28, fontSize: '0.65rem', bgcolor: 'primary.main', mb: 0.5 }}>
+                      {initials(reply.userId)}
+                    </Avatar>
+                  )}
+
+                  <Box sx={{ maxWidth: '72%' }}>
+                    {!isMine && (
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: 1, fontWeight: 600, display: 'block', mb: 0.25 }}>
+                        {reply.userId}
+                      </Typography>
+                    )}
+                    <Box sx={{ position: 'relative', '&:hover .msg-actions': { opacity: 1 } }}>
+                      <Paper
+                        elevation={0}
+                        onMouseDown={() => handleLongPressStart(reply)}
+                        onMouseUp={handleLongPressEnd}
+                        onMouseLeave={handleLongPressEnd}
+                        onTouchStart={() => handleLongPressStart(reply)}
+                        onTouchEnd={handleLongPressEnd}
+                        sx={{
+                          px: 2, py: 1.25,
+                          bgcolor: isMine ? 'primary.main' : 'action.hover',
+                          color: isMine ? 'primary.contrastText' : 'text.primary',
+                          borderRadius: isMine ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                          userSelect: 'none',
+                          border: '1px solid',
+                          borderColor: isMine ? 'transparent' : 'divider',
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ wordBreak: 'break-word', lineHeight: 1.5 }}>
+                          {reply.message}
+                        </Typography>
+                        <Typography variant="caption" sx={{ display: 'block', mt: 0.5, textAlign: 'right', opacity: 0.65, fontSize: '0.62rem' }}>
+                          {formatDate(reply.createdAt)}
+                        </Typography>
+                      </Paper>
+
+                      {canDelete && (
+                        <Box
+                          className="msg-actions"
+                          sx={{
+                            position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+                            [isMine ? 'left' : 'right']: '-32px',
+                            opacity: 0, transition: 'opacity 0.15s',
+                          }}
+                        >
+                          <Tooltip title="Delete" placement={isMine ? 'left' : 'right'}>
+                            <IconButton
+                              size="small"
+                              onClick={() => setSelectedMessageForActions(reply)}
+                              sx={{ bgcolor: 'background.paper', boxShadow: 1, '&:hover': { bgcolor: 'error.50' } }}
+                            >
+                              <DeleteOutlineIcon fontSize="small" sx={{ fontSize: 16, color: 'error.main' }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+
+                  {isMine && (
+                    <Avatar sx={{ width: 28, height: 28, fontSize: '0.65rem', bgcolor: 'secondary.main', mb: 0.5 }}>
+                      {initials(reply.userId)}
+                    </Avatar>
+                  )}
+                </Box>
+              );
+            })
+          )}
+
+          {loadingMore && (
+            <Typography variant="caption" align="center" color="text.secondary" sx={{ display: 'block', py: 2 }}>
+              Loading previous messages…
+            </Typography>
+          )}
+          {!hasMore && replies.length > 0 && (
+            <Typography variant="caption" align="center" color="text.disabled" sx={{ display: 'block', py: 1 }}>
+              — Beginning of conversation —
+            </Typography>
+          )}
+        </Box>
+
+        <Divider />
+
+        {/* Input */}
+        <Box
+          component="form" onSubmit={handleReply}
+          sx={{ px: 2.5, py: 2, bgcolor: 'background.paper', display: 'flex', gap: 1.5, alignItems: 'flex-end' }}
+        >
+          <TextField
+            fullWidth size="small"
+            placeholder="Type a message…"
+            value={newReply}
+            onChange={(e) => setNewReply(e.target.value)}
+            multiline maxRows={3} required
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (newReply.trim()) handleReply(e);
+              }
+            }}
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
+          />
+          <IconButton
+            type="submit" color="primary"
+            disabled={!newReply.trim() || sendingReply}
+            sx={{
+              bgcolor: 'primary.main', color: 'white', borderRadius: 2.5,
+              width: 40, height: 40, flexShrink: 0,
+              '&:hover': { bgcolor: 'primary.dark' },
+              '&.Mui-disabled': { bgcolor: 'action.disabledBackground' },
+            }}
+          >
+            <SendRoundedIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </Box>
+      </Dialog>
+
+      {/* ── Delete Message Confirm ── */}
+      <Dialog
+        open={!!selectedMessageForActions}
+        onClose={() => setSelectedMessageForActions(null)}
+        maxWidth="xs" fullWidth
+        PaperProps={{ sx: { borderRadius: 3 } }}
+      >
+        <DialogTitle sx={{ pt: 3, pb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: 'error.50', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DeleteOutlineIcon sx={{ color: 'error.main', fontSize: 22 }} />
+            </Box>
+            <Typography variant="h6" fontWeight="700">Delete Message</Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {selectedMessageForActions && (
+            <Paper elevation={0} sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 2, border: '1px solid', borderColor: 'divider', mb: 2 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word', fontStyle: 'italic' }}>
+                "{selectedMessageForActions.message}"
+              </Typography>
+            </Paper>
+          )}
+          <DialogContentText sx={{ fontSize: '0.9rem' }}>
+            This message will be permanently deleted.
+          </DialogContentText>
+        </DialogContent>
+        <Divider />
+        <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
+          <Button variant="text" color="inherit" onClick={() => setSelectedMessageForActions(null)} sx={{ color: 'text.secondary' }}>
+            Cancel
+          </Button>
+          <Button
+            color="error" variant="contained"
+            sx={{ borderRadius: 2, fontWeight: 600 }}
+            onClick={() => {
+              handleDeleteReply(selectedMessageForActions.id);
+              setSelectedMessageForActions(null);
+            }}
+          >
+            Delete Message
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

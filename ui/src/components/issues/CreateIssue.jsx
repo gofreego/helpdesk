@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { createIssue, fetchIssueConfig } from '../../services/issue.service';
 import { useNotification } from '@gofreego/tsutils';
-import { Container } from '@mui/material';
+import {
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  Box, Typography, Button, TextField, MenuItem, Alert, Divider, IconButton
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
-const CreateIssue = () => {
-  const navigate = useNavigate();
+const CreateIssue = ({ open, onClose, onSuccess }) => {
   const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     productId: '',
@@ -21,7 +23,7 @@ const CreateIssue = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadConfig = async () => {
       try {
         const data = await fetchIssueConfig();
@@ -36,6 +38,13 @@ const CreateIssue = () => {
     loadConfig();
   }, [showNotification]);
 
+  useEffect(() => {
+    if (open) {
+      setFormData({ productId: '', entity: '', entityId: '', title: '', description: '', issueType: '' });
+      setError('');
+    }
+  }, [open]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -48,11 +57,11 @@ const CreateIssue = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     try {
       await createIssue(formData);
       showNotification('Issue created successfully', 'success');
-      navigate('/helpdesk/issues');
+      onSuccess();
+      onClose();
     } catch (err) {
       console.error('Error creating issue:', err);
       const errorMsg = err.response?.data?.message || err.message || 'Failed to create issue';
@@ -64,132 +73,136 @@ const CreateIssue = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <div className="detail-header">
-        <div>
-          <h1>Create Issue</h1>
-          <button onClick={() => navigate('/helpdesk/issues')} className="link">
-            ← Back to Issues
-          </button>
-        </div>
-      </div>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      PaperProps={{ sx: { borderRadius: 3, overflow: 'hidden' } }}
+    >
+      {/* Header */}
+      <DialogTitle sx={{ p: 0 }}>
+        <Box sx={{ px: 3, pt: 3, pb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box>
+            <Typography variant="h6" fontWeight="700" sx={{ letterSpacing: '-0.3px' }}>
+              Create Issue
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Report a new customer issue
+            </Typography>
+          </Box>
+          <IconButton size="small" onClick={onClose} sx={{ mt: -0.5, mr: -0.5, color: 'text.secondary' }}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
+        <Divider />
+      </DialogTitle>
 
-      <div className="card">
-        {error && (
-          <div style={{
-            padding: '1rem',
-            background: '#fee2e2',
-            color: '#991b1b',
-            borderRadius: '8px',
-            marginBottom: '1.5rem'
-          }}>
-            {error}
-          </div>
-        )}
+      <form onSubmit={handleSubmit}>
+        <DialogContent sx={{ px: 3, py: 3 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+              {error}
+            </Alert>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Product ID *</label>
-            <select
-              name="productId"
-              className="form-select"
-              value={formData.productId}
-              onChange={handleChange}
-              required
+          {/* Section: Target */}
+          <Typography variant="caption" fontWeight="600" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Target
+          </Typography>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1.5, mb: 3 }}>
+            <TextField
+              select fullWidth required size="small"
+              name="productId" label="Product"
+              value={formData.productId} onChange={handleChange}
             >
-              <option value="">Select Product ID</option>
-              {productIds.map(id => (
-                <option key={id} value={id}>{id}</option>
-              ))}
-            </select>
-          </div>
+              <MenuItem value=""><em>Select a product</em></MenuItem>
+              {productIds.map(id => <MenuItem key={id} value={id}>{id}</MenuItem>)}
+            </TextField>
 
-          <div className="form-group">
-            <label className="form-label">Entity *</label>
-            <select
-              name="entity"
-              className="form-select"
-              value={formData.entity}
-              onChange={handleChange}
-              required
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                select required size="small"
+                name="entity" label="Entity"
+                value={formData.entity} onChange={handleChange}
+                sx={{ flex: 1 }}
+              >
+                <MenuItem value="" disabled><em>Select entity</em></MenuItem>
+                {issueEntities.map(e => <MenuItem key={e} value={e}>{e}</MenuItem>)}
+              </TextField>
+
+              <TextField
+                required size="small"
+                name="entityId" label="Entity ID"
+                placeholder="e.g., 12345"
+                value={formData.entityId} onChange={handleChange}
+                sx={{ flex: 1 }}
+              />
+            </Box>
+
+            <TextField
+              select required size="small"
+              name="issueType" label="Issue Type"
+              value={formData.issueType} onChange={handleChange}
             >
-              <option value="" disabled>Select Entity</option>
-              {issueEntities.map(entity => (
-                <option key={entity} value={entity}>{entity}</option>
-              ))}
-            </select>
-          </div>
+              <MenuItem value="" disabled><em>Select issue type</em></MenuItem>
+              {issueTypes.map(t => <MenuItem key={t} value={t}>{t}</MenuItem>)}
+            </TextField>
+          </Box>
 
-          <div className="form-group">
-            <label className="form-label">Issue Type *</label>
-            <select
-              name="issueType"
-              className="form-select"
-              value={formData.issueType}
-              onChange={handleChange}
-              required
-            >
-              <option value="" disabled>Select Issue Type</option>
-              {issueTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-          </div>
+          <Divider sx={{ mb: 3 }} />
 
-          <div className="form-group">
-            <label className="form-label">Entity ID *</label>
-            <input
-              type="text"
-              name="entityId"
-              className="form-input"
-              value={formData.entityId}
-              onChange={handleChange}
-              placeholder="e.g., 12345"
-              required
-            />
-          </div>
+          {/* Section: Issue Details */}
+          <Typography variant="caption" fontWeight="600" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Issue Details
+          </Typography>
 
-          <div className="form-group">
-            <label className="form-label">Title *</label>
-            <input
-              type="text"
-              name="title"
-              className="form-input"
-              value={formData.title}
-              onChange={handleChange}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1.5 }}>
+            <TextField
+              fullWidth required size="small"
+              name="title" label="Title"
               placeholder="Brief summary of the issue"
-              required
+              value={formData.title} onChange={handleChange}
             />
-          </div>
 
-          <div className="form-group">
-            <label className="form-label">Description *</label>
-            <textarea
-              name="description"
-              className="form-textarea"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Detailed description..."
-              rows="5"
-              required
-            />
-          </div>
+            <Box>
+              <Typography variant="caption" fontWeight="600" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Description <Typography component="span" variant="caption" color="text.disabled">(optional)</Typography>
+              </Typography>
+              <TextField
+                fullWidth multiline rows={3}
+                name="description"
+                placeholder="Describe the issue in detail..."
+                value={formData.description} onChange={handleChange}
+                inputProps={{ maxLength: 2000 }}
+                helperText={`${formData.description.length}/2000`}
+                sx={{ mt: 1.5 }}
+              />
+            </Box>
+          </Box>
+        </DialogContent>
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Issue'}
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate('/helpdesk/issues')}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </Container>
+        <Divider />
+
+        <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
+          <Button
+            type="button" variant="text" color="inherit"
+            onClick={onClose}
+            sx={{ borderRadius: 2, color: 'text.secondary' }}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit" variant="contained"
+            disabled={loading}
+            sx={{ borderRadius: 2, px: 3, fontWeight: 600 }}
+          >
+            {loading ? 'Creating…' : 'Create Issue'}
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

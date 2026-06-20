@@ -13,7 +13,6 @@ import {
   RatingDetail,
   IssuesList,
   IssueDetail,
-  CreateIssue
 } from './components';
 import { authService, sessionManager } from './services';
 
@@ -85,7 +84,6 @@ export default function App() {
               <Route path="helpdesk/ratings" element={<RatingsList />} />
               <Route path="helpdesk/ratings/:id" element={<RatingDetail />} />
               <Route path="helpdesk/issues" element={<IssuesList />} />
-              <Route path="helpdesk/issues/new" element={<CreateIssue />} />
               <Route path="helpdesk/issues/:id" element={<IssueDetail />} />
               <Route path="helpdesk/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/helpdesk/dashboard" replace />} />
