@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { createRating, fetchRatingTypes } from '../../services/rating.service';
 import { useNotification } from '@gofreego/tsutils';
 import {
-  Container, Box, Typography, Button, Card, CardContent,
-  TextField, MenuItem, FormControl, InputLabel, Select, Alert,
-  Slider, Grid
+  Dialog, DialogTitle, DialogContent, DialogActions, Box, Typography, Button,
+  TextField, MenuItem, Alert, Slider, Grid
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const CreateRating = () => {
-  const navigate = useNavigate();
+const CreateRating = ({ open, onClose, onSuccess }) => {
   const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     productId: '',
@@ -46,6 +42,19 @@ const CreateRating = () => {
     loadRatingConfig();
   }, [showNotification]);
 
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        productId: '',
+        entity: ratingEntities.length > 0 ? ratingEntities[0] : '',
+        entityId: '',
+        rating: 5,
+        comment: ''
+      });
+      setError('');
+    }
+  }, [open, ratingEntities]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -66,7 +75,8 @@ const CreateRating = () => {
     try {
       await createRating(formData);
       showNotification('Rating created successfully', 'success');
-      navigate('/helpdesk/ratings');
+      onSuccess();
+      onClose();
     } catch (err) {
       console.error('Error creating rating:', err);
       const errorMsg = err.response?.data?.message || err.message || 'Failed to create rating';
@@ -78,152 +88,134 @@ const CreateRating = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Box sx={{ width: '100%', maxWidth: 800 }}>
-        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>
+        <Typography variant="h5" component="span" fontWeight="700">
+          Create Rating
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          Submit a new customer rating and feedback
+        </Typography>
+      </DialogTitle>
+      
+      <form onSubmit={handleSubmit}>
+        <DialogContent dividers>
+          {error && (
+            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                fullWidth
+                required
+                name="productId"
+                label="Product ID"
+                value={formData.productId}
+                onChange={handleChange}
+              >
+                <MenuItem value=""><em>Select Product ID</em></MenuItem>
+                {productIds.map(id => (
+                  <MenuItem key={id} value={id}>{id}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                fullWidth
+                required
+                name="entity"
+                label="Entity"
+                value={formData.entity}
+                onChange={handleChange}
+              >
+                <MenuItem value="" disabled><em>Select Entity</em></MenuItem>
+                {ratingEntities.map(entity => (
+                  <MenuItem key={entity} value={entity}>{entity}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                required
+                name="entityId"
+                label="Entity ID"
+                placeholder="e.g., 12345"
+                value={formData.entityId}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2, border: '1px solid', borderColor: 'grey.200' }}>
+                <Typography id="rating-slider" gutterBottom color="text.secondary" fontWeight="500">
+                  Overall Rating * (1-{maxRating})
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, px: 1, mt: 1 }}>
+                  <Slider
+                    name="rating"
+                    value={formData.rating}
+                    onChange={handleSliderChange}
+                    aria-labelledby="rating-slider"
+                    valueLabelDisplay="auto"
+                    step={0.5}
+                    marks
+                    min={1}
+                    max={maxRating}
+                    sx={{ flex: 1 }}
+                  />
+                  <Box sx={{ minWidth: '50px', textAlign: 'center', p: 1, bgcolor: 'primary.50', borderRadius: 2, border: '1px solid', borderColor: 'primary.100' }}>
+                    <Typography variant="body1" fontWeight="700" color="primary.main">
+                      {formData.rating}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                name="comment"
+                label="Comment"
+                placeholder="Share your detailed feedback here..."
+                multiline
+                rows={3}
+                value={formData.comment}
+                onChange={handleChange}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, py: 2 }}>
           <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/helpdesk/ratings')}
-            color="inherit"
+            type="button"
+            variant="outlined"
+            onClick={onClose}
             sx={{ borderRadius: 2 }}
           >
-            Back to Ratings
+            Cancel
           </Button>
-        </Box>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" component="h1" gutterBottom fontWeight="700">
-            Create Rating
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Submit a new customer rating and feedback
-          </Typography>
-        </Box>
-
-        <Card sx={{ borderRadius: 3, boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' }}>
-          <CardContent sx={{ p: { xs: 3, sm: 5 } }}>
-            {error && (
-              <Alert severity="error" sx={{ mb: 4, borderRadius: 2 }}>
-                {error}
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={4}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    select
-                    fullWidth
-                    required
-                    name="productId"
-                    label="Product ID"
-                    value={formData.productId}
-                    onChange={handleChange}
-                  >
-                    <MenuItem value=""><em>Select Product ID</em></MenuItem>
-                    {productIds.map(id => (
-                      <MenuItem key={id} value={id}>{id}</MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    select
-                    fullWidth
-                    required
-                    name="entity"
-                    label="Entity"
-                    value={formData.entity}
-                    onChange={handleChange}
-                  >
-                    <MenuItem value="" disabled><em>Select Entity</em></MenuItem>
-                    {ratingEntities.map(entity => (
-                      <MenuItem key={entity} value={entity}>{entity}</MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    required
-                    name="entityId"
-                    label="Entity ID"
-                    placeholder="e.g., 12345"
-                    value={formData.entityId}
-                    onChange={handleChange}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Box sx={{ p: 3, bgcolor: 'grey.50', borderRadius: 2, border: '1px solid', borderColor: 'grey.200' }}>
-                    <Typography id="rating-slider" gutterBottom color="text.secondary" fontWeight="500">
-                      Overall Rating * (1-{maxRating})
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, px: 2, mt: 2 }}>
-                      <Slider
-                        name="rating"
-                        value={formData.rating}
-                        onChange={handleSliderChange}
-                        aria-labelledby="rating-slider"
-                        valueLabelDisplay="auto"
-                        step={0.5}
-                        marks
-                        min={1}
-                        max={maxRating}
-                        sx={{ flex: 1 }}
-                      />
-                      <Box sx={{ minWidth: '60px', textAlign: 'center', p: 1, bgcolor: 'primary.50', borderRadius: 2, border: '1px solid', borderColor: 'primary.100' }}>
-                        <Typography variant="h6" fontWeight="700" color="primary.main">
-                          {formData.rating}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    name="comment"
-                    label="Comment"
-                    placeholder="Share your detailed feedback here..."
-                    multiline
-                    rows={4}
-                    value={formData.comment}
-                    onChange={handleChange}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Box sx={{ display: 'flex', gap: 2, mt: 2, justifyContent: 'flex-end' }}>
-                    <Button
-                      type="button"
-                      variant="outlined"
-                      onClick={() => navigate('/helpdesk/ratings')}
-                      size="large"
-                      sx={{ px: 4, borderRadius: 2 }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                      size="large"
-                      sx={{ px: 4, borderRadius: 2 }}
-                    >
-                      {loading ? 'Creating...' : 'Submit Rating'}
-                    </Button>
-                  </Box>
-                </Grid>
-              </Grid>
-            </form>
-          </CardContent>
-        </Card>
-      </Box>
-    </Container>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={loading}
+            sx={{ borderRadius: 2 }}
+          >
+            {loading ? 'Creating...' : 'Submit Rating'}
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

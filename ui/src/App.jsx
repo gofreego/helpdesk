@@ -11,7 +11,6 @@ import {
   Settings,
   RatingsList,
   RatingDetail,
-  CreateRating,
   IssuesList,
   IssueDetail,
   CreateIssue
@@ -84,7 +83,6 @@ export default function App() {
             >
               <Route path="helpdesk/dashboard" element={<Dashboard />} />
               <Route path="helpdesk/ratings" element={<RatingsList />} />
-              <Route path="helpdesk/ratings/new" element={<CreateRating />} />
               <Route path="helpdesk/ratings/:id" element={<RatingDetail />} />
               <Route path="helpdesk/issues" element={<IssuesList />} />
               <Route path="helpdesk/issues/new" element={<CreateIssue />} />

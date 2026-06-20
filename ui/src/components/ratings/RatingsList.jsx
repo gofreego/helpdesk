@@ -9,6 +9,7 @@ import {
   Paper, Grid
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import CreateRating from './CreateRating';
 
 const RatingsList = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const RatingsList = () => {
   const [productIds, setProductIds] = useState([]);
   const [maxRating, setMaxRating] = useState(10);
   const [loading, setLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     productId: '',
     entity: '',
@@ -92,7 +94,7 @@ const RatingsList = () => {
           variant="contained"
           color="primary"
           startIcon={<AddIcon />}
-          onClick={() => navigate('/helpdesk/ratings/new')}
+          onClick={() => setIsCreateModalOpen(true)}
           sx={{ borderRadius: 2 }}
         >
           Create Rating
@@ -232,6 +234,11 @@ const RatingsList = () => {
           </Box>
         )}
       </Card>
+      <CreateRating
+        open={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={loadRatings}
+      />
     </Container>
   );
 };
