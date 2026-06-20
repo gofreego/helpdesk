@@ -245,9 +245,9 @@ const IssueDetail = () => {
 
   const handleStatusChange = async (newStatusValue) => {
     try {
-      await updateIssueStatus(id, { status: parseInt(newStatusValue) });
-      setIssue(prev => ({ ...prev, status: newStatusValue }));
-      setNewStatus(newStatusValue);
+      await updateIssueStatus(id, parseInt(newStatusValue));
+      setIssue(prev => ({ ...prev, status: parseInt(newStatusValue) }));
+      setNewStatus(parseInt(newStatusValue));
       showNotification('Status updated!', 'success');
     } catch (error) {
       console.error('Error updating status:', error);
