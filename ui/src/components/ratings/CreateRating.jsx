@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createRating, fetchRatingTypes } from '../../services/rating.service';
+import { useNotification } from '@gofreego/tsutils';
+import {
+  Container, Box, Typography, Button, Card, CardContent,
+  TextField, MenuItem, FormControl, InputLabel, Select, Alert,
+  Slider, Grid
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const CreateRating = ({ currentUser, basePath }) => {
+const CreateRating = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     productId: '',
     entity: '',
@@ -32,10 +40,11 @@ const CreateRating = ({ currentUser, basePath }) => {
         }
       } catch (err) {
         console.error('Error fetching rating config:', err);
+        showNotification('Failed to load rating configuration', 'error');
       }
     };
     loadRatingConfig();
-  }, []);
+  }, [showNotification]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,138 +54,176 @@ const CreateRating = ({ currentUser, basePath }) => {
     }));
   };
 
+  const handleSliderChange = (event, newValue) => {
+    setFormData(prev => ({ ...prev, rating: newValue }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      await createRating(formData, currentUser);
-      navigate('/ratings');
+      await createRating(formData);
+      showNotification('Rating created successfully', 'success');
+      navigate('/helpdesk/ratings');
     } catch (err) {
       console.error('Error creating rating:', err);
-      setError(err.response?.data?.message || 'Failed to create rating');
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to create rating';
+      setError(errorMsg);
+      showNotification(errorMsg, 'error');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <div className="detail-header">
-        <div>
-          <h1>Create Rating</h1>
-          <button onClick={() => navigate('/ratings')} className="link">
-            ← Back to Ratings
-          </button>
-        </div>
-      </div>
+    <Container maxWidth="xl" sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Box sx={{ width: '100%', maxWidth: 800 }}>
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/helpdesk/ratings')}
+            color="inherit"
+            sx={{ borderRadius: 2 }}
+          >
+            Back to Ratings
+          </Button>
+        </Box>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h4" component="h1" gutterBottom fontWeight="700">
+            Create Rating
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Submit a new customer rating and feedback
+          </Typography>
+        </Box>
 
-      <div className="card">
-        {error && (
-          <div style={{
-            padding: '1rem',
-            background: '#fee2e2',
-            color: '#991b1b',
-            borderRadius: '8px',
-            marginBottom: '1.5rem'
-          }}>
-            {error}
-          </div>
-        )}
+        <Card sx={{ borderRadius: 3, boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' }}>
+          <CardContent sx={{ p: { xs: 3, sm: 5 } }}>
+            {error && (
+              <Alert severity="error" sx={{ mb: 4, borderRadius: 2 }}>
+                {error}
+              </Alert>
+            )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Product ID *</label>
-            <select
-              name="productId"
-              className="form-select"
-              value={formData.productId}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select Product ID</option>
-              {productIds.map(id => (
-                <option key={id} value={id}>{id}</option>
-              ))}
-            </select>
-          </div>
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={4}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    fullWidth
+                    required
+                    name="productId"
+                    label="Product ID"
+                    value={formData.productId}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value=""><em>Select Product ID</em></MenuItem>
+                    {productIds.map(id => (
+                      <MenuItem key={id} value={id}>{id}</MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
 
-          <div className="form-group">
-            <label className="form-label">Entity *</label>
-            <select
-              name="entity"
-              className="form-input"
-              value={formData.entity}
-              onChange={handleChange}
-              required
-            >
-              <option value="" disabled>Select Entity</option>
-              {ratingEntities.map(entity => (
-                <option key={entity} value={entity}>{entity}</option>
-              ))}
-            </select>
-          </div>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    fullWidth
+                    required
+                    name="entity"
+                    label="Entity"
+                    value={formData.entity}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="" disabled><em>Select Entity</em></MenuItem>
+                    {ratingEntities.map(entity => (
+                      <MenuItem key={entity} value={entity}>{entity}</MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
 
-          <div className="form-group">
-            <label className="form-label">Entity ID *</label>
-            <input
-              type="text"
-              name="entityId"
-              className="form-input"
-              value={formData.entityId}
-              onChange={handleChange}
-              placeholder="e.g., 12345"
-              required
-            />
-          </div>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    required
+                    name="entityId"
+                    label="Entity ID"
+                    placeholder="e.g., 12345"
+                    value={formData.entityId}
+                    onChange={handleChange}
+                  />
+                </Grid>
 
-          <div className="form-group">
-            <label className="form-label">Rating * (1-{maxRating})</label>
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <input
-                type="range"
-                name="rating"
-                min="1"
-                max={maxRating}
-                step="0.5"
-                value={formData.rating}
-                onChange={handleChange}
-                style={{ flex: 1 }}
-              />
-              <span style={{ fontSize: '1.5rem', fontWeight: 600, minWidth: '40px' }}>
-                {formData.rating}
-              </span>
-            </div>
-          </div>
+                <Grid item xs={12}>
+                  <Box sx={{ p: 3, bgcolor: 'grey.50', borderRadius: 2, border: '1px solid', borderColor: 'grey.200' }}>
+                    <Typography id="rating-slider" gutterBottom color="text.secondary" fontWeight="500">
+                      Overall Rating * (1-{maxRating})
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, px: 2, mt: 2 }}>
+                      <Slider
+                        name="rating"
+                        value={formData.rating}
+                        onChange={handleSliderChange}
+                        aria-labelledby="rating-slider"
+                        valueLabelDisplay="auto"
+                        step={0.5}
+                        marks
+                        min={1}
+                        max={maxRating}
+                        sx={{ flex: 1 }}
+                      />
+                      <Box sx={{ minWidth: '60px', textAlign: 'center', p: 1, bgcolor: 'primary.50', borderRadius: 2, border: '1px solid', borderColor: 'primary.100' }}>
+                        <Typography variant="h6" fontWeight="700" color="primary.main">
+                          {formData.rating}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Grid>
 
-          <div className="form-group">
-            <label className="form-label">Comment</label>
-            <textarea
-              name="comment"
-              className="form-textarea"
-              value={formData.comment}
-              onChange={handleChange}
-              placeholder="Share your feedback..."
-              rows="4"
-            />
-          </div>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="comment"
+                    label="Comment"
+                    placeholder="Share your detailed feedback here..."
+                    multiline
+                    rows={4}
+                    value={formData.comment}
+                    onChange={handleChange}
+                  />
+                </Grid>
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Rating'}
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate('/ratings')}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+                <Grid item xs={12}>
+                  <Box sx={{ display: 'flex', gap: 2, mt: 2, justifyContent: 'flex-end' }}>
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      onClick={() => navigate('/helpdesk/ratings')}
+                      size="large"
+                      sx={{ px: 4, borderRadius: 2 }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      disabled={loading}
+                      size="large"
+                      sx={{ px: 4, borderRadius: 2 }}
+                    >
+                      {loading ? 'Creating...' : 'Submit Rating'}
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+            </form>
+          </CardContent>
+        </Card>
+      </Box>
+    </Container>
   );
 };
 

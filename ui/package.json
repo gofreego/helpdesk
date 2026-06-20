@@ -12,6 +12,11 @@
     "type-check:watch": "tsc --noEmit --watch"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@gofreego/tsutils": "^0.1.19",
+    "@mui/icons-material": "^7.3.11",
+    "@mui/material": "^7.3.11",
     "@originjs/vite-plugin-federation": "^1.4.1",
     "axios": "^1.13.5",
     "react": "^19.2.0",

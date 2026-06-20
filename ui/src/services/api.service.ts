@@ -4,62 +4,44 @@
  * Manages headers, request/response transformations
  */
 
-import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import { httpClient } from '../utils/httpClient';
+import { RequestConfig } from '@gofreego/tsutils';
 
 const API_BASE_URL = '/helpdesk/v1';
-
-/**
- * Set authentication headers in session storage
- */
-export const setAuthHeaders = (userId: string | number, permissions: string[]): void => {
-  sessionStorage.setItem('user_id', String(userId));
-  sessionStorage.setItem('user_perms', permissions.join(','));
-};
-
-/**
- * Get headers for API requests
- * Automatically manages x-user-id and x-user-perms from session storage
- */
-const getHeaders = (): Record<string, string> => {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json'
-  };
-
-  // Get user info from sessionStorage
-  const userId = sessionStorage.getItem('user_id');
-  const userPerms = sessionStorage.getItem('user_perms');
-
-  if (userId) {
-    headers['x-user-id'] = userId;
-  }
-  if (userPerms) {
-    headers['x-user-perms'] = userPerms;
-  }
-
-  return headers;
-};
 
 /**
  * Generic request handler
  */
 const request = async <T = any>(
-  method: Method,
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   endpoint: string,
   data?: any,
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> => {
+  const url = `${API_BASE_URL}${endpoint}`;
   try {
-    const response: AxiosResponse<T> = await axios({
-      method,
-      url: `${API_BASE_URL}${endpoint}`,
-      data,
-      headers: { ...getHeaders(), ...config?.headers },
-      ...config
-    });
+    let response;
+    switch (method) {
+      case 'GET':
+        response = await httpClient.get<T>(url, config);
+        break;
+      case 'POST':
+        response = await httpClient.post<T>(url, data, config);
+        break;
+      case 'PUT':
+        response = await httpClient.put<T>(url, data, config);
+        break;
+      case 'PATCH':
+        response = await httpClient.patch<T>(url, data, config);
+        break;
+      case 'DELETE':
+        response = await httpClient.delete<T>(url, config);
+        break;
+    }
     return response.data;
   } catch (error: any) {
     console.error(`API Error [${method} ${endpoint}]:`, error);
-    throw error.response?.data || error;
+    throw error.data || error;
   }
 };
 
@@ -68,7 +50,7 @@ const request = async <T = any>(
  */
 export const get = <T = any>(
   endpoint: string,
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> => {
   return request<T>('GET', endpoint, undefined, config);
 };
@@ -79,7 +61,7 @@ export const get = <T = any>(
 export const post = <T = any>(
   endpoint: string,
   data?: any,
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> => {
   return request<T>('POST', endpoint, data, config);
 };
@@ -90,7 +72,7 @@ export const post = <T = any>(
 export const put = <T = any>(
   endpoint: string,
   data?: any,
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> => {
   return request<T>('PUT', endpoint, data, config);
 };
@@ -101,7 +83,7 @@ export const put = <T = any>(
 export const patch = <T = any>(
   endpoint: string,
   data?: any,
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> => {
   return request<T>('PATCH', endpoint, data, config);
 };
@@ -111,7 +93,7 @@ export const patch = <T = any>(
  */
 export const del = <T = any>(
   endpoint: string,
-  config?: AxiosRequestConfig
+  config?: RequestConfig
 ): Promise<T> => {
   return request<T>('DELETE', endpoint, undefined, config);
 };

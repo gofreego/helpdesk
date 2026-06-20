@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createIssue, fetchIssueConfig } from '../../services/issue.service';
+import { useNotification } from '@gofreego/tsutils';
+import { Container } from '@mui/material';
 
-const CreateIssue = ({ currentUser, basePath }) => {
+const CreateIssue = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     productId: '',
     entity: '',
@@ -27,10 +30,11 @@ const CreateIssue = ({ currentUser, basePath }) => {
         setProductIds(data.productIds || []);
       } catch (err) {
         console.error('Error fetching issue config:', err);
+        showNotification('Failed to load issue configuration', 'error');
       }
     };
     loadConfig();
-  }, []);
+  }, [showNotification]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,22 +50,25 @@ const CreateIssue = ({ currentUser, basePath }) => {
     setError('');
 
     try {
-      await createIssue(formData, currentUser);
-      navigate('/issues');
+      await createIssue(formData);
+      showNotification('Issue created successfully', 'success');
+      navigate('/helpdesk/issues');
     } catch (err) {
       console.error('Error creating issue:', err);
-      setError(err.response?.data?.message || 'Failed to create issue');
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to create issue';
+      setError(errorMsg);
+      showNotification(errorMsg, 'error');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       <div className="detail-header">
         <div>
           <h1>Create Issue</h1>
-          <button onClick={() => navigate('/issues')} className="link">
+          <button onClick={() => navigate('/helpdesk/issues')} className="link">
             ← Back to Issues
           </button>
         </div>
@@ -106,7 +113,7 @@ const CreateIssue = ({ currentUser, basePath }) => {
               onChange={handleChange}
               required
             >
-              <option value="">Select Entity</option>
+              <option value="" disabled>Select Entity</option>
               {issueEntities.map(entity => (
                 <option key={entity} value={entity}>{entity}</option>
               ))}
@@ -122,7 +129,7 @@ const CreateIssue = ({ currentUser, basePath }) => {
               onChange={handleChange}
               required
             >
-              <option value="">Select Type</option>
+              <option value="" disabled>Select Issue Type</option>
               {issueTypes.map(type => (
                 <option key={type} value={type}>{type}</option>
               ))}
@@ -150,7 +157,7 @@ const CreateIssue = ({ currentUser, basePath }) => {
               className="form-input"
               value={formData.title}
               onChange={handleChange}
-              placeholder="Brief description of the issue"
+              placeholder="Brief summary of the issue"
               required
             />
           </div>
@@ -162,8 +169,8 @@ const CreateIssue = ({ currentUser, basePath }) => {
               className="form-textarea"
               value={formData.description}
               onChange={handleChange}
-              placeholder="Provide detailed information about the issue..."
-              rows="6"
+              placeholder="Detailed description..."
+              rows="5"
               required
             />
           </div>
@@ -175,14 +182,14 @@ const CreateIssue = ({ currentUser, basePath }) => {
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => navigate('/issues')}
+              onClick={() => navigate('/helpdesk/issues')}
             >
               Cancel
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </Container>
   );
 };
 

@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { fetchRatings, fetchRatingTypes } from '../../services/rating.service';
-import { getStarRating } from '../../utils/status.utils';
+import { useNotification } from '@gofreego/tsutils';
+import {
+  Container, Box, Typography, Button, Card, CardContent,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  TextField, MenuItem, FormControl, InputLabel, Select, Chip, CircularProgress,
+  Paper, Grid
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
-const RatingsList = ({ currentUser, basePath }) => {
+const RatingsList = () => {
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
   const [ratings, setRatings] = useState([]);
   const [ratingEntities, setRatingEntities] = useState([]);
   const [productIds, setProductIds] = useState([]);
@@ -19,7 +28,7 @@ const RatingsList = ({ currentUser, basePath }) => {
   useEffect(() => {
     loadRatings();
     loadRatingEntities();
-  }, [currentUser]);
+  }, [showNotification]);
 
   const loadRatingEntities = async () => {
     try {
@@ -29,15 +38,17 @@ const RatingsList = ({ currentUser, basePath }) => {
       setProductIds(data.productIds || []);
     } catch (err) {
       console.error('Error fetching rating entities:', err);
+      showNotification('Failed to load rating configuration', 'error');
     }
   };
 
   const loadRatings = async () => {
     try {
-      const response = await fetchRatings(filters, currentUser);
+      const response = await fetchRatings(filters);
       setRatings(response.ratings || []);
     } catch (error) {
       console.error('Error fetching ratings:', error);
+      showNotification(error.message || 'Failed to fetch ratings', 'error');
     } finally {
       setLoading(false);
     }
@@ -58,142 +69,170 @@ const RatingsList = ({ currentUser, basePath }) => {
     setTimeout(() => loadRatings(), 100);
   };
 
-
   if (loading) {
-    return <div className="card"><p>Loading...</p></div>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
-    <div>
-      <div className="card-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1>Ratings Management</h1>
-            <p>View and manage all customer ratings</p>
-          </div>
-          <Link to={`/ratings/new`} className="btn btn-primary">
-            <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Create Rating
-          </Link>
-        </div>
-      </div>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4 }}>
+        <Box>
+          <Typography variant="h4" component="h1" gutterBottom fontWeight="600">
+            Ratings Management
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            View and manage all customer ratings
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => navigate('/helpdesk/ratings/new')}
+          sx={{ borderRadius: 2 }}
+        >
+          Create Rating
+        </Button>
+      </Box>
 
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
-          <div>
-            <label className="form-label">Product ID</label>
-            <select
+      <Card sx={{ mb: 4, borderRadius: 3, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
+            <TextField
+              select
+              size="small"
               name="productId"
-              className="form-input"
+              label="Product ID"
               value={filters.productId}
               onChange={handleFilterChange}
+              sx={{ minWidth: 200, flex: { xs: 1, sm: 'none' } }}
             >
-              <option value="">All Products</option>
+              <MenuItem value=""><em>All Products</em></MenuItem>
               {productIds.map(id => (
-                <option key={id} value={id}>{id}</option>
+                <MenuItem key={id} value={id}>{id}</MenuItem>
               ))}
-            </select>
-          </div>
-          <div>
-            <label className="form-label">Entity</label>
-            <select
+            </TextField>
+
+            <TextField
+              select
+              size="small"
               name="entity"
-              className="form-input"
+              label="Entity"
               value={filters.entity}
               onChange={handleFilterChange}
+              sx={{ minWidth: 200, flex: { xs: 1, sm: 'none' } }}
             >
-              <option value="">All Entities</option>
+              <MenuItem value=""><em>All Entities</em></MenuItem>
               {ratingEntities.map(entity => (
-                <option key={entity} value={entity}>{entity}</option>
+                <MenuItem key={entity} value={entity}>{entity}</MenuItem>
               ))}
-            </select>
-          </div>
-          <div>
-            <label className="form-label">Entity ID</label>
-            <input
-              type="text"
+            </TextField>
+
+            <TextField
+              size="small"
               name="entityId"
-              className="form-input"
+              label="Entity ID"
+              placeholder="e.g., 12345"
               value={filters.entityId}
               onChange={handleFilterChange}
-              placeholder="e.g., 12345"
+              sx={{ minWidth: 200, flex: { xs: 1, sm: 'none' } }}
             />
-          </div>
-          <div>
-            <label className="form-label">User ID</label>
-            <input
-              type="text"
+
+            <TextField
+              size="small"
               name="userId"
-              className="form-input"
+              label="User ID"
+              placeholder="e.g., user123"
               value={filters.userId}
               onChange={handleFilterChange}
-              placeholder="e.g., user123"
+              sx={{ minWidth: 200, flex: { xs: 1, sm: 'none' } }}
             />
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <button onClick={handleApplyFilters} className="btn btn-primary">
-            Apply Filters
-          </button>
-          <button onClick={handleClearFilters} className="btn btn-secondary">
-            Clear Filters
-          </button>
-        </div>
-      </div>
+          </Box>
+          
+          <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+            <Button variant="contained" onClick={handleApplyFilters}>
+              Apply Filters
+            </Button>
+            <Button variant="outlined" onClick={handleClearFilters}>
+              Clear Filters
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
-      <div className="card">
+      <Card sx={{ borderRadius: 3, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}>
         {ratings.length === 0 ? (
-          <div className="empty-state">
-            <h3>No ratings yet</h3>
-            <p>Ratings will appear here once customers start submitting them.</p>
-          </div>
+          <Box sx={{ p: 6, textAlign: 'center' }}>
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              No ratings yet
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Ratings will appear here once customers start submitting them.
+            </Typography>
+          </Box>
         ) : (
-          <>
-            <div style={{ marginBottom: '1rem', color: '#64748b', fontSize: '0.875rem' }}>
-              Showing {ratings.length} rating{ratings.length !== 1 ? 's' : ''}
-            </div>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Product ID</th>
-                  <th>Entity</th>
-                  <th>Entity ID</th>
-                  <th>Rating</th>
-                  <th>Comment</th>
-                  <th>User</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ratings.map(rating => (
-                  <tr key={rating.id}>
-                    <td>{rating.productId}</td>
-                    <td>
-                      <span className="badge badge-info">{rating.entity}</span>
-                    </td>
-                    <td>{rating.entityId}</td>
-                    <td style={{ fontWeight: 600, fontSize: '1.1rem' }}>
-                      {rating.rating} <small style={{ color: '#94a3b8', fontWeight: 400 }}>/ {maxRating}</small>
-                    </td>
-                    <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {rating.comment || '-'}
-                    </td>
-                    <td>{rating.userId}</td>
-                    <td>
-                      <Link to={`/ratings/${rating.id}`} className="btn btn-secondary" style={{ padding: '0.5rem 1rem' }}>
-                        View Details
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
+          <Box>
+            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+              <Typography variant="body2" color="text.secondary">
+                Showing {ratings.length} rating{ratings.length !== 1 ? 's' : ''}
+              </Typography>
+            </Box>
+            <TableContainer component={Paper} elevation={0}>
+              <Table sx={{ minWidth: 650 }}>
+                <TableHead sx={{ bgcolor: 'action.hover' }}>
+                  <TableRow>
+                    <TableCell>Product ID</TableCell>
+                    <TableCell>Entity</TableCell>
+                    <TableCell>Entity ID</TableCell>
+                    <TableCell>Rating</TableCell>
+                    <TableCell>Comment</TableCell>
+                    <TableCell>User</TableCell>
+                    <TableCell align="right">Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {ratings.map(rating => (
+                    <TableRow key={rating.id} hover>
+                      <TableCell>{rating.productId}</TableCell>
+                      <TableCell>
+                        <Chip label={rating.entity} size="small" color="info" variant="outlined" />
+                      </TableCell>
+                      <TableCell>{rating.entityId}</TableCell>
+                      <TableCell>
+                        <Typography variant="body1" component="span" fontWeight="600">
+                          {rating.rating}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                          / {maxRating}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 300, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {rating.comment || '-'}
+                      </TableCell>
+                      <TableCell>{rating.userId}</TableCell>
+                      <TableCell align="right">
+                        <Button 
+                          variant="outlined" 
+                          size="small" 
+                          onClick={() => navigate(`/helpdesk/ratings/${rating.id}`)}
+                          sx={{ borderRadius: 2 }}
+                        >
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         )}
-      </div>
-    </div>
+      </Card>
+    </Container>
   );
 };
 

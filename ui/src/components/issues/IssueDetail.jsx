@@ -4,10 +4,13 @@ import { fetchIssueById, updateIssue, deleteIssue, createIssueReply, deleteIssue
 import { getIssueStatusBadge } from '../../utils/status.utils';
 import { formatDate } from '../../utils/format.utils';
 import { hasPermission, PERMISSIONS } from '../../constants/permissions.constants';
+import { sessionManager } from '../../services';
+import { Container } from '@mui/material';
 
-const IssueDetail = ({ currentUser, basePath }) => {
+const IssueDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const currentUser = sessionManager.get()?.user || { role: '' };
   const [issue, setIssue] = useState(null);
   const [replies, setReplies] = useState([]);
   const [newReply, setNewReply] = useState('');
@@ -30,7 +33,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchIssueById(id, currentUser);
+        const data = await fetchIssueById(id);
         setIssue(data.issue);
         setNewStatus(data.issue.status);
         setEditData({
@@ -53,7 +56,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
     const nextPage = isLoadMore ? page + 1 : 1;
 
     try {
-      const data = await fetchIssueReplies(id, { page: nextPage, page_size: LIMIT }, currentUser);
+      const data = await fetchIssueReplies(id, nextPage, LIMIT);
       const newReplies = data.replies || [];
 
       if (isLoadMore) {
@@ -113,7 +116,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
     if (!newReply.trim()) return;
 
     try {
-      await createIssueReply(id, { message: newReply }, currentUser);
+      await createIssueReply(id, { message: newReply });
       setNewReply('');
       fetchReplies(false);
     } catch (error) {
@@ -127,7 +130,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
       const data = await updateIssue(id, {
         ...editData,
         status: issue.status
-      }, currentUser);
+      });
       setIssue(data.issue);
       setEditMode(false);
       alert('Issue updated successfully!');
@@ -141,10 +144,10 @@ const IssueDetail = ({ currentUser, basePath }) => {
     try {
       await updateIssueStatus(id, {
         status: parseInt(newStatus)
-      }, currentUser);
+      });
       setShowStatusConfirm(false);
       setFeedbackMessage({ type: 'success', text: 'Status updated successfully!' });
-      setTimeout(() => navigate('/issues'), 1500);
+      setTimeout(() => navigate('/helpdesk/issues'), 1500);
     } catch (error) {
       console.error('Error updating status:', error);
       setFeedbackMessage({ type: 'error', text: 'Failed to update status' });
@@ -153,10 +156,10 @@ const IssueDetail = ({ currentUser, basePath }) => {
 
   const handleDelete = async () => {
     try {
-      await deleteIssue(id, currentUser);
+      await deleteIssue(id);
       setShowDeleteIssueConfirm(false);
       setFeedbackMessage({ type: 'success', text: 'Issue deleted successfully!' });
-      setTimeout(() => navigate('/issues'), 1500);
+      setTimeout(() => navigate('/helpdesk/issues'), 1500);
     } catch (error) {
       console.error('Error deleting issue:', error);
       setFeedbackMessage({ type: 'error', text: 'Failed to delete issue' });
@@ -165,7 +168,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
 
   const handleDeleteReply = async (replyId) => {
     try {
-      await deleteIssueReply(replyId, currentUser);
+      await deleteIssueReply(replyId);
       setFeedbackMessage({ type: 'success', text: 'Reply deleted successfully!' });
       setTimeout(() => setFeedbackMessage({ type: '', text: '' }), 3000);
       fetchReplies(false);
@@ -195,11 +198,11 @@ const IssueDetail = ({ currentUser, basePath }) => {
   }
 
   return (
-    <div>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       <div className="detail-header">
         <div>
           <h1>Issue Details</h1>
-          <Link to='/issues' className="link">← Back to Issues</Link>
+          <Link to='/helpdesk/issues' className="link">← Back to Issues</Link>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
           {!editMode && (
@@ -499,7 +502,7 @@ const IssueDetail = ({ currentUser, basePath }) => {
           {feedbackMessage.text}
         </div>
       )}
-    </div>
+    </Container>
   );
 };
 

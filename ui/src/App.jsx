@@ -1,7 +1,12 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, SidebarLayout, NotificationProvider, LoginCallbackPage, ProtectedRoute } from '@gofreego/tsutils';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import StarIcon from '@mui/icons-material/Star';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import SettingsIcon from '@mui/icons-material/Settings';
+
 import {
-  Layout,
   Dashboard,
   Settings,
   RatingsList,
@@ -11,28 +16,85 @@ import {
   IssueDetail,
   CreateIssue
 } from './components';
+import { authService, sessionManager } from './services';
 
-/**
- * Props injected by the Shell:
- * @param {Object}  currentUser   - Logged-in user object { id, name, role, token }
- * @param {string}  basePath      - Base URL path for this service e.g. "/helpdesk"
- * @param {Function} onNavigate   - Navigate to another service: onNavigate('catalog')
- * @param {Function} onUserChange - Callback to update user credentials (for dev settings)
- */
-export default function App({ currentUser, basePath = '/', onNavigate, onUserChange }) {
+const LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
+
+export default function App() {
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    authService.initializeAuth();
+    setIsInitialized(true);
+  }, []);
+
+  const handleLoginFailed = () => {
+    console.log("Login failed, redirecting to -> ", LOGIN_URL);
+    window.location.href = LOGIN_URL;
+  };
+
+  const menuItems = [
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      path: '/helpdesk/dashboard',
+      icon: <DashboardIcon />,
+    },
+    {
+      id: 'ratings',
+      label: 'Ratings',
+      path: '/helpdesk/ratings',
+      icon: <StarIcon />,
+    },
+    {
+      id: 'issues',
+      label: 'Issues',
+      path: '/helpdesk/issues',
+      icon: <BugReportIcon />,
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      path: '/helpdesk/settings',
+      icon: <SettingsIcon />,
+    },
+  ];
+
+  if (!isInitialized) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <Layout currentUser={currentUser} basePath={basePath}>
-      <Routes>
-        <Route path="/" element={<Dashboard currentUser={currentUser} basePath={basePath} />} />
-        <Route path="/ratings" element={<RatingsList currentUser={currentUser} basePath={basePath} />} />
-        <Route path="/ratings/new" element={<CreateRating currentUser={currentUser} basePath={basePath} />} />
-        <Route path="/ratings/:id" element={<RatingDetail currentUser={currentUser} basePath={basePath} />} />
-        <Route path="/issues" element={<IssuesList currentUser={currentUser} basePath={basePath} />} />
-        <Route path="/issues/new" element={<CreateIssue currentUser={currentUser} basePath={basePath} />} />
-        <Route path="/issues/:id" element={<IssueDetail currentUser={currentUser} basePath={basePath} />} />
-        <Route path="/settings" element={<Settings currentUser={currentUser} onUserChange={onUserChange} basePath={basePath} />} />
-      </Routes>
-    </Layout>
+    <ThemeProvider>
+      <NotificationProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/helpdesk/login-callback" element={<LoginCallbackPage authService={authService} navigateTo="/helpdesk/dashboard" onLoginFailed={handleLoginFailed} />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute sessionManager={sessionManager} loginUrl={LOGIN_URL} callbackPath="/helpdesk/login-callback">
+                  <SidebarLayout menuItems={menuItems} isRouter={true} isBrowserRouter={false} style={{ height: '100vh' }} />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="helpdesk/dashboard" element={<Dashboard />} />
+              <Route path="helpdesk/ratings" element={<RatingsList />} />
+              <Route path="helpdesk/ratings/new" element={<CreateRating />} />
+              <Route path="helpdesk/ratings/:id" element={<RatingDetail />} />
+              <Route path="helpdesk/issues" element={<IssuesList />} />
+              <Route path="helpdesk/issues/new" element={<CreateIssue />} />
+              <Route path="helpdesk/issues/:id" element={<IssueDetail />} />
+              <Route path="helpdesk/settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/helpdesk/dashboard" replace />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </NotificationProvider>
+    </ThemeProvider>
   );
 }

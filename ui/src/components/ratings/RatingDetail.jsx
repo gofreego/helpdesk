@@ -1,13 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { fetchRatingById, fetchRatingTypes, updateRating, deleteRating, createRatingReply, deleteRatingReply, fetchRatingReplies } from '../../services/rating.service';
-import { getStarRating } from '../../utils/status.utils';
-import { formatDate } from '../../utils/format.utils';
-import { hasPermission, PERMISSIONS } from '../../constants/permissions.constants';
+import { sessionManager } from '../../services';
+import { useNotification } from '@gofreego/tsutils';
+import {
+  Container, Box, Typography, Button, Card, CardContent, Grid, Chip, Divider,
+  Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText,
+  TextField, Slider, CircularProgress, IconButton, Paper, Alert
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ChatIcon from '@mui/icons-material/Chat';
+import CloseIcon from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
 
-const RatingDetail = ({ currentUser, basePath }) => {
+const RatingDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const currentUser = sessionManager.get()?.user || {};
   const [rating, setRating] = useState(null);
   const [replies, setReplies] = useState([]);
   const [newReply, setNewReply] = useState('');
@@ -21,17 +33,16 @@ const RatingDetail = ({ currentUser, basePath }) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [selectedMessageForActions, setSelectedMessageForActions] = useState(null);
   const [showDeleteRatingConfirm, setShowDeleteRatingConfirm] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState({ type: '', text: '' });
+  
   const longPressTimer = useRef(null);
   const scrollRef = useRef(null);
   const LIMIT = 10;
-
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [ratingData, entitiesData] = await Promise.all([
-          fetchRatingById(id, currentUser),
+          fetchRatingById(id),
           fetchRatingTypes()
         ]);
         const max = entitiesData.maxRating || 10;
@@ -44,12 +55,13 @@ const RatingDetail = ({ currentUser, basePath }) => {
         });
       } catch (error) {
         console.error('Error fetching rating:', error);
+        showNotification(error.message || 'Failed to load rating details', 'error');
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [id, currentUser]);
+  }, [id, showNotification]);
 
   const fetchReplies = async (isLoadMore = false) => {
     if (isLoadMore && (loadingMore || !hasMore)) return;
@@ -58,7 +70,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
     const nextPage = isLoadMore ? page + 1 : 1;
 
     try {
-      const data = await fetchRatingReplies(id, { page: nextPage, page_size: LIMIT }, currentUser);
+      const data = await fetchRatingReplies(id, nextPage, LIMIT);
       const newReplies = data.replies || [];
 
       if (isLoadMore) {
@@ -75,6 +87,7 @@ const RatingDetail = ({ currentUser, basePath }) => {
       }
     } catch (error) {
       console.error('Error fetching replies:', error);
+      showNotification(error.message || 'Failed to load replies', 'error');
     } finally {
       if (isLoadMore) setLoadingMore(false);
     }
@@ -116,318 +129,349 @@ const RatingDetail = ({ currentUser, basePath }) => {
     if (!newReply.trim()) return;
 
     try {
-      await createRatingReply(id, { message: newReply }, currentUser);
+      await createRatingReply(id, { message: newReply });
       setNewReply('');
       fetchReplies(false);
     } catch (error) {
       console.error('Error posting reply:', error);
-      setFeedbackMessage({ type: 'error', text: 'Failed to post reply' });
+      showNotification(error.message || 'Failed to post reply', 'error');
     }
   };
 
   const handleUpdate = async () => {
     try {
-      const data = await updateRating(id, editData, currentUser);
+      const data = await updateRating(id, editData);
       setRating(data.rating);
       setEditMode(false);
-      setFeedbackMessage({ type: 'success', text: 'Rating updated successfully!' });
-      setTimeout(() => setFeedbackMessage({ type: '', text: '' }), 3000);
+      showNotification('Rating updated successfully!', 'success');
     } catch (error) {
       console.error('Error updating rating:', error);
-      setFeedbackMessage({ type: 'error', text: 'Failed to update rating' });
+      showNotification(error.message || 'Failed to update rating', 'error');
     }
   };
 
   const handleDelete = async () => {
     try {
-      await deleteRating(id, currentUser);
+      await deleteRating(id);
       setShowDeleteRatingConfirm(false);
-      setFeedbackMessage({ type: 'success', text: 'Rating deleted successfully!' });
-      setTimeout(() => navigate('/ratings'), 1500);
+      showNotification('Rating deleted successfully!', 'success');
+      setTimeout(() => navigate('/helpdesk/ratings'), 1500);
     } catch (error) {
       console.error('Error deleting rating:', error);
-      setFeedbackMessage({ type: 'error', text: 'Failed to delete rating' });
+      showNotification(error.message || 'Failed to delete rating', 'error');
     }
   };
 
   const handleDeleteReply = async (replyId) => {
     try {
-      await deleteRatingReply(replyId, currentUser);
-      setFeedbackMessage({ type: 'success', text: 'Reply deleted successfully!' });
-      setTimeout(() => setFeedbackMessage({ type: '', text: '' }), 3000);
+      await deleteRatingReply(replyId);
+      showNotification('Reply deleted successfully!', 'success');
       fetchReplies(false);
     } catch (error) {
       console.error('Error deleting reply:', error);
-      setFeedbackMessage({ type: 'error', text: 'Failed to delete reply' });
+      showNotification(error.message || 'Failed to delete reply', 'error');
     }
   };
 
-
   if (loading) {
-    return <div className="card"><p>Loading...</p></div>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (!rating) {
-    return <div className="card"><p>Rating not found.</p></div>;
+    return (
+      <Container sx={{ py: 4 }}>
+        <Alert severity="warning">Rating not found.</Alert>
+      </Container>
+    );
   }
 
   return (
-    <div>
-      <div className="detail-header">
-        <div>
-          <h1>Rating Details</h1>
-          <Link to="/ratings" className="link">← Back to Ratings</Link>
-        </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          {!editMode && (
-            <>
-              <button onClick={handleShowChat} className="btn btn-secondary">
-                Chat
-              </button>
-              <button onClick={() => setEditMode(true)} className="btn btn-primary">
-                Edit Rating
-              </button>
-              <button onClick={() => setShowDeleteRatingConfirm(true)} className="btn btn-danger">
-                Delete Rating
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="card">
-        {editMode ? (
-          <div>
-            <h3 style={{ marginBottom: '1.5rem' }}>Edit Rating</h3>
-            <div className="form-group">
-              <label className="form-label">Rating (1-{maxRating})</label>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <input
-                  type="range"
-                  min="1"
-                  max={maxRating}
-                  step="0.5"
-                  value={editData.rating}
-                  onChange={(e) => setEditData({ ...editData, rating: parseFloat(e.target.value) })}
-                  style={{ flex: 1 }}
-                />
-                <span style={{ fontSize: '1.5rem', fontWeight: 600, minWidth: '40px' }}>
-                  {editData.rating}
-                </span>
-              </div>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Comment</label>
-              <textarea
-                className="form-textarea"
-                value={editData.comment}
-                onChange={(e) => setEditData({ ...editData, comment: e.target.value })}
-                rows="4"
-              />
-            </div>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button onClick={handleUpdate} className="btn btn-primary">
-                Save Changes
-              </button>
-              <button onClick={() => setEditMode(false)} className="btn btn-secondary">
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="detail-grid">
-              <div className="detail-item">
-                <span className="detail-label">Rating ID</span>
-                <span className="detail-value">{rating.id}</span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">User ID</span>
-                <span className="detail-value">{rating.userId}</span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Product ID</span>
-                <span className="detail-value">{rating.productId}</span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Entity</span>
-                <span className="detail-value">
-                  <span className="badge badge-info">{rating.entity}</span>
-                </span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Entity ID</span>
-                <span className="detail-value">{rating.entityId}</span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Rating</span>
-                <span className="detail-value" style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-                  {rating.rating}
-                </span>
-              </div>
-
-              <div className="detail-item">
-                <span className="detail-label">Created At</span>
-                <span className="detail-value">
-                  {new Date(parseInt(rating.createdAt)).toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            {rating.comment && (
-              <div style={{ marginTop: '1.5rem' }}>
-                <span className="detail-label">Comment</span>
-                <div style={{ marginTop: '0.5rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px' }}>
-                  {rating.comment}
-                </div>
-              </div>
-            )}
-          </>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box>
+          <Button 
+            startIcon={<ArrowBackIcon />} 
+            onClick={() => navigate('/helpdesk/ratings')}
+            color="inherit"
+            sx={{ mb: 1 }}
+          >
+            Back to Ratings
+          </Button>
+          <Typography variant="h4" component="h1" fontWeight="600">
+            Rating Details
+          </Typography>
+        </Box>
+        {!editMode && (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="outlined" startIcon={<ChatIcon />} onClick={handleShowChat}>
+              Chat
+            </Button>
+            <Button variant="contained" startIcon={<EditIcon />} onClick={() => setEditMode(true)}>
+              Edit
+            </Button>
+            <Button variant="contained" color="error" startIcon={<DeleteIcon />} onClick={() => setShowDeleteRatingConfirm(true)}>
+              Delete
+            </Button>
+          </Box>
         )}
-      </div>
+      </Box>
 
-      {showChat && (
-        <div className="modal-overlay" onClick={() => setShowChat(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Chat History</h3>
-              <button className="close-btn" onClick={() => setShowChat(false)}>&times;</button>
-            </div>
-            <div
-              className="modal-body"
-              onScroll={handleScroll}
-              ref={scrollRef}
-              style={{ display: 'flex', flexDirection: 'column-reverse' }}
-            >
-              {replies.length === 0 ? (
-                <div className="empty-state">
-                  <p>No replies yet. Start the conversation!</p>
-                </div>
-              ) : (
-                replies.map(reply => (
-                  <div
-                    key={reply.id}
-                    className={`chat-bubble ${reply.userId === currentUser.id ? 'bubble-sent' : 'bubble-received'}`}
-                    style={{ marginBottom: '1rem', cursor: 'pointer', userSelect: 'none' }}
+      <Card sx={{ borderRadius: 3, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+        <CardContent sx={{ p: 4 }}>
+          {editMode ? (
+            <Box>
+              <Typography variant="h6" gutterBottom>Edit Rating</Typography>
+              <Box sx={{ my: 3 }}>
+                <Typography id="rating-slider" gutterBottom color="text.secondary">
+                  Rating (1-{maxRating})
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, px: 2 }}>
+                  <Slider
+                    value={editData.rating}
+                    onChange={(e, val) => setEditData({ ...editData, rating: val })}
+                    aria-labelledby="rating-slider"
+                    valueLabelDisplay="auto"
+                    step={0.5}
+                    marks
+                    min={1}
+                    max={maxRating}
+                    sx={{ flex: 1 }}
+                  />
+                  <Typography variant="h5" fontWeight="600" sx={{ minWidth: '40px' }}>
+                    {editData.rating}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ mb: 3 }}>
+                <TextField
+                  fullWidth
+                  label="Comment"
+                  multiline
+                  rows={4}
+                  value={editData.comment}
+                  onChange={(e) => setEditData({ ...editData, comment: e.target.value })}
+                />
+              </Box>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button variant="contained" onClick={handleUpdate}>
+                  Save Changes
+                </Button>
+                <Button variant="outlined" onClick={() => setEditMode(false)}>
+                  Cancel
+                </Button>
+              </Box>
+            </Box>
+          ) : (
+            <Box>
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={8}>
+                  <Box sx={{ mb: 4 }}>
+                    <Typography variant="h6" color="text.primary" gutterBottom sx={{ fontWeight: 600 }}>
+                      Rating Information
+                    </Typography>
+                    <Divider sx={{ mb: 3 }} />
+                    <Grid container spacing={3}>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Rating ID</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>{rating.id}</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>User ID</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>{rating.userId}</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Product ID</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>{rating.productId}</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Entity</Typography>
+                        <Chip label={rating.entity} size="small" color="info" sx={{ fontWeight: 600, borderRadius: 1 }} />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Entity ID</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>{rating.entityId}</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Created At</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>{new Date(parseInt(rating.createdAt)).toLocaleString()}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+
+                  {rating.comment && (
+                    <Box>
+                      <Typography variant="h6" color="text.primary" gutterBottom sx={{ fontWeight: 600 }}>
+                        Feedback
+                      </Typography>
+                      <Divider sx={{ mb: 3 }} />
+                      <Paper elevation={0} sx={{ p: 3, bgcolor: '#f8fafc', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+                        <Typography variant="body1" sx={{ lineHeight: 1.6, color: 'text.primary' }}>
+                          "{rating.comment}"
+                        </Typography>
+                      </Paper>
+                    </Box>
+                  )}
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box sx={{ p: 3, bgcolor: 'primary.50', borderRadius: 3, border: '1px solid', borderColor: 'primary.100', textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <Typography variant="subtitle2" color="primary.main" gutterBottom sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                      Overall Rating
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContext: 'center', gap: 1, mx: 'auto', mt: 2 }}>
+                      <Typography variant="h2" fontWeight="800" color="primary.main" sx={{ lineHeight: 1 }}>
+                        {rating.rating}
+                      </Typography>
+                      <Typography variant="h5" color="primary.main" sx={{ opacity: 0.7, fontWeight: 500 }}>
+                        / {maxRating}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Delete Rating Confirmation */}
+      <Dialog open={showDeleteRatingConfirm} onClose={() => setShowDeleteRatingConfirm(false)}>
+        <DialogTitle sx={{ color: 'error.main' }}>Confirm Delete Rating</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this rating? This action <strong>cannot be undone</strong>.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowDeleteRatingConfirm(false)} color="inherit">Cancel</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">Yes, Delete</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Chat Dialog */}
+      <Dialog 
+        open={showChat} 
+        onClose={() => setShowChat(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { height: '80vh', display: 'flex', flexDirection: 'column' } }}
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          Chat History
+          <IconButton onClick={() => setShowChat(false)} size="small">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column-reverse', p: 2 }} onScroll={handleScroll} ref={scrollRef}>
+          {replies.length === 0 ? (
+            <Box sx={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+              <Typography color="text.secondary">No replies yet. Start the conversation!</Typography>
+            </Box>
+          ) : (
+            replies.map(reply => {
+              const isMine = reply.userId === currentUser.id;
+              return (
+                <Box
+                  key={reply.id}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: isMine ? 'flex-end' : 'flex-start',
+                    mb: 2
+                  }}
+                >
+                  <Paper
+                    elevation={1}
+                    sx={{
+                      p: 1.5,
+                      maxWidth: '75%',
+                      bgcolor: isMine ? 'primary.main' : 'grey.100',
+                      color: isMine ? 'primary.contrastText' : 'text.primary',
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      userSelect: 'none'
+                    }}
                     onMouseDown={() => handleLongPressStart(reply)}
                     onMouseUp={handleLongPressEnd}
                     onMouseLeave={handleLongPressEnd}
                     onTouchStart={() => handleLongPressStart(reply)}
                     onTouchEnd={handleLongPressEnd}
                   >
-                    <div className="bubble-header">
-                      <span>User: {reply.userId}</span>
-                    </div>
-                    <p>{reply.message}</p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', fontSize: '0.7rem', opacity: 0.6 }}>
-                      <span>{new Date(parseInt(reply.createdAt)).toLocaleString()}</span>
-                    </div>
-                  </div>
-                ))
-              )}
-              {loadingMore && (
-                <div style={{ textAlign: 'center', color: '#64748b', padding: '1rem', fontSize: '0.875rem' }}>
-                  Loading previous messages...
-                </div>
-              )}
-              {!hasMore && replies.length > 0 && (
-                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '1rem', fontSize: '0.875rem' }}>
-                  End of history
-                </div>
-              )}
-            </div>
-            <div className="modal-footer">
-              <form onSubmit={handleReply} style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={newReply}
-                  onChange={(e) => setNewReply(e.target.value)}
-                  placeholder="Type your reply..."
-                  style={{ marginBottom: 0 }}
-                  required
-                />
-                <button type="submit" className="btn btn-primary">Send</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-      {selectedMessageForActions && (
-        <div className="modal-overlay" onClick={() => setSelectedMessageForActions(null)} style={{ zIndex: 3000 }}>
-          <div className="modal-content" style={{ maxWidth: '300px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Message Actions</h3>
-            </div>
-            <div className="modal-body" style={{ padding: '1rem' }}>
-              <button
-                className="btn btn-danger"
-                style={{ width: '100%', marginBottom: '0.5rem' }}
-                onClick={() => {
-                  handleDeleteReply(selectedMessageForActions.id);
-                  setSelectedMessageForActions(null);
-                }}
-              >
-                Delete Message
-              </button>
-              <button
-                className="btn btn-secondary"
-                style={{ width: '100%' }}
-                onClick={() => setSelectedMessageForActions(null)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {showDeleteRatingConfirm && (
-        <div className="modal-overlay" onClick={() => setShowDeleteRatingConfirm(false)} style={{ zIndex: 3000 }}>
-          <div className="modal-content" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 style={{ color: '#ef4444' }}>Confirm Delete Rating</h3>
-            </div>
-            <div className="modal-body" style={{ padding: '1.5rem', textAlign: 'center' }}>
-              <p style={{ marginBottom: '1.5rem', fontSize: '1.1rem' }}>
-                Are you sure you want to delete this rating? This action <strong>cannot be undone</strong>.
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <button onClick={handleDelete} className="btn btn-danger" style={{ flex: 1 }}>
-                  Yes, Delete
-                </button>
-                <button onClick={() => setShowDeleteRatingConfirm(false)} className="btn btn-secondary" style={{ flex: 1 }}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+                    <Typography variant="caption" sx={{ display: 'block', mb: 0.5, opacity: 0.8, fontWeight: 600 }}>
+                      User: {reply.userId}
+                    </Typography>
+                    <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
+                      {reply.message}
+                    </Typography>
+                    <Typography variant="caption" sx={{ display: 'block', mt: 0.5, textAlign: 'right', opacity: 0.7, fontSize: '0.65rem' }}>
+                      {new Date(parseInt(reply.createdAt)).toLocaleString()}
+                    </Typography>
+                  </Paper>
+                </Box>
+              );
+            })
+          )}
+          {loadingMore && (
+            <Typography variant="caption" align="center" color="text.secondary" sx={{ display: 'block', py: 2 }}>
+              Loading previous messages...
+            </Typography>
+          )}
+          {!hasMore && replies.length > 0 && (
+            <Typography variant="caption" align="center" color="text.secondary" sx={{ display: 'block', py: 2 }}>
+              End of history
+            </Typography>
+          )}
+        </DialogContent>
+        <Box sx={{ p: 2, bgcolor: 'background.paper' }} component="form" onSubmit={handleReply}>
+          <Grid container spacing={1}>
+            <Grid item xs>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Type your reply..."
+                value={newReply}
+                onChange={(e) => setNewReply(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item>
+              <Button type="submit" variant="contained" color="primary" sx={{ height: '100%' }}>
+                <SendIcon />
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Dialog>
 
-      {feedbackMessage.text && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '2rem',
-            right: '2rem',
-            padding: '1rem 2rem',
-            background: feedbackMessage.type === 'success' ? '#10b981' : '#ef4444',
-            color: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-            zIndex: 4000,
-            animation: 'slideUp 0.3s ease-out'
-          }}
-        >
-          {feedbackMessage.text}
-        </div>
-      )}
-    </div>
+      {/* Message Action Dialog */}
+      <Dialog open={!!selectedMessageForActions} onClose={() => setSelectedMessageForActions(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Message Actions</DialogTitle>
+        <DialogContent>
+          <Button
+            fullWidth
+            variant="contained"
+            color="error"
+            onClick={() => {
+              handleDeleteReply(selectedMessageForActions.id);
+              setSelectedMessageForActions(null);
+            }}
+            sx={{ mb: 1 }}
+          >
+            Delete Message
+          </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={() => setSelectedMessageForActions(null)}
+          >
+            Cancel
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </Container>
   );
 };
 

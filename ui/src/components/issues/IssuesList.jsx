@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchIssues, fetchIssueConfig } from '../../services/issue.service';
 import { getIssueStatusBadge } from '../../utils/status.utils';
+import { useNotification } from '@gofreego/tsutils';
+import { Container } from '@mui/material';
 
-const IssuesList = ({ currentUser, basePath }) => {
+const IssuesList = () => {
+  const { showNotification } = useNotification();
   const [issues, setIssues] = useState([]);
   const [issueEntities, setIssueEntities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +24,7 @@ const IssuesList = ({ currentUser, basePath }) => {
   useEffect(() => {
     loadIssues();
     loadIssueConfig();
-  }, [currentUser]);
+  }, [showNotification]);
 
   const loadIssueConfig = async () => {
     try {
@@ -31,15 +34,17 @@ const IssuesList = ({ currentUser, basePath }) => {
       setProductIds(data.productIds || []);
     } catch (err) {
       console.error('Error fetching issue config:', err);
+      showNotification('Failed to load issue configuration', 'error');
     }
   };
 
   const loadIssues = async () => {
     try {
-      const response = await fetchIssues(filters, currentUser);
+      const response = await fetchIssues(filters);
       setIssues(response.issues);
     } catch (error) {
       console.error('Error fetching issues:', error);
+      showNotification(error.message || 'Failed to fetch issues', 'error');
     } finally {
       setLoading(false);
     }
@@ -71,16 +76,16 @@ const IssuesList = ({ currentUser, basePath }) => {
   }
 
   return (
-    <div>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       <div className="card-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1>Issues Management</h1>
             <p>Track and resolve customer issues</p>
           </div>
-          <Link to={`/issues/new`} className="btn btn-primary">
-            <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          <Link to={`/helpdesk/issues/new`} className="btn btn-primary">
+            <svg style={{ width: '16px', height: '16px', marginRight: '8px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             Create Issue
           </Link>
@@ -218,7 +223,7 @@ const IssuesList = ({ currentUser, basePath }) => {
                     <td>{renderStatusBadge(issue.status)}</td>
                     <td>{issue.userId}</td>
                     <td>
-                      <Link to={`/issues/${issue.id}`} className="btn btn-secondary" style={{ padding: '0.5rem 1rem' }}>
+                      <Link to={`/helpdesk/issues/${issue.id}`} className="btn btn-secondary" style={{ padding: '0.5rem 1rem' }}>
                         View Details
                       </Link>
                     </td>
@@ -229,7 +234,7 @@ const IssuesList = ({ currentUser, basePath }) => {
           </>
         )}
       </div>
-    </div >
+    </Container>
   );
 };
 
