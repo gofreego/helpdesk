@@ -4,11 +4,9 @@ import { ThemeProvider, SidebarLayout, NotificationProvider, LoginCallbackPage, 
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import StarIcon from '@mui/icons-material/Star';
 import BugReportIcon from '@mui/icons-material/BugReport';
-import SettingsIcon from '@mui/icons-material/Settings';
 
 import {
   Dashboard,
-  Settings,
   RatingsList,
   RatingDetail,
   IssuesList,
@@ -50,12 +48,6 @@ export default function App() {
       path: '/helpdesk/issues',
       icon: <BugReportIcon />,
     },
-    {
-      id: 'settings',
-      label: 'Settings',
-      path: '/helpdesk/settings',
-      icon: <SettingsIcon />,
-    },
   ];
 
   if (!isInitialized) {
@@ -85,7 +77,6 @@ export default function App() {
               <Route path="helpdesk/ratings/:id" element={<RatingDetail />} />
               <Route path="helpdesk/issues" element={<IssuesList />} />
               <Route path="helpdesk/issues/:id" element={<IssueDetail />} />
-              <Route path="helpdesk/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/helpdesk/dashboard" replace />} />
             </Route>
           </Routes>
