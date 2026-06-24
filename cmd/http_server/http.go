@@ -20,32 +20,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// customCORSMiddleware adds CORS headers to allow requests from the frontend
-func customCORSMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Allow requests from the React dev server
-		origin := r.Header.Get("Origin")
-		if origin == "http://localhost:3006" || origin == "http://127.0.0.1:3006" {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-		} else {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-		}
-
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-User-Id, X-User-Perms, x-user-id, x-user-perms")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Max-Age", "3600")
-
-		// Handle preflight requests
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
 type HTTPServer struct {
 	cfg       *configs.Configuration
 	uifs      http.FileSystem
@@ -139,7 +113,7 @@ func (a *HTTPServer) Run(ctx context.Context) error {
 		path := r.URL.Path
 		// Direct API and Swagger to mux
 		if strings.HasPrefix(path, "/helpdesk/v1") || strings.HasPrefix(path, "/helpdesk/swagger") {
-			customCORSMiddleware(middleware.HTTPAuthMiddleware(mux)).ServeHTTP(w, r)
+			middleware.HTTPAuthMiddleware(mux).ServeHTTP(w, r)
 			return
 		}
 
