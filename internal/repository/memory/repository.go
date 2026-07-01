@@ -115,3 +115,64 @@ func (r *MemoryRepository) DeleteIssueReply(_ context.Context, _ string) error {
 	logger.Warn(context.Background(), "DeleteIssueReply not implemented in memory repository")
 	return status.Errorf(codes.Unimplemented, "issue replies not implemented in memory repository")
 }
+
+// -- Products (not implemented in memory) --
+
+func (r *MemoryRepository) GetProduct(_ context.Context, _ int64) (*dao.Product, error) {
+	logger.Warn(context.Background(), "GetProduct not implemented in memory repository")
+	return nil, status.Errorf(codes.Unimplemented, "products not implemented in memory repository")
+}
+
+func (r *MemoryRepository) ListProducts(_ context.Context, _ *filter.ProductFilter) ([]*dao.Product, error) {
+	logger.Warn(context.Background(), "ListProducts not implemented in memory repository")
+	return nil, status.Errorf(codes.Unimplemented, "products not implemented in memory repository")
+}
+
+func (r *MemoryRepository) CreateProduct(_ context.Context, _ *dao.Product) error {
+	logger.Warn(context.Background(), "CreateProduct not implemented in memory repository")
+	return status.Errorf(codes.Unimplemented, "products not implemented in memory repository")
+}
+
+func (r *MemoryRepository) UpdateProduct(_ context.Context, _ *dao.Product) error {
+	logger.Warn(context.Background(), "UpdateProduct not implemented in memory repository")
+	return status.Errorf(codes.Unimplemented, "products not implemented in memory repository")
+}
+
+func (r *MemoryRepository) DeleteProduct(_ context.Context, _ int64) error {
+	logger.Warn(context.Background(), "DeleteProduct not implemented in memory repository")
+	return status.Errorf(codes.Unimplemented, "products not implemented in memory repository")
+}
+
+// -- Product Entities (not implemented in memory) --
+
+func (r *MemoryRepository) ListProductEntities(_ context.Context, _ *filter.ProductEntityFilter) ([]*dao.ProductEntity, error) {
+	logger.Warn(context.Background(), "ListProductEntities not implemented in memory repository")
+	return nil, status.Errorf(codes.Unimplemented, "product entities not implemented in memory repository")
+}
+
+func (r *MemoryRepository) CreateProductEntity(_ context.Context, _ *dao.ProductEntity) error {
+	logger.Warn(context.Background(), "CreateProductEntity not implemented in memory repository")
+	return status.Errorf(codes.Unimplemented, "product entities not implemented in memory repository")
+}
+
+func (r *MemoryRepository) DeleteProductEntity(_ context.Context, _ int64) error {
+	logger.Warn(context.Background(), "DeleteProductEntity not implemented in memory repository")
+	return status.Errorf(codes.Unimplemented, "product entities not implemented in memory repository")
+}
+
+// -- Product Issue Types (not implemented in memory) --
+
+func (r *MemoryRepository) ListProductIssueTypes(_ context.Context, _ *filter.ProductIssueTypeFilter) ([]*dao.ProductIssueType, error) {
+	logger.Warn(context.Background(), "ListProductIssueTypes not implemented in memory repository")
+	return nil, status.Errorf(codes.Unimplemented, "product issue types not implemented in memory repository")
+}
+
+func (r *MemoryRepository) CreateProductIssueType(_ context.Context, _ *dao.ProductIssueType) error {
+	logger.Warn(context.Background(), "CreateProductIssueType not implemented in memory repository")
+	return status.Errorf(codes.Unimplemented, "product issue types not implemented in memory repository")
+}
+
+func (r *MemoryRepository) DeleteProductIssueType(_ context.Context, _ int64) error {
+	logger.Warn(context.Background(), "DeleteProductIssueType not implemented in memory repository")
+	return status.Errorf(codes.Unimplemented, "product issue types not implemented in memory repository")
+}

@@ -46,6 +46,23 @@ type Repository interface {
 	CreateIssueReply(ctx context.Context, reply *dao.IssueReply) error
 	ListIssueReplies(ctx context.Context, f *filter.IssueReplyFilter) ([]*dao.IssueReply, error)
 	DeleteIssueReply(ctx context.Context, id string) error // soft delete
+
+	// Products
+	GetProduct(ctx context.Context, id int64) (*dao.Product, error)
+	ListProducts(ctx context.Context, f *filter.ProductFilter) ([]*dao.Product, error)
+	CreateProduct(ctx context.Context, product *dao.Product) error
+	UpdateProduct(ctx context.Context, product *dao.Product) error
+	DeleteProduct(ctx context.Context, id int64) error
+
+	// Product Entities
+	ListProductEntities(ctx context.Context, f *filter.ProductEntityFilter) ([]*dao.ProductEntity, error)
+	CreateProductEntity(ctx context.Context, entity *dao.ProductEntity) error
+	DeleteProductEntity(ctx context.Context, id int64) error
+
+	// Product Issue Types
+	ListProductIssueTypes(ctx context.Context, f *filter.ProductIssueTypeFilter) ([]*dao.ProductIssueType, error)
+	CreateProductIssueType(ctx context.Context, issueType *dao.ProductIssueType) error
+	DeleteProductIssueType(ctx context.Context, id int64) error
 }
 
 type Service struct {
@@ -399,6 +416,214 @@ func (s *Service) UpdateIssueStatus(ctx context.Context, req *helpdesk_v1.Update
 	return &helpdesk_v1.UpdateIssueStatusResponse{
 		Issue: issue.ToProto(),
 	}, nil
+}
+
+// ===== Admin Product Handlers =====
+
+func (s *Service) GetProduct(ctx context.Context, req *helpdesk_v1.GetProductRequest) (*helpdesk_v1.GetProductResponse, error) {
+	product, err := s.repo.GetProduct(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &helpdesk_v1.GetProductResponse{
+		Product: &helpdesk_v1.Product{
+			Id:          product.ID,
+			Name:        product.Name,
+			Description: product.Description,
+			IsActive:    product.IsActive,
+			CreatedAt:   product.CreatedAt,
+			UpdatedAt:   product.UpdatedAt,
+		},
+	}, nil
+}
+
+func (s *Service) ListProducts(ctx context.Context, req *helpdesk_v1.ListProductsRequest) (*helpdesk_v1.ListProductsResponse, error) {
+	f := &filter.ProductFilter{
+		Page:     int(req.Page),
+		PageSize: int(req.PageSize),
+	}
+	products, err := s.repo.ListProducts(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &helpdesk_v1.ListProductsResponse{
+		Products: make([]*helpdesk_v1.Product, 0, len(products)),
+	}
+	for _, p := range products {
+		resp.Products = append(resp.Products, &helpdesk_v1.Product{
+			Id:          p.ID,
+			Name:        p.Name,
+			Description: p.Description,
+			IsActive:    p.IsActive,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+		})
+	}
+	return resp, nil
+}
+
+func (s *Service) CreateProduct(ctx context.Context, req *helpdesk_v1.CreateProductRequest) (*helpdesk_v1.CreateProductResponse, error) {
+	product := &dao.Product{
+		ID:          req.Id,
+		Name:        req.Name,
+		Description: req.Description,
+		IsActive:    req.IsActive,
+	}
+	if err := s.repo.CreateProduct(ctx, product); err != nil {
+		return nil, err
+	}
+	return &helpdesk_v1.CreateProductResponse{
+		Product: &helpdesk_v1.Product{
+			Id:          product.ID,
+			Name:        product.Name,
+			Description: product.Description,
+			IsActive:    product.IsActive,
+			CreatedAt:   product.CreatedAt,
+			UpdatedAt:   product.UpdatedAt,
+		},
+	}, nil
+}
+
+func (s *Service) UpdateProduct(ctx context.Context, req *helpdesk_v1.UpdateProductRequest) (*helpdesk_v1.UpdateProductResponse, error) {
+	product, err := s.repo.GetProduct(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	product.Name = req.Name
+	product.Description = req.Description
+	product.IsActive = req.IsActive
+
+	if err := s.repo.UpdateProduct(ctx, product); err != nil {
+		return nil, err
+	}
+	return &helpdesk_v1.UpdateProductResponse{
+		Product: &helpdesk_v1.Product{
+			Id:          product.ID,
+			Name:        product.Name,
+			Description: product.Description,
+			IsActive:    product.IsActive,
+			CreatedAt:   product.CreatedAt,
+			UpdatedAt:   product.UpdatedAt,
+		},
+	}, nil
+}
+
+func (s *Service) DeleteProduct(ctx context.Context, req *helpdesk_v1.DeleteProductRequest) (*helpdesk_v1.DeleteProductResponse, error) {
+	if err := s.repo.DeleteProduct(ctx, req.Id); err != nil {
+		return nil, err
+	}
+	return &helpdesk_v1.DeleteProductResponse{Success: true}, nil
+}
+
+// ===== Admin Product Entity Handlers =====
+
+func (s *Service) ListProductEntities(ctx context.Context, req *helpdesk_v1.ListProductEntitiesRequest) (*helpdesk_v1.ListProductEntitiesResponse, error) {
+	f := &filter.ProductEntityFilter{
+		ProductID:  req.ProductId,
+		Page:       int(req.Page),
+		PageSize:   int(req.PageSize),
+	}
+	entities, err := s.repo.ListProductEntities(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &helpdesk_v1.ListProductEntitiesResponse{
+		Entities: make([]*helpdesk_v1.ProductEntity, 0, len(entities)),
+	}
+	for _, e := range entities {
+		resp.Entities = append(resp.Entities, &helpdesk_v1.ProductEntity{
+			Id:          e.ID,
+			ProductId:   e.ProductID,
+			EntityName:  e.EntityName,
+			Description: e.Description,
+			CreatedAt:   e.CreatedAt,
+		})
+	}
+	return resp, nil
+}
+
+func (s *Service) CreateProductEntity(ctx context.Context, req *helpdesk_v1.CreateProductEntityRequest) (*helpdesk_v1.CreateProductEntityResponse, error) {
+	entity := &dao.ProductEntity{
+		ProductID:   req.ProductId,
+		EntityName:  req.EntityName,
+		Description: req.Description,
+	}
+	if err := s.repo.CreateProductEntity(ctx, entity); err != nil {
+		return nil, err
+	}
+	return &helpdesk_v1.CreateProductEntityResponse{
+		Entity: &helpdesk_v1.ProductEntity{
+			Id:          entity.ID,
+			ProductId:   entity.ProductID,
+			EntityName:  entity.EntityName,
+			Description: entity.Description,
+			CreatedAt:   entity.CreatedAt,
+		},
+	}, nil
+}
+
+func (s *Service) DeleteProductEntity(ctx context.Context, req *helpdesk_v1.DeleteProductEntityRequest) (*helpdesk_v1.DeleteProductEntityResponse, error) {
+	if err := s.repo.DeleteProductEntity(ctx, req.Id); err != nil {
+		return nil, err
+	}
+	return &helpdesk_v1.DeleteProductEntityResponse{Success: true}, nil
+}
+
+// ===== Admin Product Issue Type Handlers =====
+
+func (s *Service) ListProductIssueTypes(ctx context.Context, req *helpdesk_v1.ListProductIssueTypesRequest) (*helpdesk_v1.ListProductIssueTypesResponse, error) {
+	f := &filter.ProductIssueTypeFilter{
+		ProductID:  req.ProductId,
+		Page:       int(req.Page),
+		PageSize:   int(req.PageSize),
+	}
+	issueTypes, err := s.repo.ListProductIssueTypes(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &helpdesk_v1.ListProductIssueTypesResponse{
+		IssueTypes: make([]*helpdesk_v1.ProductIssueType, 0, len(issueTypes)),
+	}
+	for _, it := range issueTypes {
+		resp.IssueTypes = append(resp.IssueTypes, &helpdesk_v1.ProductIssueType{
+			Id:          it.ID,
+			ProductId:   it.ProductID,
+			TypeName:    it.TypeName,
+			Description: it.Description,
+			CreatedAt:   it.CreatedAt,
+		})
+	}
+	return resp, nil
+}
+
+func (s *Service) CreateProductIssueType(ctx context.Context, req *helpdesk_v1.CreateProductIssueTypeRequest) (*helpdesk_v1.CreateProductIssueTypeResponse, error) {
+	issueType := &dao.ProductIssueType{
+		ProductID:   req.ProductId,
+		TypeName:    req.TypeName,
+		Description: req.Description,
+	}
+	if err := s.repo.CreateProductIssueType(ctx, issueType); err != nil {
+		return nil, err
+	}
+	return &helpdesk_v1.CreateProductIssueTypeResponse{
+		IssueType: &helpdesk_v1.ProductIssueType{
+			Id:          issueType.ID,
+			ProductId:   issueType.ProductID,
+			TypeName:    issueType.TypeName,
+			Description: issueType.Description,
+			CreatedAt:   issueType.CreatedAt,
+		},
+	}, nil
+}
+
+func (s *Service) DeleteProductIssueType(ctx context.Context, req *helpdesk_v1.DeleteProductIssueTypeRequest) (*helpdesk_v1.DeleteProductIssueTypeResponse, error) {
+	if err := s.repo.DeleteProductIssueType(ctx, req.Id); err != nil {
+		return nil, err
+	}
+	return &helpdesk_v1.DeleteProductIssueTypeResponse{Success: true}, nil
 }
 
 // ===== Issue Reply Handlers =====

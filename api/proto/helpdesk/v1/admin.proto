@@ -1,0 +1,142 @@
+syntax = "proto3";
+package v1;
+
+option go_package = "./helpdesk_v1";
+
+// Product represents a product/service offering
+message Product {
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    bool is_active = 4;
+    int64 created_at = 5;
+    int64 updated_at = 6;
+}
+
+// ProductEntity represents an entity type within a product (e.g., "app", "topic")
+message ProductEntity {
+    int64 id = 1;
+    int64 product_id = 2;
+    string entity_name = 3;
+    string description = 4;
+    int64 created_at = 5;
+}
+
+// ProductIssueType represents an issue type within a product
+message ProductIssueType {
+    int64 id = 1;
+    int64 product_id = 2;
+    string type_name = 3;
+    string description = 4;
+    int64 created_at = 5;
+}
+
+// --- Product Requests/Responses ---
+
+message GetProductRequest {
+    int64 id = 1;
+}
+
+message GetProductResponse {
+    Product product = 1;
+}
+
+message ListProductsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message ListProductsResponse {
+    repeated Product products = 1;
+    int32 total = 2;
+}
+
+message CreateProductRequest {
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    bool is_active = 4;
+}
+
+message CreateProductResponse {
+    Product product = 1;
+}
+
+message UpdateProductRequest {
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    bool is_active = 4;
+}
+
+message UpdateProductResponse {
+    Product product = 1;
+}
+
+message DeleteProductRequest {
+    int64 id = 1;
+}
+
+message DeleteProductResponse {
+    bool success = 1;
+}
+
+// --- Product Entity Requests/Responses ---
+
+message ListProductEntitiesRequest {
+    int64 product_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message ListProductEntitiesResponse {
+    repeated ProductEntity entities = 1;
+}
+
+message CreateProductEntityRequest {
+    int64 product_id = 1;
+    string entity_name = 2;
+    string description = 3;
+}
+
+message CreateProductEntityResponse {
+    ProductEntity entity = 1;
+}
+
+message DeleteProductEntityRequest {
+    int64 id = 1;
+}
+
+message DeleteProductEntityResponse {
+    bool success = 1;
+}
+
+// --- Product Issue Type Requests/Responses ---
+
+message ListProductIssueTypesRequest {
+    int64 product_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message ListProductIssueTypesResponse {
+    repeated ProductIssueType issue_types = 1;
+}
+
+message CreateProductIssueTypeRequest {
+    int64 product_id = 1;
+    string type_name = 2;
+    string description = 3;
+}
+
+message CreateProductIssueTypeResponse {
+    ProductIssueType issue_type = 1;
+}
+
+message DeleteProductIssueTypeRequest {
+    int64 id = 1;
+}
+
+message DeleteProductIssueTypeResponse {
+    bool success = 1;
+}

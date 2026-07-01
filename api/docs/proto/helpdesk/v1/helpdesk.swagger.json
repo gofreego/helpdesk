@@ -37,6 +37,37 @@
     "application/json"
   ],
   "paths": {
+    "/helpdesk/v1/entities/{id}": {
+      "delete": {
+        "operationId": "BaseService_DeleteProductEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteProductEntityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      }
+    },
     "/helpdesk/v1/issue-config": {
       "get": {
         "summary": "List issue configuration",
@@ -90,6 +121,37 @@
         ],
         "tags": [
           "Replies"
+        ]
+      }
+    },
+    "/helpdesk/v1/issue-types/{id}": {
+      "delete": {
+        "operationId": "BaseService_DeleteProductIssueType",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteProductIssueTypeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BaseService"
         ]
       }
     },
@@ -460,6 +522,338 @@
         ]
       }
     },
+    "/helpdesk/v1/products": {
+      "get": {
+        "operationId": "BaseService_ListProducts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListProductsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      },
+      "post": {
+        "operationId": "BaseService_CreateProduct",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateProductResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateProductRequest"
+            }
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      }
+    },
+    "/helpdesk/v1/products/{id}": {
+      "get": {
+        "summary": "--- Admin: Products ---",
+        "operationId": "BaseService_GetProduct",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetProductResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      },
+      "delete": {
+        "operationId": "BaseService_DeleteProduct",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteProductResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      },
+      "put": {
+        "operationId": "BaseService_UpdateProduct",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateProductResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceUpdateProductBody"
+            }
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      }
+    },
+    "/helpdesk/v1/products/{productId}/entities": {
+      "get": {
+        "summary": "--- Admin: Product Entities ---",
+        "operationId": "BaseService_ListProductEntities",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListProductEntitiesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      },
+      "post": {
+        "operationId": "BaseService_CreateProductEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateProductEntityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceCreateProductEntityBody"
+            }
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      }
+    },
+    "/helpdesk/v1/products/{productId}/issue-types": {
+      "get": {
+        "summary": "--- Admin: Product Issue Types ---",
+        "operationId": "BaseService_ListProductIssueTypes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListProductIssueTypesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      },
+      "post": {
+        "operationId": "BaseService_CreateProductIssueType",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateProductIssueTypeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceCreateProductIssueTypeBody"
+            }
+          }
+        ],
+        "tags": [
+          "BaseService"
+        ]
+      }
+    },
     "/helpdesk/v1/rating-config": {
       "get": {
         "summary": "Get ratings configuration",
@@ -807,6 +1201,28 @@
         }
       }
     },
+    "BaseServiceCreateProductEntityBody": {
+      "type": "object",
+      "properties": {
+        "entityName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "BaseServiceCreateProductIssueTypeBody": {
+      "type": "object",
+      "properties": {
+        "typeName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
     "BaseServiceCreateRatingReplyBody": {
       "type": "object",
       "properties": {
@@ -839,6 +1255,20 @@
         "status": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "BaseServiceUpdateProductBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "isActive": {
+          "type": "boolean"
         }
       }
     },
@@ -922,6 +1352,48 @@
         }
       }
     },
+    "v1CreateProductEntityResponse": {
+      "type": "object",
+      "properties": {
+        "entity": {
+          "$ref": "#/definitions/v1ProductEntity"
+        }
+      }
+    },
+    "v1CreateProductIssueTypeResponse": {
+      "type": "object",
+      "properties": {
+        "issueType": {
+          "$ref": "#/definitions/v1ProductIssueType"
+        }
+      }
+    },
+    "v1CreateProductRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "isActive": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1CreateProductResponse": {
+      "type": "object",
+      "properties": {
+        "product": {
+          "$ref": "#/definitions/v1Product"
+        }
+      }
+    },
     "v1CreateRatingReplyResponse": {
       "type": "object",
       "properties": {
@@ -976,6 +1448,30 @@
         }
       }
     },
+    "v1DeleteProductEntityResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1DeleteProductIssueTypeResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1DeleteProductResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
     "v1DeleteRatingReplyResponse": {
       "type": "object",
       "properties": {
@@ -997,6 +1493,14 @@
       "properties": {
         "issue": {
           "$ref": "#/definitions/v1Issue"
+        }
+      }
+    },
+    "v1GetProductResponse": {
+      "type": "object",
+      "properties": {
+        "product": {
+          "$ref": "#/definitions/v1Product"
         }
       }
     },
@@ -1163,6 +1667,46 @@
         }
       }
     },
+    "v1ListProductEntitiesResponse": {
+      "type": "object",
+      "properties": {
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ProductEntity"
+          }
+        }
+      }
+    },
+    "v1ListProductIssueTypesResponse": {
+      "type": "object",
+      "properties": {
+        "issueTypes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ProductIssueType"
+          }
+        }
+      }
+    },
+    "v1ListProductsResponse": {
+      "type": "object",
+      "properties": {
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Product"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "v1ListRatingRepliesResponse": {
       "type": "object",
       "properties": {
@@ -1186,6 +1730,81 @@
           }
         }
       }
+    },
+    "v1Product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "isActive": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "Product represents a product/service offering"
+    },
+    "v1ProductEntity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "productId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "entityName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "ProductEntity represents an entity type within a product (e.g., \"app\", \"topic\")"
+    },
+    "v1ProductIssueType": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "productId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "typeName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "ProductIssueType represents an issue type within a product"
     },
     "v1Rating": {
       "type": "object",
@@ -1273,6 +1892,14 @@
       "properties": {
         "issue": {
           "$ref": "#/definitions/v1Issue"
+        }
+      }
+    },
+    "v1UpdateProductResponse": {
+      "type": "object",
+      "properties": {
+        "product": {
+          "$ref": "#/definitions/v1Product"
         }
       }
     },

@@ -4,6 +4,7 @@ import { ThemeProvider, SidebarLayout, NotificationProvider, LoginCallbackPage, 
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import StarIcon from '@mui/icons-material/Star';
 import BugReportIcon from '@mui/icons-material/BugReport';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import {
   Dashboard,
@@ -11,6 +12,8 @@ import {
   RatingDetail,
   IssuesList,
   IssueDetail,
+  AdminProducts,
+  AdminProductDetail,
 } from './components';
 import { authService, sessionManager } from './services';
 
@@ -35,6 +38,12 @@ export default function App() {
       label: 'Dashboard',
       path: '/helpdesk/dashboard',
       icon: <DashboardIcon />,
+    },
+    {
+      id: 'products',
+      label: 'Products',
+      path: '/helpdesk/admin/products',
+      icon: <SettingsIcon />,
     },
     {
       id: 'ratings',
@@ -77,6 +86,8 @@ export default function App() {
               <Route path="helpdesk/ratings/:id" element={<RatingDetail />} />
               <Route path="helpdesk/issues" element={<IssuesList />} />
               <Route path="helpdesk/issues/:id" element={<IssueDetail />} />
+              <Route path="helpdesk/admin/products" element={<AdminProducts />} />
+              <Route path="helpdesk/admin/products/:productId" element={<AdminProductDetail />} />
               <Route path="*" element={<Navigate to="/helpdesk/dashboard" replace />} />
             </Route>
           </Routes>

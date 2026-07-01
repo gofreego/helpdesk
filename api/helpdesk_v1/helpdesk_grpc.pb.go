@@ -19,26 +19,37 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BaseService_Ping_FullMethodName              = "/v1.BaseService/Ping"
-	BaseService_CreateRating_FullMethodName      = "/v1.BaseService/CreateRating"
-	BaseService_GetRating_FullMethodName         = "/v1.BaseService/GetRating"
-	BaseService_ListRatings_FullMethodName       = "/v1.BaseService/ListRatings"
-	BaseService_UpdateRating_FullMethodName      = "/v1.BaseService/UpdateRating"
-	BaseService_DeleteRating_FullMethodName      = "/v1.BaseService/DeleteRating"
-	BaseService_GetRatingsConfig_FullMethodName  = "/v1.BaseService/GetRatingsConfig"
-	BaseService_CreateRatingReply_FullMethodName = "/v1.BaseService/CreateRatingReply"
-	BaseService_ListRatingReplies_FullMethodName = "/v1.BaseService/ListRatingReplies"
-	BaseService_DeleteRatingReply_FullMethodName = "/v1.BaseService/DeleteRatingReply"
-	BaseService_CreateIssue_FullMethodName       = "/v1.BaseService/CreateIssue"
-	BaseService_GetIssue_FullMethodName          = "/v1.BaseService/GetIssue"
-	BaseService_ListIssues_FullMethodName        = "/v1.BaseService/ListIssues"
-	BaseService_UpdateIssue_FullMethodName       = "/v1.BaseService/UpdateIssue"
-	BaseService_DeleteIssue_FullMethodName       = "/v1.BaseService/DeleteIssue"
-	BaseService_UpdateIssueStatus_FullMethodName = "/v1.BaseService/UpdateIssueStatus"
-	BaseService_ListIssueConfig_FullMethodName   = "/v1.BaseService/ListIssueConfig"
-	BaseService_CreateIssueReply_FullMethodName  = "/v1.BaseService/CreateIssueReply"
-	BaseService_ListIssueReplies_FullMethodName  = "/v1.BaseService/ListIssueReplies"
-	BaseService_DeleteIssueReply_FullMethodName  = "/v1.BaseService/DeleteIssueReply"
+	BaseService_Ping_FullMethodName                   = "/v1.BaseService/Ping"
+	BaseService_CreateRating_FullMethodName           = "/v1.BaseService/CreateRating"
+	BaseService_GetRating_FullMethodName              = "/v1.BaseService/GetRating"
+	BaseService_ListRatings_FullMethodName            = "/v1.BaseService/ListRatings"
+	BaseService_UpdateRating_FullMethodName           = "/v1.BaseService/UpdateRating"
+	BaseService_DeleteRating_FullMethodName           = "/v1.BaseService/DeleteRating"
+	BaseService_GetRatingsConfig_FullMethodName       = "/v1.BaseService/GetRatingsConfig"
+	BaseService_CreateRatingReply_FullMethodName      = "/v1.BaseService/CreateRatingReply"
+	BaseService_ListRatingReplies_FullMethodName      = "/v1.BaseService/ListRatingReplies"
+	BaseService_DeleteRatingReply_FullMethodName      = "/v1.BaseService/DeleteRatingReply"
+	BaseService_CreateIssue_FullMethodName            = "/v1.BaseService/CreateIssue"
+	BaseService_GetIssue_FullMethodName               = "/v1.BaseService/GetIssue"
+	BaseService_ListIssues_FullMethodName             = "/v1.BaseService/ListIssues"
+	BaseService_UpdateIssue_FullMethodName            = "/v1.BaseService/UpdateIssue"
+	BaseService_DeleteIssue_FullMethodName            = "/v1.BaseService/DeleteIssue"
+	BaseService_UpdateIssueStatus_FullMethodName      = "/v1.BaseService/UpdateIssueStatus"
+	BaseService_ListIssueConfig_FullMethodName        = "/v1.BaseService/ListIssueConfig"
+	BaseService_CreateIssueReply_FullMethodName       = "/v1.BaseService/CreateIssueReply"
+	BaseService_ListIssueReplies_FullMethodName       = "/v1.BaseService/ListIssueReplies"
+	BaseService_DeleteIssueReply_FullMethodName       = "/v1.BaseService/DeleteIssueReply"
+	BaseService_GetProduct_FullMethodName             = "/v1.BaseService/GetProduct"
+	BaseService_ListProducts_FullMethodName           = "/v1.BaseService/ListProducts"
+	BaseService_CreateProduct_FullMethodName          = "/v1.BaseService/CreateProduct"
+	BaseService_UpdateProduct_FullMethodName          = "/v1.BaseService/UpdateProduct"
+	BaseService_DeleteProduct_FullMethodName          = "/v1.BaseService/DeleteProduct"
+	BaseService_ListProductEntities_FullMethodName    = "/v1.BaseService/ListProductEntities"
+	BaseService_CreateProductEntity_FullMethodName    = "/v1.BaseService/CreateProductEntity"
+	BaseService_DeleteProductEntity_FullMethodName    = "/v1.BaseService/DeleteProductEntity"
+	BaseService_ListProductIssueTypes_FullMethodName  = "/v1.BaseService/ListProductIssueTypes"
+	BaseService_CreateProductIssueType_FullMethodName = "/v1.BaseService/CreateProductIssueType"
+	BaseService_DeleteProductIssueType_FullMethodName = "/v1.BaseService/DeleteProductIssueType"
 )
 
 // BaseServiceClient is the client API for BaseService service.
@@ -70,6 +81,20 @@ type BaseServiceClient interface {
 	CreateIssueReply(ctx context.Context, in *CreateIssueReplyRequest, opts ...grpc.CallOption) (*CreateIssueReplyResponse, error)
 	ListIssueReplies(ctx context.Context, in *ListIssueRepliesRequest, opts ...grpc.CallOption) (*ListIssueRepliesResponse, error)
 	DeleteIssueReply(ctx context.Context, in *DeleteIssueReplyRequest, opts ...grpc.CallOption) (*DeleteIssueReplyResponse, error)
+	// --- Admin: Products ---
+	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
+	ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error)
+	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
+	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*UpdateProductResponse, error)
+	DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*DeleteProductResponse, error)
+	// --- Admin: Product Entities ---
+	ListProductEntities(ctx context.Context, in *ListProductEntitiesRequest, opts ...grpc.CallOption) (*ListProductEntitiesResponse, error)
+	CreateProductEntity(ctx context.Context, in *CreateProductEntityRequest, opts ...grpc.CallOption) (*CreateProductEntityResponse, error)
+	DeleteProductEntity(ctx context.Context, in *DeleteProductEntityRequest, opts ...grpc.CallOption) (*DeleteProductEntityResponse, error)
+	// --- Admin: Product Issue Types ---
+	ListProductIssueTypes(ctx context.Context, in *ListProductIssueTypesRequest, opts ...grpc.CallOption) (*ListProductIssueTypesResponse, error)
+	CreateProductIssueType(ctx context.Context, in *CreateProductIssueTypeRequest, opts ...grpc.CallOption) (*CreateProductIssueTypeResponse, error)
+	DeleteProductIssueType(ctx context.Context, in *DeleteProductIssueTypeRequest, opts ...grpc.CallOption) (*DeleteProductIssueTypeResponse, error)
 }
 
 type baseServiceClient struct {
@@ -280,6 +305,116 @@ func (c *baseServiceClient) DeleteIssueReply(ctx context.Context, in *DeleteIssu
 	return out, nil
 }
 
+func (c *baseServiceClient) GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProductResponse)
+	err := c.cc.Invoke(ctx, BaseService_GetProduct_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListProductsResponse)
+	err := c.cc.Invoke(ctx, BaseService_ListProducts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateProductResponse)
+	err := c.cc.Invoke(ctx, BaseService_CreateProduct_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*UpdateProductResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateProductResponse)
+	err := c.cc.Invoke(ctx, BaseService_UpdateProduct_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*DeleteProductResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteProductResponse)
+	err := c.cc.Invoke(ctx, BaseService_DeleteProduct_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) ListProductEntities(ctx context.Context, in *ListProductEntitiesRequest, opts ...grpc.CallOption) (*ListProductEntitiesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListProductEntitiesResponse)
+	err := c.cc.Invoke(ctx, BaseService_ListProductEntities_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) CreateProductEntity(ctx context.Context, in *CreateProductEntityRequest, opts ...grpc.CallOption) (*CreateProductEntityResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateProductEntityResponse)
+	err := c.cc.Invoke(ctx, BaseService_CreateProductEntity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) DeleteProductEntity(ctx context.Context, in *DeleteProductEntityRequest, opts ...grpc.CallOption) (*DeleteProductEntityResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteProductEntityResponse)
+	err := c.cc.Invoke(ctx, BaseService_DeleteProductEntity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) ListProductIssueTypes(ctx context.Context, in *ListProductIssueTypesRequest, opts ...grpc.CallOption) (*ListProductIssueTypesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListProductIssueTypesResponse)
+	err := c.cc.Invoke(ctx, BaseService_ListProductIssueTypes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) CreateProductIssueType(ctx context.Context, in *CreateProductIssueTypeRequest, opts ...grpc.CallOption) (*CreateProductIssueTypeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateProductIssueTypeResponse)
+	err := c.cc.Invoke(ctx, BaseService_CreateProductIssueType_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) DeleteProductIssueType(ctx context.Context, in *DeleteProductIssueTypeRequest, opts ...grpc.CallOption) (*DeleteProductIssueTypeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteProductIssueTypeResponse)
+	err := c.cc.Invoke(ctx, BaseService_DeleteProductIssueType_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BaseServiceServer is the server API for BaseService service.
 // All implementations must embed UnimplementedBaseServiceServer
 // for forward compatibility.
@@ -309,6 +444,20 @@ type BaseServiceServer interface {
 	CreateIssueReply(context.Context, *CreateIssueReplyRequest) (*CreateIssueReplyResponse, error)
 	ListIssueReplies(context.Context, *ListIssueRepliesRequest) (*ListIssueRepliesResponse, error)
 	DeleteIssueReply(context.Context, *DeleteIssueReplyRequest) (*DeleteIssueReplyResponse, error)
+	// --- Admin: Products ---
+	GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error)
+	ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error)
+	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
+	UpdateProduct(context.Context, *UpdateProductRequest) (*UpdateProductResponse, error)
+	DeleteProduct(context.Context, *DeleteProductRequest) (*DeleteProductResponse, error)
+	// --- Admin: Product Entities ---
+	ListProductEntities(context.Context, *ListProductEntitiesRequest) (*ListProductEntitiesResponse, error)
+	CreateProductEntity(context.Context, *CreateProductEntityRequest) (*CreateProductEntityResponse, error)
+	DeleteProductEntity(context.Context, *DeleteProductEntityRequest) (*DeleteProductEntityResponse, error)
+	// --- Admin: Product Issue Types ---
+	ListProductIssueTypes(context.Context, *ListProductIssueTypesRequest) (*ListProductIssueTypesResponse, error)
+	CreateProductIssueType(context.Context, *CreateProductIssueTypeRequest) (*CreateProductIssueTypeResponse, error)
+	DeleteProductIssueType(context.Context, *DeleteProductIssueTypeRequest) (*DeleteProductIssueTypeResponse, error)
 	mustEmbedUnimplementedBaseServiceServer()
 }
 
@@ -378,6 +527,39 @@ func (UnimplementedBaseServiceServer) ListIssueReplies(context.Context, *ListIss
 }
 func (UnimplementedBaseServiceServer) DeleteIssueReply(context.Context, *DeleteIssueReplyRequest) (*DeleteIssueReplyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIssueReply not implemented")
+}
+func (UnimplementedBaseServiceServer) GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
+}
+func (UnimplementedBaseServiceServer) ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListProducts not implemented")
+}
+func (UnimplementedBaseServiceServer) CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
+}
+func (UnimplementedBaseServiceServer) UpdateProduct(context.Context, *UpdateProductRequest) (*UpdateProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProduct not implemented")
+}
+func (UnimplementedBaseServiceServer) DeleteProduct(context.Context, *DeleteProductRequest) (*DeleteProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProduct not implemented")
+}
+func (UnimplementedBaseServiceServer) ListProductEntities(context.Context, *ListProductEntitiesRequest) (*ListProductEntitiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListProductEntities not implemented")
+}
+func (UnimplementedBaseServiceServer) CreateProductEntity(context.Context, *CreateProductEntityRequest) (*CreateProductEntityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProductEntity not implemented")
+}
+func (UnimplementedBaseServiceServer) DeleteProductEntity(context.Context, *DeleteProductEntityRequest) (*DeleteProductEntityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProductEntity not implemented")
+}
+func (UnimplementedBaseServiceServer) ListProductIssueTypes(context.Context, *ListProductIssueTypesRequest) (*ListProductIssueTypesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListProductIssueTypes not implemented")
+}
+func (UnimplementedBaseServiceServer) CreateProductIssueType(context.Context, *CreateProductIssueTypeRequest) (*CreateProductIssueTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProductIssueType not implemented")
+}
+func (UnimplementedBaseServiceServer) DeleteProductIssueType(context.Context, *DeleteProductIssueTypeRequest) (*DeleteProductIssueTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProductIssueType not implemented")
 }
 func (UnimplementedBaseServiceServer) mustEmbedUnimplementedBaseServiceServer() {}
 func (UnimplementedBaseServiceServer) testEmbeddedByValue()                     {}
@@ -760,6 +942,204 @@ func _BaseService_DeleteIssueReply_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BaseService_GetProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).GetProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_GetProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).GetProduct(ctx, req.(*GetProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_ListProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListProductsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).ListProducts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_ListProducts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).ListProducts(ctx, req.(*ListProductsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_CreateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).CreateProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_CreateProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).CreateProduct(ctx, req.(*CreateProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_UpdateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).UpdateProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_UpdateProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).UpdateProduct(ctx, req.(*UpdateProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_DeleteProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).DeleteProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_DeleteProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).DeleteProduct(ctx, req.(*DeleteProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_ListProductEntities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListProductEntitiesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).ListProductEntities(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_ListProductEntities_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).ListProductEntities(ctx, req.(*ListProductEntitiesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_CreateProductEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProductEntityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).CreateProductEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_CreateProductEntity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).CreateProductEntity(ctx, req.(*CreateProductEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_DeleteProductEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProductEntityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).DeleteProductEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_DeleteProductEntity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).DeleteProductEntity(ctx, req.(*DeleteProductEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_ListProductIssueTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListProductIssueTypesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).ListProductIssueTypes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_ListProductIssueTypes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).ListProductIssueTypes(ctx, req.(*ListProductIssueTypesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_CreateProductIssueType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProductIssueTypeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).CreateProductIssueType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_CreateProductIssueType_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).CreateProductIssueType(ctx, req.(*CreateProductIssueTypeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_DeleteProductIssueType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProductIssueTypeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).DeleteProductIssueType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_DeleteProductIssueType_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).DeleteProductIssueType(ctx, req.(*DeleteProductIssueTypeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BaseService_ServiceDesc is the grpc.ServiceDesc for BaseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -846,6 +1226,50 @@ var BaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteIssueReply",
 			Handler:    _BaseService_DeleteIssueReply_Handler,
+		},
+		{
+			MethodName: "GetProduct",
+			Handler:    _BaseService_GetProduct_Handler,
+		},
+		{
+			MethodName: "ListProducts",
+			Handler:    _BaseService_ListProducts_Handler,
+		},
+		{
+			MethodName: "CreateProduct",
+			Handler:    _BaseService_CreateProduct_Handler,
+		},
+		{
+			MethodName: "UpdateProduct",
+			Handler:    _BaseService_UpdateProduct_Handler,
+		},
+		{
+			MethodName: "DeleteProduct",
+			Handler:    _BaseService_DeleteProduct_Handler,
+		},
+		{
+			MethodName: "ListProductEntities",
+			Handler:    _BaseService_ListProductEntities_Handler,
+		},
+		{
+			MethodName: "CreateProductEntity",
+			Handler:    _BaseService_CreateProductEntity_Handler,
+		},
+		{
+			MethodName: "DeleteProductEntity",
+			Handler:    _BaseService_DeleteProductEntity_Handler,
+		},
+		{
+			MethodName: "ListProductIssueTypes",
+			Handler:    _BaseService_ListProductIssueTypes_Handler,
+		},
+		{
+			MethodName: "CreateProductIssueType",
+			Handler:    _BaseService_CreateProductIssueType_Handler,
+		},
+		{
+			MethodName: "DeleteProductIssueType",
+			Handler:    _BaseService_DeleteProductIssueType_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
