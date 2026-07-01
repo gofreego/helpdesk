@@ -13,11 +13,7 @@ import (
 )
 
 type Config struct {
-	RatingEntities    []string `yaml:"RatingEntities"`
-	IssueEntities     []string `yaml:"IssueEntities"`
-	IssueTypes        []string `yaml:"IssueTypes"`
-	AllowedProductIds []int    `yaml:"AllowedProductIds"`
-	MaxRating         float32  `yaml:"MaxRating"`
+	MaxRating float32 `yaml:"MaxRating"`
 }
 
 type Repository interface {
@@ -78,31 +74,114 @@ func NewService(ctx context.Context, cfg *Config, repo Repository) *Service {
 	}
 }
 
+// validateProduct checks that a product exists and is active.
+func (s *Service) validateProduct(ctx context.Context, productID int32) error {
+	product, err := s.repo.GetProduct(ctx, int64(productID))
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return status.Errorf(codes.InvalidArgument, "invalid product id: %d", productID)
+		}
+		return err
+	}
+	if !product.IsActive {
+		return status.Errorf(codes.InvalidArgument, "invalid product id: %d", productID)
+	}
+	return nil
+}
+
+// validateProductEntity checks that an entity is registered for the given product.
+func (s *Service) validateProductEntity(ctx context.Context, productID int32, entity string) error {
+	entities, err := s.repo.ListProductEntities(ctx, &filter.ProductEntityFilter{
+		ProductID: int64(productID),
+		PageSize:  constants.MaxPageSize,
+	})
+	if err != nil {
+		return err
+	}
+	names := make([]string, 0, len(entities))
+	for _, e := range entities {
+		names = append(names, e.EntityName)
+		if e.EntityName == entity {
+			return nil
+		}
+	}
+	return status.Errorf(codes.InvalidArgument, "invalid entity: %s. allowed entities: %v", entity, names)
+}
+
+// validateProductIssueType checks that an issue type is registered for the given product.
+func (s *Service) validateProductIssueType(ctx context.Context, productID int32, issueType string) error {
+	types, err := s.repo.ListProductIssueTypes(ctx, &filter.ProductIssueTypeFilter{
+		ProductID: int64(productID),
+		PageSize:  constants.MaxPageSize,
+	})
+	if err != nil {
+		return err
+	}
+	names := make([]string, 0, len(types))
+	for _, t := range types {
+		names = append(names, t.TypeName)
+		if t.TypeName == issueType {
+			return nil
+		}
+	}
+	return status.Errorf(codes.InvalidArgument, "invalid issue type: %s. allowed types: %v", issueType, names)
+}
+
+// aggregateProductConfig returns active product IDs and the union of entity/issue-type
+// names registered across those products.
+func (s *Service) aggregateProductConfig(ctx context.Context) (productIDs []int32, entityNames []string, issueTypeNames []string, err error) {
+	products, err := s.repo.ListProducts(ctx, &filter.ProductFilter{PageSize: constants.MaxPageSize})
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	entitySet := make(map[string]struct{})
+	typeSet := make(map[string]struct{})
+
+	for _, p := range products {
+		if !p.IsActive {
+			continue
+		}
+		productIDs = append(productIDs, int32(p.ID))
+
+		entities, err := s.repo.ListProductEntities(ctx, &filter.ProductEntityFilter{ProductID: p.ID, PageSize: constants.MaxPageSize})
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		for _, e := range entities {
+			entitySet[e.EntityName] = struct{}{}
+		}
+
+		types, err := s.repo.ListProductIssueTypes(ctx, &filter.ProductIssueTypeFilter{ProductID: p.ID, PageSize: constants.MaxPageSize})
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		for _, t := range types {
+			typeSet[t.TypeName] = struct{}{}
+		}
+	}
+
+	entityNames = make([]string, 0, len(entitySet))
+	for name := range entitySet {
+		entityNames = append(entityNames, name)
+	}
+	issueTypeNames = make([]string, 0, len(typeSet))
+	for name := range typeSet {
+		issueTypeNames = append(issueTypeNames, name)
+	}
+
+	return productIDs, entityNames, issueTypeNames, nil
+}
+
 // ===== Rating Handlers =====
 
 func (s *Service) CreateRating(ctx context.Context, req *helpdesk_v1.CreateRatingRequest) (*helpdesk_v1.CreateRatingResponse, error) {
-	// Validate product ID
-	allowedProduct := false
-	for _, id := range s.cfg.AllowedProductIds {
-		if int32(id) == req.ProductId {
-			allowedProduct = true
-			break
-		}
-	}
-	if !allowedProduct {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid product id: %d", req.ProductId)
+	if err := s.validateProduct(ctx, req.ProductId); err != nil {
+		return nil, err
 	}
 
-	// Validate rating entity
-	allowed := false
-	for _, t := range s.cfg.RatingEntities {
-		if t == req.Entity {
-			allowed = true
-			break
-		}
-	}
-	if !allowed {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid rating entity: %s. allowed entities: %v", req.Entity, s.cfg.RatingEntities)
+	if err := s.validateProductEntity(ctx, req.ProductId, req.Entity); err != nil {
+		return nil, err
 	}
 
 	if req.Rating < 1 || req.Rating > s.cfg.MaxRating {
@@ -186,12 +265,12 @@ func (s *Service) DeleteRating(ctx context.Context, req *helpdesk_v1.DeleteRatin
 }
 
 func (s *Service) GetRatingsConfig(ctx context.Context, req *helpdesk_v1.GetRatingsConfigRequest) (*helpdesk_v1.GetRatingsConfigResponse, error) {
-	productIDs := make([]int32, len(s.cfg.AllowedProductIds))
-	for i, id := range s.cfg.AllowedProductIds {
-		productIDs[i] = int32(id)
+	productIDs, entities, _, err := s.aggregateProductConfig(ctx)
+	if err != nil {
+		return nil, err
 	}
 	return &helpdesk_v1.GetRatingsConfigResponse{
-		Entities:   s.cfg.RatingEntities,
+		Entities:   entities,
 		MaxRating:  s.cfg.MaxRating,
 		ProductIds: productIDs,
 	}, nil
@@ -252,44 +331,20 @@ func (s *Service) DeleteRatingReply(ctx context.Context, req *helpdesk_v1.Delete
 // ===== Issue Handlers =====
 
 func (s *Service) CreateIssue(ctx context.Context, req *helpdesk_v1.CreateIssueRequest) (*helpdesk_v1.CreateIssueResponse, error) {
-	// Validate product ID
-	allowedProduct := false
-	for _, id := range s.cfg.AllowedProductIds {
-		if int32(id) == req.ProductId {
-			allowedProduct = true
-			break
-		}
-	}
-	if !allowedProduct {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid product id: %d", req.ProductId)
+	if err := s.validateProduct(ctx, req.ProductId); err != nil {
+		return nil, err
 	}
 
 	if req.IssueType == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "issue_type is required")
 	}
 
-	// Validate issue type
-	allowedType := false
-	for _, t := range s.cfg.IssueTypes {
-		if t == req.IssueType {
-			allowedType = true
-			break
-		}
-	}
-	if !allowedType {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid issue type: %s. allowed types: %v", req.IssueType, s.cfg.IssueTypes)
+	if err := s.validateProductIssueType(ctx, req.ProductId, req.IssueType); err != nil {
+		return nil, err
 	}
 
-	// Validate issue entity
-	allowedEntity := false
-	for _, t := range s.cfg.IssueEntities {
-		if t == req.Entity {
-			allowedEntity = true
-			break
-		}
-	}
-	if !allowedEntity {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid issue entity: %s. allowed entities: %v", req.Entity, s.cfg.IssueEntities)
+	if err := s.validateProductEntity(ctx, req.ProductId, req.Entity); err != nil {
+		return nil, err
 	}
 
 	userID, err := auth.GetUserID(ctx)
@@ -352,16 +407,8 @@ func (s *Service) UpdateIssue(ctx context.Context, req *helpdesk_v1.UpdateIssueR
 	existing.Status = constants.IssueStatus(req.Status)
 
 	if req.IssueType != "" {
-		// Validate issue type
-		allowedType := false
-		for _, t := range s.cfg.IssueTypes {
-			if t == req.IssueType {
-				allowedType = true
-				break
-			}
-		}
-		if !allowedType {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid issue type: %s. allowed types: %v", req.IssueType, s.cfg.IssueTypes)
+		if err := s.validateProductIssueType(ctx, existing.ProductID, req.IssueType); err != nil {
+			return nil, err
 		}
 		existing.IssueType = req.IssueType
 	}
@@ -386,13 +433,13 @@ func (s *Service) DeleteIssue(ctx context.Context, req *helpdesk_v1.DeleteIssueR
 }
 
 func (s *Service) ListIssueConfig(ctx context.Context, req *helpdesk_v1.ListIssueConfigRequest) (*helpdesk_v1.ListIssueConfigResponse, error) {
-	productIDs := make([]int32, len(s.cfg.AllowedProductIds))
-	for i, id := range s.cfg.AllowedProductIds {
-		productIDs[i] = int32(id)
+	productIDs, entities, types, err := s.aggregateProductConfig(ctx)
+	if err != nil {
+		return nil, err
 	}
 	return &helpdesk_v1.ListIssueConfigResponse{
-		Entities:   s.cfg.IssueEntities,
-		Types:      s.cfg.IssueTypes,
+		Entities:   entities,
+		Types:      types,
 		ProductIds: productIDs,
 	}, nil
 }

@@ -2,9 +2,14 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
+	"strconv"
 
+	"github.com/gofreego/goutils/logger"
 	"github.com/gofreego/helpdesk/internal/models/dao"
 	"github.com/gofreego/helpdesk/internal/models/filter"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (r *PostgresRepository) GetProduct(ctx context.Context, id int64) (*dao.Product, error) {
@@ -13,8 +18,13 @@ func (r *PostgresRepository) GetProduct(ctx context.Context, id int64) (*dao.Pro
 		id,
 	)
 	product := &dao.Product{}
-	if err := product.Scan(row); err != nil {
-		return nil, err
+	err := product.Scan(row)
+	if err == sql.ErrNoRows {
+		return nil, status.Errorf(codes.NotFound, "product not found")
+	}
+	if err != nil {
+		logger.Error(ctx, "failed to get product: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get product: %v", err)
 	}
 	return product, nil
 }
@@ -22,26 +32,27 @@ func (r *PostgresRepository) GetProduct(ctx context.Context, id int64) (*dao.Pro
 func (r *PostgresRepository) ListProducts(ctx context.Context, f *filter.ProductFilter) ([]*dao.Product, error) {
 	f.WithDefaults()
 
-	query := "SELECT id, name, description, is_active, created_at, updated_at FROM products WHERE is_active = true"
+	query := "SELECT id, name, description, is_active, created_at, updated_at FROM products WHERE 1=1"
 	args := []any{}
 
 	if f.ID > 0 {
 		args = append(args, f.ID)
-		query += " AND id = $" + string(rune(len(args)))
+		query += " AND id = $" + strconv.Itoa(len(args))
 	}
 	if f.Name != "" {
 		args = append(args, "%"+f.Name+"%")
-		query += " AND name ILIKE $" + string(rune(len(args)))
+		query += " AND name ILIKE $" + strconv.Itoa(len(args))
 	}
 
 	args = append(args, f.PageSize)
-	query += " ORDER BY created_at DESC LIMIT $" + string(rune(len(args)))
+	query += " ORDER BY created_at DESC LIMIT $" + strconv.Itoa(len(args))
 	args = append(args, f.Offset())
-	query += " OFFSET $" + string(rune(len(args)))
+	query += " OFFSET $" + strconv.Itoa(len(args))
 
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		logger.Error(ctx, "failed to list products: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list products: %v", err)
 	}
 	defer rows.Close()
 
@@ -49,12 +60,17 @@ func (r *PostgresRepository) ListProducts(ctx context.Context, f *filter.Product
 	for rows.Next() {
 		product := &dao.Product{}
 		if err := product.Scan(rows); err != nil {
-			return nil, err
+			logger.Error(ctx, "failed to scan product: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to scan product: %v", err)
 		}
 		products = append(products, product)
 	}
+	if err := rows.Err(); err != nil {
+		logger.Error(ctx, "failed to list products: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list products: %v", err)
+	}
 
-	return products, rows.Err()
+	return products, nil
 }
 
 func (r *PostgresRepository) CreateProduct(ctx context.Context, product *dao.Product) error {
@@ -62,18 +78,46 @@ func (r *PostgresRepository) CreateProduct(ctx context.Context, product *dao.Pro
 		"INSERT INTO products (id, name, description, is_active) VALUES ($1, $2, $3, $4)",
 		product.ID, product.Name, product.Description, product.IsActive,
 	)
-	return err
+	if err != nil {
+		logger.Error(ctx, "failed to create product: %v", err)
+		return status.Errorf(codes.Internal, "failed to create product: %v", err)
+	}
+	return nil
 }
 
 func (r *PostgresRepository) UpdateProduct(ctx context.Context, product *dao.Product) error {
-	_, err := r.db.ExecContext(ctx,
+	result, err := r.db.ExecContext(ctx,
 		"UPDATE products SET name = $1, description = $2, is_active = $3, updated_at = (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT WHERE id = $4",
 		product.Name, product.Description, product.IsActive, product.ID,
 	)
-	return err
+	if err != nil {
+		logger.Error(ctx, "failed to update product: %v", err)
+		return status.Errorf(codes.Internal, "failed to update product: %v", err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		logger.Error(ctx, "failed to update product: %v", err)
+		return status.Errorf(codes.Internal, "failed to update product: %v", err)
+	}
+	if rows == 0 {
+		return status.Errorf(codes.NotFound, "product not found")
+	}
+	return nil
 }
 
 func (r *PostgresRepository) DeleteProduct(ctx context.Context, id int64) error {
-	_, err := r.db.ExecContext(ctx, "DELETE FROM products WHERE id = $1", id)
-	return err
+	result, err := r.db.ExecContext(ctx, "DELETE FROM products WHERE id = $1", id)
+	if err != nil {
+		logger.Error(ctx, "failed to delete product: %v", err)
+		return status.Errorf(codes.Internal, "failed to delete product: %v", err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		logger.Error(ctx, "failed to delete product: %v", err)
+		return status.Errorf(codes.Internal, "failed to delete product: %v", err)
+	}
+	if rows == 0 {
+		return status.Errorf(codes.NotFound, "product not found")
+	}
+	return nil
 }

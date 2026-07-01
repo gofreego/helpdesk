@@ -35,10 +35,6 @@ Repository:
     ConnMaxLifetime: 30m
     ConnMaxIdleTime: 5m
 Service:
-  RatingEntities: ["app", "topic", "question"]
-  IssueEntities: ["app", "topic", "question"]
-  IssueTypes: ["issue", "improvement", "other"]
-  AllowedProductIds: [101]
   MaxRating: 5
 Debug:
   Enabled: true
