@@ -17,12 +17,13 @@ type Issue struct {
 	CreatedAt   int64                 // Unix epoch milliseconds
 	UpdatedAt   int64                 // Unix epoch milliseconds
 	IssueType   string
+	Priority    constants.IssuePriority // 0=unset, 1=low, 2=medium, 3=high, 4=urgent
 }
 
 func (i *Issue) Scan(row interface {
 	Scan(dest ...interface{}) error
 }) error {
-	return row.Scan(&i.ID, &i.UserID, &i.ProductID, &i.Entity, &i.EntityID, &i.Title, &i.Description, &i.Status, &i.CreatedAt, &i.UpdatedAt, &i.IssueType)
+	return row.Scan(&i.ID, &i.UserID, &i.ProductID, &i.Entity, &i.EntityID, &i.Title, &i.Description, &i.Status, &i.CreatedAt, &i.UpdatedAt, &i.IssueType, &i.Priority)
 }
 
 // ToProto converts DAO Issue to proto Issue
@@ -42,6 +43,7 @@ func (i *Issue) ToProto() *helpdesk_v1.Issue {
 		CreatedAt:   i.CreatedAt,
 		UpdatedAt:   i.UpdatedAt,
 		IssueType:   i.IssueType,
+		Priority:    int32(i.Priority),
 	}
 }
 
@@ -62,6 +64,7 @@ func FromProtoIssue(p *helpdesk_v1.Issue) *Issue {
 		CreatedAt:   p.CreatedAt,
 		UpdatedAt:   p.UpdatedAt,
 		IssueType:   p.IssueType,
+		Priority:    constants.IssuePriority(p.Priority),
 	}
 }
 

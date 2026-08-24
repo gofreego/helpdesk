@@ -11,6 +11,7 @@ type IssueFilter struct {
 	Entity    string
 	EntityID  string
 	Status    int // 0 means no filter, otherwise use status constants
+	Priority  int // 0 means no filter, otherwise use priority constants
 	Page      int
 	PageSize  int
 	IssueType string
@@ -43,6 +44,7 @@ func FromProtoListIssuesRequest(req *helpdesk_v1.ListIssuesRequest) *IssueFilter
 		Entity:    req.Entity,
 		EntityID:  req.EntityId,
 		Status:    int(req.Status),
+		Priority:  int(req.Priority),
 		Page:      int(req.Page),
 		PageSize:  int(req.PageSize),
 		IssueType: req.IssueType,

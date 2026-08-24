@@ -272,6 +272,18 @@ service BaseService {
         };
     }
 
+    rpc UpdateIssuePriority (UpdateIssuePriorityRequest) returns (UpdateIssuePriorityResponse) {
+        option (google.api.http) = {
+            patch: "/helpdesk/v1/issues/{id}/priority"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "Update issue priority"
+            description: "Update the priority of an issue (Admin only)."
+        };
+    }
+
     rpc ListIssueConfig (ListIssueConfigRequest) returns (ListIssueConfigResponse) {
         option (google.api.http) = {
             get: "/helpdesk/v1/issue-config"

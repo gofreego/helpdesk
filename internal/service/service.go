@@ -465,6 +465,27 @@ func (s *Service) UpdateIssueStatus(ctx context.Context, req *helpdesk_v1.Update
 	}, nil
 }
 
+func (s *Service) UpdateIssuePriority(ctx context.Context, req *helpdesk_v1.UpdateIssuePriorityRequest) (*helpdesk_v1.UpdateIssuePriorityResponse, error) {
+	if err := auth.RequirePermission(ctx, constants.PermissionManageIssue); err != nil {
+		return nil, err
+	}
+
+	issue, err := s.repo.GetIssue(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	issue.Priority = constants.IssuePriority(req.Priority)
+
+	if err := s.repo.UpdateIssue(ctx, issue); err != nil {
+		return nil, err
+	}
+
+	return &helpdesk_v1.UpdateIssuePriorityResponse{
+		Issue: issue.ToProto(),
+	}, nil
+}
+
 // ===== Admin Product Handlers =====
 
 func (s *Service) GetProduct(ctx context.Context, req *helpdesk_v1.GetProductRequest) (*helpdesk_v1.GetProductResponse, error) {

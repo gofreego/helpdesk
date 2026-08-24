@@ -35,6 +35,7 @@ type Issue struct {
 	CreatedAt     int64                  `protobuf:"varint,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     int64                  `protobuf:"varint,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	IssueType     string                 `protobuf:"bytes,13,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
+	Priority      int32                  `protobuf:"varint,14,opt,name=priority,proto3" json:"priority,omitempty"` // 0=unset, 1=low, 2=medium, 3=high, 4=urgent
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -144,6 +145,13 @@ func (x *Issue) GetIssueType() string {
 		return x.IssueType
 	}
 	return ""
+}
+
+func (x *Issue) GetPriority() int32 {
+	if x != nil {
+		return x.Priority
+	}
+	return 0
 }
 
 // IssueReply represents a reply in an issue conversation
@@ -465,6 +473,7 @@ type ListIssuesRequest struct {
 	Page          int32                  `protobuf:"varint,6,opt,name=page,proto3" json:"page,omitempty"`
 	PageSize      int32                  `protobuf:"varint,7,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	IssueType     string                 `protobuf:"bytes,13,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
+	Priority      int32                  `protobuf:"varint,14,opt,name=priority,proto3" json:"priority,omitempty"` // 0 = no filter
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -553,6 +562,13 @@ func (x *ListIssuesRequest) GetIssueType() string {
 		return x.IssueType
 	}
 	return ""
+}
+
+func (x *ListIssuesRequest) GetPriority() int32 {
+	if x != nil {
+		return x.Priority
+	}
+	return 0
 }
 
 type ListIssuesResponse struct {
@@ -1191,6 +1207,102 @@ func (x *UpdateIssueStatusResponse) GetIssue() *Issue {
 	return nil
 }
 
+type UpdateIssuePriorityRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Priority      int32                  `protobuf:"varint,2,opt,name=priority,proto3" json:"priority,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateIssuePriorityRequest) Reset() {
+	*x = UpdateIssuePriorityRequest{}
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateIssuePriorityRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateIssuePriorityRequest) ProtoMessage() {}
+
+func (x *UpdateIssuePriorityRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateIssuePriorityRequest.ProtoReflect.Descriptor instead.
+func (*UpdateIssuePriorityRequest) Descriptor() ([]byte, []int) {
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *UpdateIssuePriorityRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateIssuePriorityRequest) GetPriority() int32 {
+	if x != nil {
+		return x.Priority
+	}
+	return 0
+}
+
+type UpdateIssuePriorityResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Issue         *Issue                 `protobuf:"bytes,1,opt,name=issue,proto3" json:"issue,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateIssuePriorityResponse) Reset() {
+	*x = UpdateIssuePriorityResponse{}
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateIssuePriorityResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateIssuePriorityResponse) ProtoMessage() {}
+
+func (x *UpdateIssuePriorityResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateIssuePriorityResponse.ProtoReflect.Descriptor instead.
+func (*UpdateIssuePriorityResponse) Descriptor() ([]byte, []int) {
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *UpdateIssuePriorityResponse) GetIssue() *Issue {
+	if x != nil {
+		return x.Issue
+	}
+	return nil
+}
+
 type ListIssueConfigRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1199,7 +1311,7 @@ type ListIssueConfigRequest struct {
 
 func (x *ListIssueConfigRequest) Reset() {
 	*x = ListIssueConfigRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[20]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1211,7 +1323,7 @@ func (x *ListIssueConfigRequest) String() string {
 func (*ListIssueConfigRequest) ProtoMessage() {}
 
 func (x *ListIssueConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[20]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1224,7 +1336,7 @@ func (x *ListIssueConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssueConfigRequest.ProtoReflect.Descriptor instead.
 func (*ListIssueConfigRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{20}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{22}
 }
 
 type ListIssueConfigResponse struct {
@@ -1238,7 +1350,7 @@ type ListIssueConfigResponse struct {
 
 func (x *ListIssueConfigResponse) Reset() {
 	*x = ListIssueConfigResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[21]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1250,7 +1362,7 @@ func (x *ListIssueConfigResponse) String() string {
 func (*ListIssueConfigResponse) ProtoMessage() {}
 
 func (x *ListIssueConfigResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[21]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1263,7 +1375,7 @@ func (x *ListIssueConfigResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssueConfigResponse.ProtoReflect.Descriptor instead.
 func (*ListIssueConfigResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{21}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListIssueConfigResponse) GetEntities() []string {
@@ -1291,7 +1403,7 @@ var File_proto_helpdesk_v1_issues_proto protoreflect.FileDescriptor
 
 const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\n" +
-	"\x1eproto/helpdesk/v1/issues.proto\x12\x02v1\"\xb1\x02\n" +
+	"\x1eproto/helpdesk/v1/issues.proto\x12\x02v1\"\xcd\x02\n" +
 	"\x05Issue\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x1d\n" +
@@ -1307,7 +1419,8 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\t \x01(\x03R\tupdatedAt\x12\x1d\n" +
 	"\n" +
-	"issue_type\x18\r \x01(\tR\tissueType\"\xbc\x01\n" +
+	"issue_type\x18\r \x01(\tR\tissueType\x12\x1a\n" +
+	"\bpriority\x18\x0e \x01(\x05R\bpriority\"\xbc\x01\n" +
 	"\n" +
 	"IssueReply\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
@@ -1333,7 +1446,7 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\x0fGetIssueRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"3\n" +
 	"\x10GetIssueResponse\x12\x1f\n" +
-	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\xd9\x01\n" +
+	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\xf5\x01\n" +
 	"\x11ListIssuesRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x05R\x06userId\x12\x16\n" +
@@ -1343,7 +1456,8 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\x04page\x18\x06 \x01(\x05R\x04page\x12\x1b\n" +
 	"\tpage_size\x18\a \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"issue_type\x18\r \x01(\tR\tissueType\"7\n" +
+	"issue_type\x18\r \x01(\tR\tissueType\x12\x1a\n" +
+	"\bpriority\x18\x0e \x01(\x05R\bpriority\"7\n" +
 	"\x12ListIssuesResponse\x12!\n" +
 	"\x06issues\x18\x01 \x03(\v2\t.v1.IssueR\x06issues\"\x93\x01\n" +
 	"\x12UpdateIssueRequest\x12\x0e\n" +
@@ -1378,6 +1492,11 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\x05R\x06status\"<\n" +
 	"\x19UpdateIssueStatusResponse\x12\x1f\n" +
+	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"H\n" +
+	"\x1aUpdateIssuePriorityRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
+	"\bpriority\x18\x02 \x01(\x05R\bpriority\">\n" +
+	"\x1bUpdateIssuePriorityResponse\x12\x1f\n" +
 	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"\x18\n" +
 	"\x16ListIssueConfigRequest\"l\n" +
 	"\x17ListIssueConfigResponse\x12\x1a\n" +
@@ -1398,30 +1517,32 @@ func file_proto_helpdesk_v1_issues_proto_rawDescGZIP() []byte {
 	return file_proto_helpdesk_v1_issues_proto_rawDescData
 }
 
-var file_proto_helpdesk_v1_issues_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_proto_helpdesk_v1_issues_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_proto_helpdesk_v1_issues_proto_goTypes = []any{
-	(*Issue)(nil),                     // 0: v1.Issue
-	(*IssueReply)(nil),                // 1: v1.IssueReply
-	(*CreateIssueRequest)(nil),        // 2: v1.CreateIssueRequest
-	(*CreateIssueResponse)(nil),       // 3: v1.CreateIssueResponse
-	(*GetIssueRequest)(nil),           // 4: v1.GetIssueRequest
-	(*GetIssueResponse)(nil),          // 5: v1.GetIssueResponse
-	(*ListIssuesRequest)(nil),         // 6: v1.ListIssuesRequest
-	(*ListIssuesResponse)(nil),        // 7: v1.ListIssuesResponse
-	(*UpdateIssueRequest)(nil),        // 8: v1.UpdateIssueRequest
-	(*UpdateIssueResponse)(nil),       // 9: v1.UpdateIssueResponse
-	(*DeleteIssueRequest)(nil),        // 10: v1.DeleteIssueRequest
-	(*DeleteIssueResponse)(nil),       // 11: v1.DeleteIssueResponse
-	(*CreateIssueReplyRequest)(nil),   // 12: v1.CreateIssueReplyRequest
-	(*CreateIssueReplyResponse)(nil),  // 13: v1.CreateIssueReplyResponse
-	(*ListIssueRepliesRequest)(nil),   // 14: v1.ListIssueRepliesRequest
-	(*ListIssueRepliesResponse)(nil),  // 15: v1.ListIssueRepliesResponse
-	(*DeleteIssueReplyRequest)(nil),   // 16: v1.DeleteIssueReplyRequest
-	(*DeleteIssueReplyResponse)(nil),  // 17: v1.DeleteIssueReplyResponse
-	(*UpdateIssueStatusRequest)(nil),  // 18: v1.UpdateIssueStatusRequest
-	(*UpdateIssueStatusResponse)(nil), // 19: v1.UpdateIssueStatusResponse
-	(*ListIssueConfigRequest)(nil),    // 20: v1.ListIssueConfigRequest
-	(*ListIssueConfigResponse)(nil),   // 21: v1.ListIssueConfigResponse
+	(*Issue)(nil),                       // 0: v1.Issue
+	(*IssueReply)(nil),                  // 1: v1.IssueReply
+	(*CreateIssueRequest)(nil),          // 2: v1.CreateIssueRequest
+	(*CreateIssueResponse)(nil),         // 3: v1.CreateIssueResponse
+	(*GetIssueRequest)(nil),             // 4: v1.GetIssueRequest
+	(*GetIssueResponse)(nil),            // 5: v1.GetIssueResponse
+	(*ListIssuesRequest)(nil),           // 6: v1.ListIssuesRequest
+	(*ListIssuesResponse)(nil),          // 7: v1.ListIssuesResponse
+	(*UpdateIssueRequest)(nil),          // 8: v1.UpdateIssueRequest
+	(*UpdateIssueResponse)(nil),         // 9: v1.UpdateIssueResponse
+	(*DeleteIssueRequest)(nil),          // 10: v1.DeleteIssueRequest
+	(*DeleteIssueResponse)(nil),         // 11: v1.DeleteIssueResponse
+	(*CreateIssueReplyRequest)(nil),     // 12: v1.CreateIssueReplyRequest
+	(*CreateIssueReplyResponse)(nil),    // 13: v1.CreateIssueReplyResponse
+	(*ListIssueRepliesRequest)(nil),     // 14: v1.ListIssueRepliesRequest
+	(*ListIssueRepliesResponse)(nil),    // 15: v1.ListIssueRepliesResponse
+	(*DeleteIssueReplyRequest)(nil),     // 16: v1.DeleteIssueReplyRequest
+	(*DeleteIssueReplyResponse)(nil),    // 17: v1.DeleteIssueReplyResponse
+	(*UpdateIssueStatusRequest)(nil),    // 18: v1.UpdateIssueStatusRequest
+	(*UpdateIssueStatusResponse)(nil),   // 19: v1.UpdateIssueStatusResponse
+	(*UpdateIssuePriorityRequest)(nil),  // 20: v1.UpdateIssuePriorityRequest
+	(*UpdateIssuePriorityResponse)(nil), // 21: v1.UpdateIssuePriorityResponse
+	(*ListIssueConfigRequest)(nil),      // 22: v1.ListIssueConfigRequest
+	(*ListIssueConfigResponse)(nil),     // 23: v1.ListIssueConfigResponse
 }
 var file_proto_helpdesk_v1_issues_proto_depIdxs = []int32{
 	0, // 0: v1.CreateIssueResponse.issue:type_name -> v1.Issue
@@ -1431,11 +1552,12 @@ var file_proto_helpdesk_v1_issues_proto_depIdxs = []int32{
 	1, // 4: v1.CreateIssueReplyResponse.reply:type_name -> v1.IssueReply
 	1, // 5: v1.ListIssueRepliesResponse.replies:type_name -> v1.IssueReply
 	0, // 6: v1.UpdateIssueStatusResponse.issue:type_name -> v1.Issue
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	0, // 7: v1.UpdateIssuePriorityResponse.issue:type_name -> v1.Issue
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_proto_helpdesk_v1_issues_proto_init() }
@@ -1449,7 +1571,7 @@ func file_proto_helpdesk_v1_issues_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_helpdesk_v1_issues_proto_rawDesc), len(file_proto_helpdesk_v1_issues_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

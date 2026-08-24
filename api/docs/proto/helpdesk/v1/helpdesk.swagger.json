@@ -226,6 +226,14 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "priority",
+            "description": "0 = no filter",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -357,6 +365,46 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/BaseServiceUpdateIssueBody"
+            }
+          }
+        ],
+        "tags": [
+          "Issues"
+        ]
+      }
+    },
+    "/helpdesk/v1/issues/{id}/priority": {
+      "patch": {
+        "summary": "Update issue priority",
+        "description": "Update the priority of an issue (Admin only).",
+        "operationId": "BaseService_UpdateIssuePriority",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateIssuePriorityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseServiceUpdateIssuePriorityBody"
             }
           }
         ],
@@ -1249,6 +1297,15 @@
         }
       }
     },
+    "BaseServiceUpdateIssuePriorityBody": {
+      "type": "object",
+      "properties": {
+        "priority": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "BaseServiceUpdateIssueStatusBody": {
       "type": "object",
       "properties": {
@@ -1585,6 +1642,11 @@
         },
         "issueType": {
           "type": "string"
+        },
+        "priority": {
+          "type": "integer",
+          "format": "int32",
+          "title": "0=unset, 1=low, 2=medium, 3=high, 4=urgent"
         }
       },
       "title": "Issue represents a helpdesk issue"
@@ -1878,6 +1940,14 @@
         }
       },
       "title": "RatingReply represents a response to a rating (from admin/owner)"
+    },
+    "v1UpdateIssuePriorityResponse": {
+      "type": "object",
+      "properties": {
+        "issue": {
+          "$ref": "#/definitions/v1Issue"
+        }
+      }
     },
     "v1UpdateIssueResponse": {
       "type": "object",

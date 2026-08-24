@@ -26,7 +26,7 @@ var File_proto_helpdesk_v1_helpdesk_proto protoreflect.FileDescriptor
 
 const file_proto_helpdesk_v1_helpdesk_proto_rawDesc = "" +
 	"\n" +
-	" proto/helpdesk/v1/helpdesk.proto\x12\x02v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17proto/common/ping.proto\x1a\x1fproto/helpdesk/v1/ratings.proto\x1a\x1eproto/helpdesk/v1/issues.proto\x1a\x1dproto/helpdesk/v1/admin.proto2\xb6'\n" +
+	" proto/helpdesk/v1/helpdesk.proto\x12\x02v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17proto/common/ping.proto\x1a\x1fproto/helpdesk/v1/ratings.proto\x1a\x1eproto/helpdesk/v1/issues.proto\x1a\x1dproto/helpdesk/v1/admin.proto2\x8e)\n" +
 	"\vBaseService\x12\x81\x01\n" +
 	"\x04Ping\x12\x11.v1.HDPingRequest\x1a\x12.v1.HDPingResponse\"R\x92A6\n" +
 	"\x04Ping\x12\x0fPing the server\x1a\x1dCheck if the server is alive.\x82\xd3\xe4\x93\x02\x13\x12\x11/helpdesk/v1/ping\x12\xa3\x01\n" +
@@ -60,7 +60,9 @@ const file_proto_helpdesk_v1_helpdesk_proto_rawDesc = "" +
 	"\vDeleteIssue\x12\x16.v1.DeleteIssueRequest\x1a\x17.v1.DeleteIssueResponse\"Z\x92A7\n" +
 	"\x06Issues\x12\x0fDelete an issue\x1a\x1cDelete an issue permanently.\x82\xd3\xe4\x93\x02\x1a*\x18/helpdesk/v1/issues/{id}\x12\xc9\x01\n" +
 	"\x11UpdateIssueStatus\x12\x1c.v1.UpdateIssueStatusRequest\x1a\x1d.v1.UpdateIssueStatusResponse\"w\x92AJ\n" +
-	"\x06Issues\x12\x13Update issue status\x1a+Update the status of an issue (Admin only).\x82\xd3\xe4\x93\x02$:\x01*2\x1f/helpdesk/v1/issues/{id}/status\x12\xcb\x01\n" +
+	"\x06Issues\x12\x13Update issue status\x1a+Update the status of an issue (Admin only).\x82\xd3\xe4\x93\x02$:\x01*2\x1f/helpdesk/v1/issues/{id}/status\x12\xd5\x01\n" +
+	"\x13UpdateIssuePriority\x12\x1e.v1.UpdateIssuePriorityRequest\x1a\x1f.v1.UpdateIssuePriorityResponse\"}\x92AN\n" +
+	"\x06Issues\x12\x15Update issue priority\x1a-Update the priority of an issue (Admin only).\x82\xd3\xe4\x93\x02&:\x01*2!/helpdesk/v1/issues/{id}/priority\x12\xcb\x01\n" +
 	"\x0fListIssueConfig\x12\x1a.v1.ListIssueConfigRequest\x1a\x1b.v1.ListIssueConfigResponse\"\x7f\x92A[\n" +
 	"\x06Issues\x12\x18List issue configuration\x1a7Get the list of allowed issue types from configuration.\x82\xd3\xe4\x93\x02\x1b\x12\x19/helpdesk/v1/issue-config\x12\xd1\x01\n" +
 	"\x10CreateIssueReply\x12\x1b.v1.CreateIssueReplyRequest\x1a\x1c.v1.CreateIssueReplyResponse\"\x81\x01\x92AM\n" +
@@ -119,52 +121,54 @@ var file_proto_helpdesk_v1_helpdesk_proto_goTypes = []any{
 	(*UpdateIssueRequest)(nil),             // 13: v1.UpdateIssueRequest
 	(*DeleteIssueRequest)(nil),             // 14: v1.DeleteIssueRequest
 	(*UpdateIssueStatusRequest)(nil),       // 15: v1.UpdateIssueStatusRequest
-	(*ListIssueConfigRequest)(nil),         // 16: v1.ListIssueConfigRequest
-	(*CreateIssueReplyRequest)(nil),        // 17: v1.CreateIssueReplyRequest
-	(*ListIssueRepliesRequest)(nil),        // 18: v1.ListIssueRepliesRequest
-	(*DeleteIssueReplyRequest)(nil),        // 19: v1.DeleteIssueReplyRequest
-	(*GetProductRequest)(nil),              // 20: v1.GetProductRequest
-	(*ListProductsRequest)(nil),            // 21: v1.ListProductsRequest
-	(*CreateProductRequest)(nil),           // 22: v1.CreateProductRequest
-	(*UpdateProductRequest)(nil),           // 23: v1.UpdateProductRequest
-	(*DeleteProductRequest)(nil),           // 24: v1.DeleteProductRequest
-	(*ListProductEntitiesRequest)(nil),     // 25: v1.ListProductEntitiesRequest
-	(*CreateProductEntityRequest)(nil),     // 26: v1.CreateProductEntityRequest
-	(*DeleteProductEntityRequest)(nil),     // 27: v1.DeleteProductEntityRequest
-	(*ListProductIssueTypesRequest)(nil),   // 28: v1.ListProductIssueTypesRequest
-	(*CreateProductIssueTypeRequest)(nil),  // 29: v1.CreateProductIssueTypeRequest
-	(*DeleteProductIssueTypeRequest)(nil),  // 30: v1.DeleteProductIssueTypeRequest
-	(*HDPingResponse)(nil),                 // 31: v1.HDPingResponse
-	(*CreateRatingResponse)(nil),           // 32: v1.CreateRatingResponse
-	(*GetRatingResponse)(nil),              // 33: v1.GetRatingResponse
-	(*ListRatingsResponse)(nil),            // 34: v1.ListRatingsResponse
-	(*UpdateRatingResponse)(nil),           // 35: v1.UpdateRatingResponse
-	(*DeleteRatingResponse)(nil),           // 36: v1.DeleteRatingResponse
-	(*GetRatingsConfigResponse)(nil),       // 37: v1.GetRatingsConfigResponse
-	(*CreateRatingReplyResponse)(nil),      // 38: v1.CreateRatingReplyResponse
-	(*ListRatingRepliesResponse)(nil),      // 39: v1.ListRatingRepliesResponse
-	(*DeleteRatingReplyResponse)(nil),      // 40: v1.DeleteRatingReplyResponse
-	(*CreateIssueResponse)(nil),            // 41: v1.CreateIssueResponse
-	(*GetIssueResponse)(nil),               // 42: v1.GetIssueResponse
-	(*ListIssuesResponse)(nil),             // 43: v1.ListIssuesResponse
-	(*UpdateIssueResponse)(nil),            // 44: v1.UpdateIssueResponse
-	(*DeleteIssueResponse)(nil),            // 45: v1.DeleteIssueResponse
-	(*UpdateIssueStatusResponse)(nil),      // 46: v1.UpdateIssueStatusResponse
-	(*ListIssueConfigResponse)(nil),        // 47: v1.ListIssueConfigResponse
-	(*CreateIssueReplyResponse)(nil),       // 48: v1.CreateIssueReplyResponse
-	(*ListIssueRepliesResponse)(nil),       // 49: v1.ListIssueRepliesResponse
-	(*DeleteIssueReplyResponse)(nil),       // 50: v1.DeleteIssueReplyResponse
-	(*GetProductResponse)(nil),             // 51: v1.GetProductResponse
-	(*ListProductsResponse)(nil),           // 52: v1.ListProductsResponse
-	(*CreateProductResponse)(nil),          // 53: v1.CreateProductResponse
-	(*UpdateProductResponse)(nil),          // 54: v1.UpdateProductResponse
-	(*DeleteProductResponse)(nil),          // 55: v1.DeleteProductResponse
-	(*ListProductEntitiesResponse)(nil),    // 56: v1.ListProductEntitiesResponse
-	(*CreateProductEntityResponse)(nil),    // 57: v1.CreateProductEntityResponse
-	(*DeleteProductEntityResponse)(nil),    // 58: v1.DeleteProductEntityResponse
-	(*ListProductIssueTypesResponse)(nil),  // 59: v1.ListProductIssueTypesResponse
-	(*CreateProductIssueTypeResponse)(nil), // 60: v1.CreateProductIssueTypeResponse
-	(*DeleteProductIssueTypeResponse)(nil), // 61: v1.DeleteProductIssueTypeResponse
+	(*UpdateIssuePriorityRequest)(nil),     // 16: v1.UpdateIssuePriorityRequest
+	(*ListIssueConfigRequest)(nil),         // 17: v1.ListIssueConfigRequest
+	(*CreateIssueReplyRequest)(nil),        // 18: v1.CreateIssueReplyRequest
+	(*ListIssueRepliesRequest)(nil),        // 19: v1.ListIssueRepliesRequest
+	(*DeleteIssueReplyRequest)(nil),        // 20: v1.DeleteIssueReplyRequest
+	(*GetProductRequest)(nil),              // 21: v1.GetProductRequest
+	(*ListProductsRequest)(nil),            // 22: v1.ListProductsRequest
+	(*CreateProductRequest)(nil),           // 23: v1.CreateProductRequest
+	(*UpdateProductRequest)(nil),           // 24: v1.UpdateProductRequest
+	(*DeleteProductRequest)(nil),           // 25: v1.DeleteProductRequest
+	(*ListProductEntitiesRequest)(nil),     // 26: v1.ListProductEntitiesRequest
+	(*CreateProductEntityRequest)(nil),     // 27: v1.CreateProductEntityRequest
+	(*DeleteProductEntityRequest)(nil),     // 28: v1.DeleteProductEntityRequest
+	(*ListProductIssueTypesRequest)(nil),   // 29: v1.ListProductIssueTypesRequest
+	(*CreateProductIssueTypeRequest)(nil),  // 30: v1.CreateProductIssueTypeRequest
+	(*DeleteProductIssueTypeRequest)(nil),  // 31: v1.DeleteProductIssueTypeRequest
+	(*HDPingResponse)(nil),                 // 32: v1.HDPingResponse
+	(*CreateRatingResponse)(nil),           // 33: v1.CreateRatingResponse
+	(*GetRatingResponse)(nil),              // 34: v1.GetRatingResponse
+	(*ListRatingsResponse)(nil),            // 35: v1.ListRatingsResponse
+	(*UpdateRatingResponse)(nil),           // 36: v1.UpdateRatingResponse
+	(*DeleteRatingResponse)(nil),           // 37: v1.DeleteRatingResponse
+	(*GetRatingsConfigResponse)(nil),       // 38: v1.GetRatingsConfigResponse
+	(*CreateRatingReplyResponse)(nil),      // 39: v1.CreateRatingReplyResponse
+	(*ListRatingRepliesResponse)(nil),      // 40: v1.ListRatingRepliesResponse
+	(*DeleteRatingReplyResponse)(nil),      // 41: v1.DeleteRatingReplyResponse
+	(*CreateIssueResponse)(nil),            // 42: v1.CreateIssueResponse
+	(*GetIssueResponse)(nil),               // 43: v1.GetIssueResponse
+	(*ListIssuesResponse)(nil),             // 44: v1.ListIssuesResponse
+	(*UpdateIssueResponse)(nil),            // 45: v1.UpdateIssueResponse
+	(*DeleteIssueResponse)(nil),            // 46: v1.DeleteIssueResponse
+	(*UpdateIssueStatusResponse)(nil),      // 47: v1.UpdateIssueStatusResponse
+	(*UpdateIssuePriorityResponse)(nil),    // 48: v1.UpdateIssuePriorityResponse
+	(*ListIssueConfigResponse)(nil),        // 49: v1.ListIssueConfigResponse
+	(*CreateIssueReplyResponse)(nil),       // 50: v1.CreateIssueReplyResponse
+	(*ListIssueRepliesResponse)(nil),       // 51: v1.ListIssueRepliesResponse
+	(*DeleteIssueReplyResponse)(nil),       // 52: v1.DeleteIssueReplyResponse
+	(*GetProductResponse)(nil),             // 53: v1.GetProductResponse
+	(*ListProductsResponse)(nil),           // 54: v1.ListProductsResponse
+	(*CreateProductResponse)(nil),          // 55: v1.CreateProductResponse
+	(*UpdateProductResponse)(nil),          // 56: v1.UpdateProductResponse
+	(*DeleteProductResponse)(nil),          // 57: v1.DeleteProductResponse
+	(*ListProductEntitiesResponse)(nil),    // 58: v1.ListProductEntitiesResponse
+	(*CreateProductEntityResponse)(nil),    // 59: v1.CreateProductEntityResponse
+	(*DeleteProductEntityResponse)(nil),    // 60: v1.DeleteProductEntityResponse
+	(*ListProductIssueTypesResponse)(nil),  // 61: v1.ListProductIssueTypesResponse
+	(*CreateProductIssueTypeResponse)(nil), // 62: v1.CreateProductIssueTypeResponse
+	(*DeleteProductIssueTypeResponse)(nil), // 63: v1.DeleteProductIssueTypeResponse
 }
 var file_proto_helpdesk_v1_helpdesk_proto_depIdxs = []int32{
 	0,  // 0: v1.BaseService.Ping:input_type -> v1.HDPingRequest
@@ -183,54 +187,56 @@ var file_proto_helpdesk_v1_helpdesk_proto_depIdxs = []int32{
 	13, // 13: v1.BaseService.UpdateIssue:input_type -> v1.UpdateIssueRequest
 	14, // 14: v1.BaseService.DeleteIssue:input_type -> v1.DeleteIssueRequest
 	15, // 15: v1.BaseService.UpdateIssueStatus:input_type -> v1.UpdateIssueStatusRequest
-	16, // 16: v1.BaseService.ListIssueConfig:input_type -> v1.ListIssueConfigRequest
-	17, // 17: v1.BaseService.CreateIssueReply:input_type -> v1.CreateIssueReplyRequest
-	18, // 18: v1.BaseService.ListIssueReplies:input_type -> v1.ListIssueRepliesRequest
-	19, // 19: v1.BaseService.DeleteIssueReply:input_type -> v1.DeleteIssueReplyRequest
-	20, // 20: v1.BaseService.GetProduct:input_type -> v1.GetProductRequest
-	21, // 21: v1.BaseService.ListProducts:input_type -> v1.ListProductsRequest
-	22, // 22: v1.BaseService.CreateProduct:input_type -> v1.CreateProductRequest
-	23, // 23: v1.BaseService.UpdateProduct:input_type -> v1.UpdateProductRequest
-	24, // 24: v1.BaseService.DeleteProduct:input_type -> v1.DeleteProductRequest
-	25, // 25: v1.BaseService.ListProductEntities:input_type -> v1.ListProductEntitiesRequest
-	26, // 26: v1.BaseService.CreateProductEntity:input_type -> v1.CreateProductEntityRequest
-	27, // 27: v1.BaseService.DeleteProductEntity:input_type -> v1.DeleteProductEntityRequest
-	28, // 28: v1.BaseService.ListProductIssueTypes:input_type -> v1.ListProductIssueTypesRequest
-	29, // 29: v1.BaseService.CreateProductIssueType:input_type -> v1.CreateProductIssueTypeRequest
-	30, // 30: v1.BaseService.DeleteProductIssueType:input_type -> v1.DeleteProductIssueTypeRequest
-	31, // 31: v1.BaseService.Ping:output_type -> v1.HDPingResponse
-	32, // 32: v1.BaseService.CreateRating:output_type -> v1.CreateRatingResponse
-	33, // 33: v1.BaseService.GetRating:output_type -> v1.GetRatingResponse
-	34, // 34: v1.BaseService.ListRatings:output_type -> v1.ListRatingsResponse
-	35, // 35: v1.BaseService.UpdateRating:output_type -> v1.UpdateRatingResponse
-	36, // 36: v1.BaseService.DeleteRating:output_type -> v1.DeleteRatingResponse
-	37, // 37: v1.BaseService.GetRatingsConfig:output_type -> v1.GetRatingsConfigResponse
-	38, // 38: v1.BaseService.CreateRatingReply:output_type -> v1.CreateRatingReplyResponse
-	39, // 39: v1.BaseService.ListRatingReplies:output_type -> v1.ListRatingRepliesResponse
-	40, // 40: v1.BaseService.DeleteRatingReply:output_type -> v1.DeleteRatingReplyResponse
-	41, // 41: v1.BaseService.CreateIssue:output_type -> v1.CreateIssueResponse
-	42, // 42: v1.BaseService.GetIssue:output_type -> v1.GetIssueResponse
-	43, // 43: v1.BaseService.ListIssues:output_type -> v1.ListIssuesResponse
-	44, // 44: v1.BaseService.UpdateIssue:output_type -> v1.UpdateIssueResponse
-	45, // 45: v1.BaseService.DeleteIssue:output_type -> v1.DeleteIssueResponse
-	46, // 46: v1.BaseService.UpdateIssueStatus:output_type -> v1.UpdateIssueStatusResponse
-	47, // 47: v1.BaseService.ListIssueConfig:output_type -> v1.ListIssueConfigResponse
-	48, // 48: v1.BaseService.CreateIssueReply:output_type -> v1.CreateIssueReplyResponse
-	49, // 49: v1.BaseService.ListIssueReplies:output_type -> v1.ListIssueRepliesResponse
-	50, // 50: v1.BaseService.DeleteIssueReply:output_type -> v1.DeleteIssueReplyResponse
-	51, // 51: v1.BaseService.GetProduct:output_type -> v1.GetProductResponse
-	52, // 52: v1.BaseService.ListProducts:output_type -> v1.ListProductsResponse
-	53, // 53: v1.BaseService.CreateProduct:output_type -> v1.CreateProductResponse
-	54, // 54: v1.BaseService.UpdateProduct:output_type -> v1.UpdateProductResponse
-	55, // 55: v1.BaseService.DeleteProduct:output_type -> v1.DeleteProductResponse
-	56, // 56: v1.BaseService.ListProductEntities:output_type -> v1.ListProductEntitiesResponse
-	57, // 57: v1.BaseService.CreateProductEntity:output_type -> v1.CreateProductEntityResponse
-	58, // 58: v1.BaseService.DeleteProductEntity:output_type -> v1.DeleteProductEntityResponse
-	59, // 59: v1.BaseService.ListProductIssueTypes:output_type -> v1.ListProductIssueTypesResponse
-	60, // 60: v1.BaseService.CreateProductIssueType:output_type -> v1.CreateProductIssueTypeResponse
-	61, // 61: v1.BaseService.DeleteProductIssueType:output_type -> v1.DeleteProductIssueTypeResponse
-	31, // [31:62] is the sub-list for method output_type
-	0,  // [0:31] is the sub-list for method input_type
+	16, // 16: v1.BaseService.UpdateIssuePriority:input_type -> v1.UpdateIssuePriorityRequest
+	17, // 17: v1.BaseService.ListIssueConfig:input_type -> v1.ListIssueConfigRequest
+	18, // 18: v1.BaseService.CreateIssueReply:input_type -> v1.CreateIssueReplyRequest
+	19, // 19: v1.BaseService.ListIssueReplies:input_type -> v1.ListIssueRepliesRequest
+	20, // 20: v1.BaseService.DeleteIssueReply:input_type -> v1.DeleteIssueReplyRequest
+	21, // 21: v1.BaseService.GetProduct:input_type -> v1.GetProductRequest
+	22, // 22: v1.BaseService.ListProducts:input_type -> v1.ListProductsRequest
+	23, // 23: v1.BaseService.CreateProduct:input_type -> v1.CreateProductRequest
+	24, // 24: v1.BaseService.UpdateProduct:input_type -> v1.UpdateProductRequest
+	25, // 25: v1.BaseService.DeleteProduct:input_type -> v1.DeleteProductRequest
+	26, // 26: v1.BaseService.ListProductEntities:input_type -> v1.ListProductEntitiesRequest
+	27, // 27: v1.BaseService.CreateProductEntity:input_type -> v1.CreateProductEntityRequest
+	28, // 28: v1.BaseService.DeleteProductEntity:input_type -> v1.DeleteProductEntityRequest
+	29, // 29: v1.BaseService.ListProductIssueTypes:input_type -> v1.ListProductIssueTypesRequest
+	30, // 30: v1.BaseService.CreateProductIssueType:input_type -> v1.CreateProductIssueTypeRequest
+	31, // 31: v1.BaseService.DeleteProductIssueType:input_type -> v1.DeleteProductIssueTypeRequest
+	32, // 32: v1.BaseService.Ping:output_type -> v1.HDPingResponse
+	33, // 33: v1.BaseService.CreateRating:output_type -> v1.CreateRatingResponse
+	34, // 34: v1.BaseService.GetRating:output_type -> v1.GetRatingResponse
+	35, // 35: v1.BaseService.ListRatings:output_type -> v1.ListRatingsResponse
+	36, // 36: v1.BaseService.UpdateRating:output_type -> v1.UpdateRatingResponse
+	37, // 37: v1.BaseService.DeleteRating:output_type -> v1.DeleteRatingResponse
+	38, // 38: v1.BaseService.GetRatingsConfig:output_type -> v1.GetRatingsConfigResponse
+	39, // 39: v1.BaseService.CreateRatingReply:output_type -> v1.CreateRatingReplyResponse
+	40, // 40: v1.BaseService.ListRatingReplies:output_type -> v1.ListRatingRepliesResponse
+	41, // 41: v1.BaseService.DeleteRatingReply:output_type -> v1.DeleteRatingReplyResponse
+	42, // 42: v1.BaseService.CreateIssue:output_type -> v1.CreateIssueResponse
+	43, // 43: v1.BaseService.GetIssue:output_type -> v1.GetIssueResponse
+	44, // 44: v1.BaseService.ListIssues:output_type -> v1.ListIssuesResponse
+	45, // 45: v1.BaseService.UpdateIssue:output_type -> v1.UpdateIssueResponse
+	46, // 46: v1.BaseService.DeleteIssue:output_type -> v1.DeleteIssueResponse
+	47, // 47: v1.BaseService.UpdateIssueStatus:output_type -> v1.UpdateIssueStatusResponse
+	48, // 48: v1.BaseService.UpdateIssuePriority:output_type -> v1.UpdateIssuePriorityResponse
+	49, // 49: v1.BaseService.ListIssueConfig:output_type -> v1.ListIssueConfigResponse
+	50, // 50: v1.BaseService.CreateIssueReply:output_type -> v1.CreateIssueReplyResponse
+	51, // 51: v1.BaseService.ListIssueReplies:output_type -> v1.ListIssueRepliesResponse
+	52, // 52: v1.BaseService.DeleteIssueReply:output_type -> v1.DeleteIssueReplyResponse
+	53, // 53: v1.BaseService.GetProduct:output_type -> v1.GetProductResponse
+	54, // 54: v1.BaseService.ListProducts:output_type -> v1.ListProductsResponse
+	55, // 55: v1.BaseService.CreateProduct:output_type -> v1.CreateProductResponse
+	56, // 56: v1.BaseService.UpdateProduct:output_type -> v1.UpdateProductResponse
+	57, // 57: v1.BaseService.DeleteProduct:output_type -> v1.DeleteProductResponse
+	58, // 58: v1.BaseService.ListProductEntities:output_type -> v1.ListProductEntitiesResponse
+	59, // 59: v1.BaseService.CreateProductEntity:output_type -> v1.CreateProductEntityResponse
+	60, // 60: v1.BaseService.DeleteProductEntity:output_type -> v1.DeleteProductEntityResponse
+	61, // 61: v1.BaseService.ListProductIssueTypes:output_type -> v1.ListProductIssueTypesResponse
+	62, // 62: v1.BaseService.CreateProductIssueType:output_type -> v1.CreateProductIssueTypeResponse
+	63, // 63: v1.BaseService.DeleteProductIssueType:output_type -> v1.DeleteProductIssueTypeResponse
+	32, // [32:64] is the sub-list for method output_type
+	0,  // [0:32] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

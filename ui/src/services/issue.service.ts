@@ -8,6 +8,7 @@ import {
   CreateIssueRequest,
   UpdateIssueRequest,
   UpdateIssueStatusRequest,
+  UpdateIssuePriorityRequest,
   CreateIssueReplyRequest,
   FetchIssuesRequest,
   FetchIssuesResponse,
@@ -105,6 +106,20 @@ export const updateIssueStatus = async (
   request.validate();
 
   const data = await apiService.patch(`/issues/${issueId}/status`, request.toJSON());
+  return transformUpdateIssueResponse(data);
+};
+
+/**
+ * Update issue priority
+ */
+export const updateIssuePriority = async (
+  issueId: string,
+  priority: number
+): Promise<UpdateIssueResponse> => {
+  const request = new UpdateIssuePriorityRequest({ priority });
+  request.validate();
+
+  const data = await apiService.patch(`/issues/${issueId}/priority`, request.toJSON());
   return transformUpdateIssueResponse(data);
 };
 

@@ -19,6 +19,7 @@ export interface Issue {
   createdAt?: string;
   updatedAt?: string;
   issueType: string;
+  priority: number;
 }
 
 export interface IssueReply {
@@ -60,6 +61,10 @@ export interface UpdateIssueStatusRequestData {
   status: number;
 }
 
+export interface UpdateIssuePriorityRequestData {
+  priority: number;
+}
+
 export interface CreateIssueReplyRequestData {
   message: string;
 }
@@ -69,6 +74,7 @@ export interface FetchIssuesFilters {
   entityId?: string;
   userId?: string;
   status?: string;
+  priority?: string;
   page?: number;
   pageSize?: number;
   issueType?: string;
@@ -182,6 +188,25 @@ export class UpdateIssueStatusRequest implements UpdateIssueStatusRequestData {
   }
 }
 
+export class UpdateIssuePriorityRequest implements UpdateIssuePriorityRequestData {
+  priority: number;
+
+  constructor(data: UpdateIssuePriorityRequestData) {
+    this.priority = parseInt(String(data.priority));
+  }
+
+  validate(): boolean {
+    if (![0, 1, 2, 3, 4].includes(this.priority)) {
+      throw new Error('Invalid priority value. Must be 0 (none), 1, 2, 3, or 4');
+    }
+    return true;
+  }
+
+  toJSON(): UpdateIssuePriorityRequestData {
+    return { priority: this.priority };
+  }
+}
+
 export class CreateIssueReplyRequest implements CreateIssueReplyRequestData {
   message: string;
 
@@ -206,6 +231,7 @@ export class FetchIssuesRequest {
   entityId?: string;
   userId?: string;
   status?: string;
+  priority?: string;
   page?: number;
   pageSize?: number;
   issueType?: string;
@@ -215,6 +241,7 @@ export class FetchIssuesRequest {
     this.entityId = filters.entityId;
     this.userId = filters.userId;
     this.status = filters.status;
+    this.priority = filters.priority;
     this.page = filters.page;
     this.pageSize = filters.pageSize;
     this.issueType = filters.issueType;
@@ -226,6 +253,7 @@ export class FetchIssuesRequest {
     if (this.entityId) params.append('entityId', this.entityId);
     if (this.userId) params.append('userId', this.userId);
     if (this.status) params.append('status', this.status);
+    if (this.priority) params.append('priority', this.priority);
     if (this.page) params.append('page', String(this.page));
     if (this.pageSize) params.append('pageSize', String(this.pageSize));
     if (this.issueType) params.append('issueType', this.issueType);
@@ -248,7 +276,8 @@ export const transformIssue = (data: any): Issue => ({
   status: data.status,
   createdAt: data.createdAt,
   updatedAt: data.updatedAt,
-  issueType: data.issueType
+  issueType: data.issueType,
+  priority: data.priority || 0
 });
 
 export const transformIssueReply = (data: any): IssueReply => ({

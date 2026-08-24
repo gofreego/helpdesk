@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   fetchIssueById, updateIssue, deleteIssue,
-  createIssueReply, deleteIssueReply, fetchIssueReplies, updateIssueStatus
+  createIssueReply, deleteIssueReply, fetchIssueReplies, updateIssueStatus, updateIssuePriority
 } from '../../services/issue.service';
 import { sessionManager } from '../../services';
 import { useNotification } from '@gofreego/tsutils';
@@ -37,6 +37,21 @@ const STATUS_OPTIONS = [
   { value: 2, label: 'In Progress' },
   { value: 3, label: 'Resolved' },
   { value: 4, label: 'Closed' },
+];
+
+const PRIORITY_MAP = {
+  1: { label: 'Low',    color: 'default' },
+  2: { label: 'Medium', color: 'info' },
+  3: { label: 'High',   color: 'warning' },
+  4: { label: 'Urgent', color: 'error' },
+};
+
+const PRIORITY_OPTIONS = [
+  { value: 0, label: 'No priority' },
+  { value: 1, label: 'Low' },
+  { value: 2, label: 'Medium' },
+  { value: 3, label: 'High' },
+  { value: 4, label: 'Urgent' },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -75,6 +90,44 @@ const ClickableStatusChip = ({ status, anchorEl, onOpen, onClose, onChange }) =>
           <MenuItem
             key={opt.value}
             selected={opt.value === status}
+            onClick={() => { onChange(opt.value); onClose(); }}
+            sx={{ gap: 1.5 }}
+          >
+            <ListItemText primary={opt.label} />
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+};
+
+const ClickablePriorityChip = ({ priority, anchorEl, onOpen, onClose, onChange }) => {
+  const p = PRIORITY_MAP[priority] || { label: 'No priority', color: 'default' };
+  return (
+    <>
+      <Chip
+        label={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {p.label}
+            <KeyboardArrowDownIcon sx={{ fontSize: 14, opacity: 0.7 }} />
+          </Box>
+        }
+        color={p.color}
+        size="small"
+        variant="outlined"
+        onClick={onOpen}
+        sx={{ fontWeight: 600, cursor: 'pointer' }}
+      />
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={onClose}
+        PaperProps={{ sx: { borderRadius: 2, minWidth: 160 } }}
+      >
+        {PRIORITY_OPTIONS.map(opt => (
+          <MenuItem
+            key={opt.value}
+            selected={opt.value === (priority || 0)}
             onClick={() => { onChange(opt.value); onClose(); }}
             sx={{ gap: 1.5 }}
           >
@@ -129,6 +182,7 @@ const IssueDetail = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [selectedMessageForActions, setSelectedMessageForActions] = useState(null);
   const [statusAnchorEl, setStatusAnchorEl] = useState(null);
+  const [priorityAnchorEl, setPriorityAnchorEl] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
   const [sendingReply, setSendingReply] = useState(false);
 
@@ -252,6 +306,17 @@ const IssueDetail = () => {
     } catch (error) {
       console.error('Error updating status:', error);
       showNotification(error.message || 'Failed to update status', 'error');
+    }
+  };
+
+  const handlePriorityChange = async (newPriorityValue) => {
+    try {
+      await updateIssuePriority(id, parseInt(newPriorityValue));
+      setIssue(prev => ({ ...prev, priority: parseInt(newPriorityValue) }));
+      showNotification('Priority updated!', 'success');
+    } catch (error) {
+      console.error('Error updating priority:', error);
+      showNotification(error.message || 'Failed to update priority', 'error');
     }
   };
 
@@ -381,6 +446,13 @@ const IssueDetail = () => {
                   onOpen={(e) => setStatusAnchorEl(e.currentTarget)}
                   onClose={() => setStatusAnchorEl(null)}
                   onChange={handleStatusChange}
+                />
+                <ClickablePriorityChip
+                  priority={issue.priority}
+                  anchorEl={priorityAnchorEl}
+                  onOpen={(e) => setPriorityAnchorEl(e.currentTarget)}
+                  onClose={() => setPriorityAnchorEl(null)}
+                  onChange={handlePriorityChange}
                 />
                 <Chip label={issue.issueType} size="small" variant="outlined" sx={{ fontWeight: 600 }} />
               </Box>

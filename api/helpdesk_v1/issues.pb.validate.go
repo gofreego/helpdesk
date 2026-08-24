@@ -78,6 +78,8 @@ func (m *Issue) validate(all bool) error {
 
 	// no validation rules for IssueType
 
+	// no validation rules for Priority
+
 	if len(errors) > 0 {
 		return IssueMultiError(errors)
 	}
@@ -781,6 +783,8 @@ func (m *ListIssuesRequest) validate(all bool) error {
 	// no validation rules for PageSize
 
 	// no validation rules for IssueType
+
+	// no validation rules for Priority
 
 	if len(errors) > 0 {
 		return ListIssuesRequestMultiError(errors)
@@ -2374,6 +2378,244 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UpdateIssueStatusResponseValidationError{}
+
+// Validate checks the field values on UpdateIssuePriorityRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateIssuePriorityRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateIssuePriorityRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateIssuePriorityRequestMultiError, or nil if none found.
+func (m *UpdateIssuePriorityRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateIssuePriorityRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Priority
+
+	if len(errors) > 0 {
+		return UpdateIssuePriorityRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateIssuePriorityRequestMultiError is an error wrapping multiple
+// validation errors returned by UpdateIssuePriorityRequest.ValidateAll() if
+// the designated constraints aren't met.
+type UpdateIssuePriorityRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateIssuePriorityRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateIssuePriorityRequestMultiError) AllErrors() []error { return m }
+
+// UpdateIssuePriorityRequestValidationError is the validation error returned
+// by UpdateIssuePriorityRequest.Validate if the designated constraints aren't met.
+type UpdateIssuePriorityRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateIssuePriorityRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateIssuePriorityRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateIssuePriorityRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateIssuePriorityRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateIssuePriorityRequestValidationError) ErrorName() string {
+	return "UpdateIssuePriorityRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateIssuePriorityRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateIssuePriorityRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateIssuePriorityRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateIssuePriorityRequestValidationError{}
+
+// Validate checks the field values on UpdateIssuePriorityResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateIssuePriorityResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateIssuePriorityResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateIssuePriorityResponseMultiError, or nil if none found.
+func (m *UpdateIssuePriorityResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateIssuePriorityResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetIssue()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateIssuePriorityResponseValidationError{
+					field:  "Issue",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateIssuePriorityResponseValidationError{
+					field:  "Issue",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetIssue()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateIssuePriorityResponseValidationError{
+				field:  "Issue",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UpdateIssuePriorityResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateIssuePriorityResponseMultiError is an error wrapping multiple
+// validation errors returned by UpdateIssuePriorityResponse.ValidateAll() if
+// the designated constraints aren't met.
+type UpdateIssuePriorityResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateIssuePriorityResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateIssuePriorityResponseMultiError) AllErrors() []error { return m }
+
+// UpdateIssuePriorityResponseValidationError is the validation error returned
+// by UpdateIssuePriorityResponse.Validate if the designated constraints
+// aren't met.
+type UpdateIssuePriorityResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateIssuePriorityResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateIssuePriorityResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateIssuePriorityResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateIssuePriorityResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateIssuePriorityResponseValidationError) ErrorName() string {
+	return "UpdateIssuePriorityResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateIssuePriorityResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateIssuePriorityResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateIssuePriorityResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateIssuePriorityResponseValidationError{}
 
 // Validate checks the field values on ListIssueConfigRequest with the rules
 // defined in the proto definition for this message. If any rules are

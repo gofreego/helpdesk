@@ -23,6 +23,19 @@ const StatusChip = ({ status }) => {
   return <Chip label={s.label} color={s.color} size="small" variant="outlined" sx={{ fontWeight: 600 }} />;
 };
 
+const PRIORITY_MAP = {
+  1: { label: 'Low',    color: 'default' },
+  2: { label: 'Medium', color: 'info' },
+  3: { label: 'High',   color: 'warning' },
+  4: { label: 'Urgent', color: 'error' },
+};
+
+const PriorityChip = ({ priority }) => {
+  const p = PRIORITY_MAP[priority];
+  if (!p) return <Typography variant="body2" color="text.disabled">—</Typography>;
+  return <Chip label={p.label} color={p.color} size="small" variant="outlined" sx={{ fontWeight: 600 }} />;
+};
+
 const IssuesList = () => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
@@ -36,6 +49,7 @@ const IssuesList = () => {
     entityId: '',
     userId: '',
     status: '',
+    priority: '',
     issueType: ''
   });
   const [issueTypes, setIssueTypes] = useState([]);
@@ -80,7 +94,7 @@ const IssuesList = () => {
   };
 
   const handleClearFilters = () => {
-    setFilters({ productId: '', entity: '', entityId: '', userId: '', status: '', issueType: '' });
+    setFilters({ productId: '', entity: '', entityId: '', userId: '', status: '', priority: '', issueType: '' });
     setLoading(true);
     setTimeout(() => loadIssues(), 100);
   };
@@ -150,6 +164,17 @@ const IssuesList = () => {
             </TextField>
 
             <TextField
+              select size="small" name="priority" label="Priority"
+              value={filters.priority} onChange={handleFilterChange}
+              sx={{ minWidth: 160 }}
+            >
+              <MenuItem value=""><em>All Priorities</em></MenuItem>
+              {Object.entries(PRIORITY_MAP).map(([val, p]) => (
+                <MenuItem key={val} value={val}>{p.label}</MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
               select size="small" name="issueType" label="Issue Type"
               value={filters.issueType} onChange={handleFilterChange}
               sx={{ minWidth: 160 }}
@@ -209,6 +234,7 @@ const IssuesList = () => {
                     <TableCell sx={{ fontWeight: 600 }}>Entity ID</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Priority</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
                   </TableRow>
                 </TableHead>
@@ -234,6 +260,9 @@ const IssuesList = () => {
                       </TableCell>
                       <TableCell>
                         <StatusChip status={issue.status} />
+                      </TableCell>
+                      <TableCell>
+                        <PriorityChip priority={issue.priority} />
                       </TableCell>
                       <TableCell>{issue.userId}</TableCell>
                     </TableRow>

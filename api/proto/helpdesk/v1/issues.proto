@@ -18,6 +18,7 @@ message Issue {
     int64 created_at = 8;
     int64 updated_at = 9;
     string issue_type = 13;
+    int32 priority = 14;     // 0=unset, 1=low, 2=medium, 3=high, 4=urgent
 }
 
 // IssueReply represents a reply in an issue conversation
@@ -63,6 +64,7 @@ message ListIssuesRequest {
     int32 page = 6;
     int32 page_size = 7;
     string issue_type = 13;
+    int32 priority = 14;     // 0 = no filter
 }
 
 message ListIssuesResponse {
@@ -123,6 +125,15 @@ message UpdateIssueStatusRequest {
 }
 
 message UpdateIssueStatusResponse {
+    Issue issue = 1;
+}
+
+message UpdateIssuePriorityRequest {
+    string id = 1;
+    int32 priority = 2;
+}
+
+message UpdateIssuePriorityResponse {
     Issue issue = 1;
 }
 
