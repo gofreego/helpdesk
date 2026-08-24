@@ -210,13 +210,18 @@ const IssuesList = () => {
                     <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="right">Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {issues.map(issue => (
                     <TableRow key={issue.id} hover>
-                      <TableCell sx={{ fontWeight: 600, maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <TableCell
+                        onClick={() => navigate(`/helpdesk/issues/${issue.id}`)}
+                        sx={{
+                          fontWeight: 600, maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          cursor: 'pointer', color: 'primary.main', '&:hover': { textDecoration: 'underline' }
+                        }}
+                      >
                         {issue.title}
                       </TableCell>
                       <TableCell>{issue.productId}</TableCell>
@@ -231,16 +236,6 @@ const IssuesList = () => {
                         <StatusChip status={issue.status} />
                       </TableCell>
                       <TableCell>{issue.userId}</TableCell>
-                      <TableCell align="right">
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => navigate(`/helpdesk/issues/${issue.id}`)}
-                          sx={{ borderRadius: 2 }}
-                        >
-                          View Details
-                        </Button>
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
