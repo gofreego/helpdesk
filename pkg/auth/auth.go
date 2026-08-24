@@ -7,12 +7,13 @@ import (
 	"strings"
 
 	"github.com/gofreego/helpdesk/internal/constants"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Errors
 var (
 	ErrUnauthenticated   = errors.New("user not authenticated: missing x-user-id header")
-	ErrForbidden         = errors.New("insufficient permissions")
 	ErrCannotManageIssue = errors.New("you don't have permission to manage this issue")
 )
 
@@ -84,7 +85,7 @@ func CanManageIssue(ctx context.Context, issueCreatorID int32) (bool, error) {
 // RequirePermission returns error if user doesn't have the permission
 func RequirePermission(ctx context.Context, permission string) error {
 	if !HasPermission(ctx, permission) {
-		return ErrForbidden
+		return status.Errorf(codes.PermissionDenied, "insufficient permissions: requires %q", permission)
 	}
 	return nil
 }
