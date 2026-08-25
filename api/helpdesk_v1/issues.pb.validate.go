@@ -1030,8 +1030,6 @@ func (m *UpdateIssueRequest) validate(all bool) error {
 
 	// no validation rules for Description
 
-	// no validation rules for Status
-
 	// no validation rules for IssueType
 
 	if len(errors) > 0 {

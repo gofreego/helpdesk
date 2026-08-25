@@ -336,7 +336,7 @@
       },
       "put": {
         "summary": "Update an issue",
-        "description": "Update issue title, description, or status.",
+        "description": "Update issue title, description, or type. Only the reporter (until resolved/closed) or an admin may call this.",
         "operationId": "BaseService_UpdateIssue",
         "responses": {
           "200": {
@@ -1287,10 +1287,6 @@
         },
         "description": {
           "type": "string"
-        },
-        "status": {
-          "type": "integer",
-          "format": "int32"
         },
         "issueType": {
           "type": "string"

@@ -75,7 +75,7 @@ message UpdateIssueRequest {
     string id = 1;
     string title = 2;
     string description = 3;
-    int32 status = 4;
+    reserved 4; // Deprecated: status changes go through UpdateIssueStatus (admin-only)
     string issue_type = 13;
 }
 

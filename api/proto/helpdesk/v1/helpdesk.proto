@@ -245,7 +245,7 @@ service BaseService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags: "Issues"
             summary: "Update an issue"
-            description: "Update issue title, description, or status."
+            description: "Update issue title, description, or type. Only the reporter (until resolved/closed) or an admin may call this."
         };
     }
 

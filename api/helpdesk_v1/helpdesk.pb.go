@@ -26,7 +26,7 @@ var File_proto_helpdesk_v1_helpdesk_proto protoreflect.FileDescriptor
 
 const file_proto_helpdesk_v1_helpdesk_proto_rawDesc = "" +
 	"\n" +
-	" proto/helpdesk/v1/helpdesk.proto\x12\x02v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17proto/common/ping.proto\x1a\x1fproto/helpdesk/v1/ratings.proto\x1a\x1eproto/helpdesk/v1/issues.proto\x1a\x1dproto/helpdesk/v1/admin.proto2\x8e)\n" +
+	" proto/helpdesk/v1/helpdesk.proto\x12\x02v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17proto/common/ping.proto\x1a\x1fproto/helpdesk/v1/ratings.proto\x1a\x1eproto/helpdesk/v1/issues.proto\x1a\x1dproto/helpdesk/v1/admin.proto2\xd3)\n" +
 	"\vBaseService\x12\x81\x01\n" +
 	"\x04Ping\x12\x11.v1.HDPingRequest\x1a\x12.v1.HDPingResponse\"R\x92A6\n" +
 	"\x04Ping\x12\x0fPing the server\x1a\x1dCheck if the server is alive.\x82\xd3\xe4\x93\x02\x13\x12\x11/helpdesk/v1/ping\x12\xa3\x01\n" +
@@ -54,9 +54,9 @@ const file_proto_helpdesk_v1_helpdesk_proto_rawDesc = "" +
 	"\x06Issues\x12\fGet an issue\x1a Retrieve a specific issue by ID.\x82\xd3\xe4\x93\x02\x1a\x12\x18/helpdesk/v1/issues/{id}\x12\x94\x01\n" +
 	"\n" +
 	"ListIssues\x12\x15.v1.ListIssuesRequest\x1a\x16.v1.ListIssuesResponse\"W\x92A9\n" +
-	"\x06Issues\x12\vList issues\x1a\"List issues with optional filters.\x82\xd3\xe4\x93\x02\x15\x12\x13/helpdesk/v1/issues\x12\xac\x01\n" +
-	"\vUpdateIssue\x12\x16.v1.UpdateIssueRequest\x1a\x17.v1.UpdateIssueResponse\"l\x92AF\n" +
-	"\x06Issues\x12\x0fUpdate an issue\x1a+Update issue title, description, or status.\x82\xd3\xe4\x93\x02\x1d:\x01*\x1a\x18/helpdesk/v1/issues/{id}\x12\x9a\x01\n" +
+	"\x06Issues\x12\vList issues\x1a\"List issues with optional filters.\x82\xd3\xe4\x93\x02\x15\x12\x13/helpdesk/v1/issues\x12\xf1\x01\n" +
+	"\vUpdateIssue\x12\x16.v1.UpdateIssueRequest\x1a\x17.v1.UpdateIssueResponse\"\xb0\x01\x92A\x89\x01\n" +
+	"\x06Issues\x12\x0fUpdate an issue\x1anUpdate issue title, description, or type. Only the reporter (until resolved/closed) or an admin may call this.\x82\xd3\xe4\x93\x02\x1d:\x01*\x1a\x18/helpdesk/v1/issues/{id}\x12\x9a\x01\n" +
 	"\vDeleteIssue\x12\x16.v1.DeleteIssueRequest\x1a\x17.v1.DeleteIssueResponse\"Z\x92A7\n" +
 	"\x06Issues\x12\x0fDelete an issue\x1a\x1cDelete an issue permanently.\x82\xd3\xe4\x93\x02\x1a*\x18/helpdesk/v1/issues/{id}\x12\xc9\x01\n" +
 	"\x11UpdateIssueStatus\x12\x1c.v1.UpdateIssueStatusRequest\x1a\x1d.v1.UpdateIssueStatusResponse\"w\x92AJ\n" +

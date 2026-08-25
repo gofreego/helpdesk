@@ -401,10 +401,24 @@ func (s *Service) UpdateIssue(ctx context.Context, req *helpdesk_v1.UpdateIssueR
 		return nil, err
 	}
 
-	// Update fields
+	canManage, err := auth.CanManageIssue(ctx, existing.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if !canManage {
+		return nil, auth.ErrCannotManageIssue
+	}
+
+	// Reporters can only edit their issue while it's still open/in-progress;
+	// admins keep full edit rights regardless of status.
+	isAdmin := auth.HasPermission(ctx, constants.PermissionManageIssue)
+	if !isAdmin && (existing.Status == constants.Resolved || existing.Status == constants.Closed) {
+		return nil, status.Errorf(codes.FailedPrecondition, "issue is %s and can no longer be edited", existing.Status)
+	}
+
+	// Update fields. Status changes go through UpdateIssueStatus (admin-only).
 	existing.Title = req.Title
 	existing.Description = req.Description
-	existing.Status = constants.IssueStatus(req.Status)
 
 	if req.IssueType != "" {
 		if err := s.validateProductIssueType(ctx, existing.ProductID, req.IssueType); err != nil {

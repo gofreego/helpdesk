@@ -620,7 +620,6 @@ type UpdateIssueRequest struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Status        int32                  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
 	IssueType     string                 `protobuf:"bytes,13,opt,name=issue_type,json=issueType,proto3" json:"issue_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -675,13 +674,6 @@ func (x *UpdateIssueRequest) GetDescription() string {
 		return x.Description
 	}
 	return ""
-}
-
-func (x *UpdateIssueRequest) GetStatus() int32 {
-	if x != nil {
-		return x.Status
-	}
-	return 0
 }
 
 func (x *UpdateIssueRequest) GetIssueType() string {
@@ -1459,14 +1451,13 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"issue_type\x18\r \x01(\tR\tissueType\x12\x1a\n" +
 	"\bpriority\x18\x0e \x01(\x05R\bpriority\"7\n" +
 	"\x12ListIssuesResponse\x12!\n" +
-	"\x06issues\x18\x01 \x03(\v2\t.v1.IssueR\x06issues\"\x93\x01\n" +
+	"\x06issues\x18\x01 \x03(\v2\t.v1.IssueR\x06issues\"\x81\x01\n" +
 	"\x12UpdateIssueRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\x05R\x06status\x12\x1d\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1d\n" +
 	"\n" +
-	"issue_type\x18\r \x01(\tR\tissueType\"6\n" +
+	"issue_type\x18\r \x01(\tR\tissueTypeJ\x04\b\x04\x10\x05\"6\n" +
 	"\x13UpdateIssueResponse\x12\x1f\n" +
 	"\x05issue\x18\x01 \x01(\v2\t.v1.IssueR\x05issue\"$\n" +
 	"\x12DeleteIssueRequest\x12\x0e\n" +
