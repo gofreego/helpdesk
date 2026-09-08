@@ -89,6 +89,11 @@ func (r *MemoryRepository) ListIssues(_ context.Context, _ *filter.IssueFilter) 
 	return nil, status.Errorf(codes.Unimplemented, "issues not implemented in memory repository")
 }
 
+func (r *MemoryRepository) ListMyIssues(_ context.Context, _ *filter.MyIssuesFilter) ([]*dao.Issue, error) {
+	logger.Warn(context.Background(), "ListMyIssues not implemented in memory repository")
+	return nil, status.Errorf(codes.Unimplemented, "issues not implemented in memory repository")
+}
+
 func (r *MemoryRepository) UpdateIssue(_ context.Context, _ *dao.Issue) error {
 	logger.Warn(context.Background(), "UpdateIssue not implemented in memory repository")
 	return status.Errorf(codes.Unimplemented, "issues not implemented in memory repository")

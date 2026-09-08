@@ -71,6 +71,18 @@ message ListIssuesResponse {
     repeated Issue issues = 1;
 }
 
+message ListMyIssuesRequest {
+    int32 product_id = 1;
+    string entity = 2;
+    string entity_id = 3;
+    int32 limit = 4;
+    int32 offset = 5;
+}
+
+message ListMyIssuesResponse {
+    repeated Issue issues = 1;
+}
+
 message UpdateIssueRequest {
     string id = 1;
     string title = 2;

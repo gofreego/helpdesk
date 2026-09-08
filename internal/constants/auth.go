@@ -10,12 +10,16 @@ const (
 
 // Context keys
 const (
-	ContextKeyUserID    = "user_id"
-	ContextKeyUserPerms = "user_perms"
+	ContextKeyUserID     = "user_id"
+	ContextKeyUserPerms  = "user_perms"
+	ContextKeyProfileID  = "profile_id"
+	ContextKeyProfileIDs = "profile_ids"
 )
 
 // Headers
 const (
-	HeaderUserID    = "x-user-id"
-	HeaderUserPerms = "x-user-perms"
+	HeaderUserID     = "x-user-id"
+	HeaderUserPerms  = "x-user-perms"
+	HeaderProfileID  = "x-profile-id"  // client-supplied active profile; must be validated against HeaderProfileIDs
+	HeaderProfileIDs = "x-profile-ids" // gateway-derived (from JWT) comma-separated list of profiles authorized for the caller
 )

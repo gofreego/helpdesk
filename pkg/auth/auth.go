@@ -15,9 +15,10 @@ import (
 var (
 	ErrUnauthenticated   = errors.New("user not authenticated: missing x-user-id header")
 	ErrCannotManageIssue = errors.New("you don't have permission to manage this issue")
+	ErrProfileNotAllowed = errors.New("profile is not authorized for this user")
 )
 
-// GetUserID extracts user ID from context as int32
+// GetUserID extracts the user ID (from x-user-id) from context as int32
 func GetUserID(ctx context.Context) (int32, error) {
 	userIDStr, ok := ctx.Value(constants.ContextKeyUserID).(string)
 	if !ok || userIDStr == "" {
@@ -30,6 +31,50 @@ func GetUserID(ctx context.Context) (int32, error) {
 	}
 
 	return int32(userID), nil
+}
+
+// GetProfileID extracts the active profile ID (from x-profile-id) from context as int32,
+// validating it against the authorized profile list (x-profile-ids) set by the gateway from the JWT.
+func GetProfileID(ctx context.Context) (int32, error) {
+	profileIDStr, ok := ctx.Value(constants.ContextKeyProfileID).(string)
+	if !ok || profileIDStr == "" {
+		return 0, errors.New("missing x-profile-id header")
+	}
+
+	profileID, err := strconv.ParseInt(profileIDStr, 10, 32)
+	if err != nil {
+		return 0, errors.New("invalid profile id format: must be an integer")
+	}
+
+	profileIDsStr, ok := ctx.Value(constants.ContextKeyProfileIDs).(string)
+	if !ok || profileIDsStr == "" {
+		return 0, ErrUnauthenticated
+	}
+	if !isProfileAuthorized(profileIDStr, profileIDsStr) {
+		return 0, ErrProfileNotAllowed
+	}
+
+	return int32(profileID), nil
+}
+
+// GetProfileOrUserID returns GetProfileID when the request carries an x-profile-id,
+// falling back to GetUserID (x-user-id) when no profile is present on the request.
+func GetProfileOrUserID(ctx context.Context) (int32, error) {
+	profileIDStr, ok := ctx.Value(constants.ContextKeyProfileID).(string)
+	if !ok || profileIDStr == "" {
+		return GetUserID(ctx)
+	}
+	return GetProfileID(ctx)
+}
+
+// isProfileAuthorized checks that targetID is present in the comma-separated authorizedIDs list.
+func isProfileAuthorized(targetID string, authorizedIDs string) bool {
+	for _, id := range strings.Split(authorizedIDs, ",") {
+		if strings.TrimSpace(id) == targetID {
+			return true
+		}
+	}
+	return false
 }
 
 // GetUserPermissions extracts user permissions from context
@@ -61,16 +106,16 @@ func HasPermission(ctx context.Context, permission string) bool {
 	return false
 }
 
-// CanManageIssue checks if user can manage an issue
-// Returns true if user is the issue creator OR has the permission to manage
+// CanManageIssue checks if the calling profile can manage an issue
+// Returns true if the profile is the issue creator OR has the permission to manage
 func CanManageIssue(ctx context.Context, issueCreatorID int32) (bool, error) {
-	userID, err := GetUserID(ctx)
+	profileID, err := GetProfileOrUserID(ctx)
 	if err != nil {
 		return false, err
 	}
 
-	// User created the issue
-	if userID == issueCreatorID {
+	// Profile created the issue
+	if profileID == issueCreatorID {
 		return true, nil
 	}
 

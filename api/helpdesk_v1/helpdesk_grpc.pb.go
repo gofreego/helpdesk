@@ -32,6 +32,7 @@ const (
 	BaseService_CreateIssue_FullMethodName            = "/v1.BaseService/CreateIssue"
 	BaseService_GetIssue_FullMethodName               = "/v1.BaseService/GetIssue"
 	BaseService_ListIssues_FullMethodName             = "/v1.BaseService/ListIssues"
+	BaseService_ListMyIssues_FullMethodName           = "/v1.BaseService/ListMyIssues"
 	BaseService_UpdateIssue_FullMethodName            = "/v1.BaseService/UpdateIssue"
 	BaseService_DeleteIssue_FullMethodName            = "/v1.BaseService/DeleteIssue"
 	BaseService_UpdateIssueStatus_FullMethodName      = "/v1.BaseService/UpdateIssueStatus"
@@ -74,6 +75,7 @@ type BaseServiceClient interface {
 	CreateIssue(ctx context.Context, in *CreateIssueRequest, opts ...grpc.CallOption) (*CreateIssueResponse, error)
 	GetIssue(ctx context.Context, in *GetIssueRequest, opts ...grpc.CallOption) (*GetIssueResponse, error)
 	ListIssues(ctx context.Context, in *ListIssuesRequest, opts ...grpc.CallOption) (*ListIssuesResponse, error)
+	ListMyIssues(ctx context.Context, in *ListMyIssuesRequest, opts ...grpc.CallOption) (*ListMyIssuesResponse, error)
 	UpdateIssue(ctx context.Context, in *UpdateIssueRequest, opts ...grpc.CallOption) (*UpdateIssueResponse, error)
 	DeleteIssue(ctx context.Context, in *DeleteIssueRequest, opts ...grpc.CallOption) (*DeleteIssueResponse, error)
 	UpdateIssueStatus(ctx context.Context, in *UpdateIssueStatusRequest, opts ...grpc.CallOption) (*UpdateIssueStatusResponse, error)
@@ -231,6 +233,16 @@ func (c *baseServiceClient) ListIssues(ctx context.Context, in *ListIssuesReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListIssuesResponse)
 	err := c.cc.Invoke(ctx, BaseService_ListIssues_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *baseServiceClient) ListMyIssues(ctx context.Context, in *ListMyIssuesRequest, opts ...grpc.CallOption) (*ListMyIssuesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListMyIssuesResponse)
+	err := c.cc.Invoke(ctx, BaseService_ListMyIssues_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -448,6 +460,7 @@ type BaseServiceServer interface {
 	CreateIssue(context.Context, *CreateIssueRequest) (*CreateIssueResponse, error)
 	GetIssue(context.Context, *GetIssueRequest) (*GetIssueResponse, error)
 	ListIssues(context.Context, *ListIssuesRequest) (*ListIssuesResponse, error)
+	ListMyIssues(context.Context, *ListMyIssuesRequest) (*ListMyIssuesResponse, error)
 	UpdateIssue(context.Context, *UpdateIssueRequest) (*UpdateIssueResponse, error)
 	DeleteIssue(context.Context, *DeleteIssueRequest) (*DeleteIssueResponse, error)
 	UpdateIssueStatus(context.Context, *UpdateIssueStatusRequest) (*UpdateIssueStatusResponse, error)
@@ -519,6 +532,9 @@ func (UnimplementedBaseServiceServer) GetIssue(context.Context, *GetIssueRequest
 }
 func (UnimplementedBaseServiceServer) ListIssues(context.Context, *ListIssuesRequest) (*ListIssuesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListIssues not implemented")
+}
+func (UnimplementedBaseServiceServer) ListMyIssues(context.Context, *ListMyIssuesRequest) (*ListMyIssuesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMyIssues not implemented")
 }
 func (UnimplementedBaseServiceServer) UpdateIssue(context.Context, *UpdateIssueRequest) (*UpdateIssueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateIssue not implemented")
@@ -828,6 +844,24 @@ func _BaseService_ListIssues_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BaseServiceServer).ListIssues(ctx, req.(*ListIssuesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BaseService_ListMyIssues_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMyIssuesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BaseServiceServer).ListMyIssues(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BaseService_ListMyIssues_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BaseServiceServer).ListMyIssues(ctx, req.(*ListMyIssuesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1232,6 +1266,10 @@ var BaseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListIssues",
 			Handler:    _BaseService_ListIssues_Handler,
+		},
+		{
+			MethodName: "ListMyIssues",
+			Handler:    _BaseService_ListMyIssues_Handler,
 		},
 		{
 			MethodName: "UpdateIssue",

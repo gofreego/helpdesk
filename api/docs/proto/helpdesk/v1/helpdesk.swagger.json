@@ -537,6 +537,65 @@
         ]
       }
     },
+    "/helpdesk/v1/my-issues": {
+      "get": {
+        "summary": "List my issues",
+        "description": "List issues reported by the authenticated user (identified via the x-user-id header) for a product, optionally filtered by entity and entity_id.",
+        "operationId": "BaseService_ListMyIssues",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListMyIssuesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "Issues"
+        ]
+      }
+    },
     "/helpdesk/v1/ping": {
       "get": {
         "summary": "Ping the server",
@@ -1714,6 +1773,18 @@
       }
     },
     "v1ListIssuesResponse": {
+      "type": "object",
+      "properties": {
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Issue"
+          }
+        }
+      }
+    },
+    "v1ListMyIssuesResponse": {
       "type": "object",
       "properties": {
         "issues": {

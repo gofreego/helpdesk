@@ -18,6 +18,16 @@ func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 			ctx = context.WithValue(ctx, constants.ContextKeyUserID, userIDs[0])
 		}
 
+		// Extract x-profile-id (the active profile the request is acting as)
+		if profileIDs := md.Get(constants.HeaderProfileID); len(profileIDs) > 0 {
+			ctx = context.WithValue(ctx, constants.ContextKeyProfileID, profileIDs[0])
+		}
+
+		// Extract x-profile-ids (gateway-derived list of profiles authorized for the caller)
+		if profileIDs := md.Get(constants.HeaderProfileIDs); len(profileIDs) > 0 {
+			ctx = context.WithValue(ctx, constants.ContextKeyProfileIDs, profileIDs[0])
+		}
+
 		// Extract x-user-perms
 		if perms := md.Get(constants.HeaderUserPerms); len(perms) > 0 {
 			ctx = context.WithValue(ctx, constants.ContextKeyUserPerms, perms[0])
@@ -35,6 +45,16 @@ func HTTPAuthMiddleware(next http.Handler) http.Handler {
 		// Extract x-user-id
 		if userID := r.Header.Get(constants.HeaderUserID); userID != "" {
 			ctx = context.WithValue(ctx, constants.ContextKeyUserID, userID)
+		}
+
+		// Extract x-profile-id (the active profile the request is acting as)
+		if profileID := r.Header.Get(constants.HeaderProfileID); profileID != "" {
+			ctx = context.WithValue(ctx, constants.ContextKeyProfileID, profileID)
+		}
+
+		// Extract x-profile-ids (gateway-derived list of profiles authorized for the caller)
+		if profileIDs := r.Header.Get(constants.HeaderProfileIDs); profileIDs != "" {
+			ctx = context.WithValue(ctx, constants.ContextKeyProfileIDs, profileIDs)
 		}
 
 		// Extract x-user-perms

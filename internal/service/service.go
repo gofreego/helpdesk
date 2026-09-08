@@ -35,6 +35,7 @@ type Repository interface {
 	CreateIssue(ctx context.Context, issue *dao.Issue) error
 	GetIssue(ctx context.Context, id string) (*dao.Issue, error)
 	ListIssues(ctx context.Context, f *filter.IssueFilter) ([]*dao.Issue, error)
+	ListMyIssues(ctx context.Context, f *filter.MyIssuesFilter) ([]*dao.Issue, error)
 	UpdateIssue(ctx context.Context, issue *dao.Issue) error
 	DeleteIssue(ctx context.Context, id string) error
 
@@ -188,7 +189,7 @@ func (s *Service) CreateRating(ctx context.Context, req *helpdesk_v1.CreateRatin
 		return nil, status.Errorf(codes.InvalidArgument, "invalid rating score: %.1f. rating must be between 1.0 and %.1f", req.Rating, s.cfg.MaxRating)
 	}
 
-	userID, err := auth.GetUserID(ctx)
+	userID, err := auth.GetProfileOrUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -347,7 +348,7 @@ func (s *Service) CreateIssue(ctx context.Context, req *helpdesk_v1.CreateIssueR
 		return nil, err
 	}
 
-	userID, err := auth.GetUserID(ctx)
+	userID, err := auth.GetProfileOrUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -390,6 +391,35 @@ func (s *Service) ListIssues(ctx context.Context, req *helpdesk_v1.ListIssuesReq
 	}
 
 	return &helpdesk_v1.ListIssuesResponse{
+		Issues: dao.ToProtoIssues(issues),
+	}, nil
+}
+
+func (s *Service) ListMyIssues(ctx context.Context, req *helpdesk_v1.ListMyIssuesRequest) (*helpdesk_v1.ListMyIssuesResponse, error) {
+	userID, err := auth.GetProfileOrUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if req.ProductId == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "product_id is required")
+	}
+	if err := s.validateProduct(ctx, req.ProductId); err != nil {
+		return nil, err
+	}
+	if req.Entity != "" {
+		if err := s.validateProductEntity(ctx, req.ProductId, req.Entity); err != nil {
+			return nil, err
+		}
+	}
+
+	f := filter.FromProtoListMyIssuesRequest(userID, req)
+	issues, err := s.repo.ListMyIssues(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+
+	return &helpdesk_v1.ListMyIssuesResponse{
 		Issues: dao.ToProtoIssues(issues),
 	}, nil
 }
@@ -711,7 +741,7 @@ func (s *Service) DeleteProductIssueType(ctx context.Context, req *helpdesk_v1.D
 // ===== Issue Reply Handlers =====
 
 func (s *Service) CreateIssueReply(ctx context.Context, req *helpdesk_v1.CreateIssueReplyRequest) (*helpdesk_v1.CreateIssueReplyResponse, error) {
-	userID, err := auth.GetUserID(ctx)
+	userID, err := auth.GetProfileOrUserID(ctx)
 	if err != nil {
 		return nil, err
 	}

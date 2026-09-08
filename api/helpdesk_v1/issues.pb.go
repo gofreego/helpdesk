@@ -615,6 +615,126 @@ func (x *ListIssuesResponse) GetIssues() []*Issue {
 	return nil
 }
 
+type ListMyIssuesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProductId     int32                  `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Entity        string                 `protobuf:"bytes,2,opt,name=entity,proto3" json:"entity,omitempty"`
+	EntityId      string                 `protobuf:"bytes,3,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
+	Limit         int32                  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int32                  `protobuf:"varint,5,opt,name=offset,proto3" json:"offset,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMyIssuesRequest) Reset() {
+	*x = ListMyIssuesRequest{}
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMyIssuesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMyIssuesRequest) ProtoMessage() {}
+
+func (x *ListMyIssuesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMyIssuesRequest.ProtoReflect.Descriptor instead.
+func (*ListMyIssuesRequest) Descriptor() ([]byte, []int) {
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListMyIssuesRequest) GetProductId() int32 {
+	if x != nil {
+		return x.ProductId
+	}
+	return 0
+}
+
+func (x *ListMyIssuesRequest) GetEntity() string {
+	if x != nil {
+		return x.Entity
+	}
+	return ""
+}
+
+func (x *ListMyIssuesRequest) GetEntityId() string {
+	if x != nil {
+		return x.EntityId
+	}
+	return ""
+}
+
+func (x *ListMyIssuesRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *ListMyIssuesRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+type ListMyIssuesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Issues        []*Issue               `protobuf:"bytes,1,rep,name=issues,proto3" json:"issues,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMyIssuesResponse) Reset() {
+	*x = ListMyIssuesResponse{}
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMyIssuesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMyIssuesResponse) ProtoMessage() {}
+
+func (x *ListMyIssuesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMyIssuesResponse.ProtoReflect.Descriptor instead.
+func (*ListMyIssuesResponse) Descriptor() ([]byte, []int) {
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListMyIssuesResponse) GetIssues() []*Issue {
+	if x != nil {
+		return x.Issues
+	}
+	return nil
+}
+
 type UpdateIssueRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -627,7 +747,7 @@ type UpdateIssueRequest struct {
 
 func (x *UpdateIssueRequest) Reset() {
 	*x = UpdateIssueRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[8]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -639,7 +759,7 @@ func (x *UpdateIssueRequest) String() string {
 func (*UpdateIssueRequest) ProtoMessage() {}
 
 func (x *UpdateIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[8]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -652,7 +772,7 @@ func (x *UpdateIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateIssueRequest.ProtoReflect.Descriptor instead.
 func (*UpdateIssueRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{8}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateIssueRequest) GetId() string {
@@ -692,7 +812,7 @@ type UpdateIssueResponse struct {
 
 func (x *UpdateIssueResponse) Reset() {
 	*x = UpdateIssueResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[9]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -704,7 +824,7 @@ func (x *UpdateIssueResponse) String() string {
 func (*UpdateIssueResponse) ProtoMessage() {}
 
 func (x *UpdateIssueResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[9]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -717,7 +837,7 @@ func (x *UpdateIssueResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateIssueResponse.ProtoReflect.Descriptor instead.
 func (*UpdateIssueResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{9}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateIssueResponse) GetIssue() *Issue {
@@ -736,7 +856,7 @@ type DeleteIssueRequest struct {
 
 func (x *DeleteIssueRequest) Reset() {
 	*x = DeleteIssueRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[10]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -748,7 +868,7 @@ func (x *DeleteIssueRequest) String() string {
 func (*DeleteIssueRequest) ProtoMessage() {}
 
 func (x *DeleteIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[10]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -761,7 +881,7 @@ func (x *DeleteIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteIssueRequest.ProtoReflect.Descriptor instead.
 func (*DeleteIssueRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{10}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteIssueRequest) GetId() string {
@@ -780,7 +900,7 @@ type DeleteIssueResponse struct {
 
 func (x *DeleteIssueResponse) Reset() {
 	*x = DeleteIssueResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[11]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -792,7 +912,7 @@ func (x *DeleteIssueResponse) String() string {
 func (*DeleteIssueResponse) ProtoMessage() {}
 
 func (x *DeleteIssueResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[11]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -805,7 +925,7 @@ func (x *DeleteIssueResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteIssueResponse.ProtoReflect.Descriptor instead.
 func (*DeleteIssueResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{11}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DeleteIssueResponse) GetSuccess() bool {
@@ -825,7 +945,7 @@ type CreateIssueReplyRequest struct {
 
 func (x *CreateIssueReplyRequest) Reset() {
 	*x = CreateIssueReplyRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[12]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -837,7 +957,7 @@ func (x *CreateIssueReplyRequest) String() string {
 func (*CreateIssueReplyRequest) ProtoMessage() {}
 
 func (x *CreateIssueReplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[12]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -850,7 +970,7 @@ func (x *CreateIssueReplyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateIssueReplyRequest.ProtoReflect.Descriptor instead.
 func (*CreateIssueReplyRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{12}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CreateIssueReplyRequest) GetIssueId() string {
@@ -876,7 +996,7 @@ type CreateIssueReplyResponse struct {
 
 func (x *CreateIssueReplyResponse) Reset() {
 	*x = CreateIssueReplyResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[13]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -888,7 +1008,7 @@ func (x *CreateIssueReplyResponse) String() string {
 func (*CreateIssueReplyResponse) ProtoMessage() {}
 
 func (x *CreateIssueReplyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[13]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -901,7 +1021,7 @@ func (x *CreateIssueReplyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateIssueReplyResponse.ProtoReflect.Descriptor instead.
 func (*CreateIssueReplyResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{13}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CreateIssueReplyResponse) GetReply() *IssueReply {
@@ -922,7 +1042,7 @@ type ListIssueRepliesRequest struct {
 
 func (x *ListIssueRepliesRequest) Reset() {
 	*x = ListIssueRepliesRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[14]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -934,7 +1054,7 @@ func (x *ListIssueRepliesRequest) String() string {
 func (*ListIssueRepliesRequest) ProtoMessage() {}
 
 func (x *ListIssueRepliesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[14]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -947,7 +1067,7 @@ func (x *ListIssueRepliesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssueRepliesRequest.ProtoReflect.Descriptor instead.
 func (*ListIssueRepliesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{14}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListIssueRepliesRequest) GetIssueId() string {
@@ -980,7 +1100,7 @@ type ListIssueRepliesResponse struct {
 
 func (x *ListIssueRepliesResponse) Reset() {
 	*x = ListIssueRepliesResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[15]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -992,7 +1112,7 @@ func (x *ListIssueRepliesResponse) String() string {
 func (*ListIssueRepliesResponse) ProtoMessage() {}
 
 func (x *ListIssueRepliesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[15]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1005,7 +1125,7 @@ func (x *ListIssueRepliesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssueRepliesResponse.ProtoReflect.Descriptor instead.
 func (*ListIssueRepliesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{15}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListIssueRepliesResponse) GetReplies() []*IssueReply {
@@ -1024,7 +1144,7 @@ type DeleteIssueReplyRequest struct {
 
 func (x *DeleteIssueReplyRequest) Reset() {
 	*x = DeleteIssueReplyRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[16]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1036,7 +1156,7 @@ func (x *DeleteIssueReplyRequest) String() string {
 func (*DeleteIssueReplyRequest) ProtoMessage() {}
 
 func (x *DeleteIssueReplyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[16]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1049,7 +1169,7 @@ func (x *DeleteIssueReplyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteIssueReplyRequest.ProtoReflect.Descriptor instead.
 func (*DeleteIssueReplyRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{16}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *DeleteIssueReplyRequest) GetId() string {
@@ -1068,7 +1188,7 @@ type DeleteIssueReplyResponse struct {
 
 func (x *DeleteIssueReplyResponse) Reset() {
 	*x = DeleteIssueReplyResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[17]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1080,7 +1200,7 @@ func (x *DeleteIssueReplyResponse) String() string {
 func (*DeleteIssueReplyResponse) ProtoMessage() {}
 
 func (x *DeleteIssueReplyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[17]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1093,7 +1213,7 @@ func (x *DeleteIssueReplyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteIssueReplyResponse.ProtoReflect.Descriptor instead.
 func (*DeleteIssueReplyResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{17}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *DeleteIssueReplyResponse) GetSuccess() bool {
@@ -1113,7 +1233,7 @@ type UpdateIssueStatusRequest struct {
 
 func (x *UpdateIssueStatusRequest) Reset() {
 	*x = UpdateIssueStatusRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[18]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1125,7 +1245,7 @@ func (x *UpdateIssueStatusRequest) String() string {
 func (*UpdateIssueStatusRequest) ProtoMessage() {}
 
 func (x *UpdateIssueStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[18]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1138,7 +1258,7 @@ func (x *UpdateIssueStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateIssueStatusRequest.ProtoReflect.Descriptor instead.
 func (*UpdateIssueStatusRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{18}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *UpdateIssueStatusRequest) GetId() string {
@@ -1164,7 +1284,7 @@ type UpdateIssueStatusResponse struct {
 
 func (x *UpdateIssueStatusResponse) Reset() {
 	*x = UpdateIssueStatusResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[19]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1176,7 +1296,7 @@ func (x *UpdateIssueStatusResponse) String() string {
 func (*UpdateIssueStatusResponse) ProtoMessage() {}
 
 func (x *UpdateIssueStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[19]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1189,7 +1309,7 @@ func (x *UpdateIssueStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateIssueStatusResponse.ProtoReflect.Descriptor instead.
 func (*UpdateIssueStatusResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{19}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *UpdateIssueStatusResponse) GetIssue() *Issue {
@@ -1209,7 +1329,7 @@ type UpdateIssuePriorityRequest struct {
 
 func (x *UpdateIssuePriorityRequest) Reset() {
 	*x = UpdateIssuePriorityRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[20]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1221,7 +1341,7 @@ func (x *UpdateIssuePriorityRequest) String() string {
 func (*UpdateIssuePriorityRequest) ProtoMessage() {}
 
 func (x *UpdateIssuePriorityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[20]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1234,7 +1354,7 @@ func (x *UpdateIssuePriorityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateIssuePriorityRequest.ProtoReflect.Descriptor instead.
 func (*UpdateIssuePriorityRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{20}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *UpdateIssuePriorityRequest) GetId() string {
@@ -1260,7 +1380,7 @@ type UpdateIssuePriorityResponse struct {
 
 func (x *UpdateIssuePriorityResponse) Reset() {
 	*x = UpdateIssuePriorityResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[21]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1272,7 +1392,7 @@ func (x *UpdateIssuePriorityResponse) String() string {
 func (*UpdateIssuePriorityResponse) ProtoMessage() {}
 
 func (x *UpdateIssuePriorityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[21]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1285,7 +1405,7 @@ func (x *UpdateIssuePriorityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateIssuePriorityResponse.ProtoReflect.Descriptor instead.
 func (*UpdateIssuePriorityResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{21}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *UpdateIssuePriorityResponse) GetIssue() *Issue {
@@ -1303,7 +1423,7 @@ type ListIssueConfigRequest struct {
 
 func (x *ListIssueConfigRequest) Reset() {
 	*x = ListIssueConfigRequest{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[22]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1315,7 +1435,7 @@ func (x *ListIssueConfigRequest) String() string {
 func (*ListIssueConfigRequest) ProtoMessage() {}
 
 func (x *ListIssueConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[22]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1328,7 +1448,7 @@ func (x *ListIssueConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssueConfigRequest.ProtoReflect.Descriptor instead.
 func (*ListIssueConfigRequest) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{22}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{24}
 }
 
 type ListIssueConfigResponse struct {
@@ -1342,7 +1462,7 @@ type ListIssueConfigResponse struct {
 
 func (x *ListIssueConfigResponse) Reset() {
 	*x = ListIssueConfigResponse{}
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[23]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1354,7 +1474,7 @@ func (x *ListIssueConfigResponse) String() string {
 func (*ListIssueConfigResponse) ProtoMessage() {}
 
 func (x *ListIssueConfigResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[23]
+	mi := &file_proto_helpdesk_v1_issues_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1367,7 +1487,7 @@ func (x *ListIssueConfigResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssueConfigResponse.ProtoReflect.Descriptor instead.
 func (*ListIssueConfigResponse) Descriptor() ([]byte, []int) {
-	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{23}
+	return file_proto_helpdesk_v1_issues_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ListIssueConfigResponse) GetEntities() []string {
@@ -1451,6 +1571,15 @@ const file_proto_helpdesk_v1_issues_proto_rawDesc = "" +
 	"issue_type\x18\r \x01(\tR\tissueType\x12\x1a\n" +
 	"\bpriority\x18\x0e \x01(\x05R\bpriority\"7\n" +
 	"\x12ListIssuesResponse\x12!\n" +
+	"\x06issues\x18\x01 \x03(\v2\t.v1.IssueR\x06issues\"\x97\x01\n" +
+	"\x13ListMyIssuesRequest\x12\x1d\n" +
+	"\n" +
+	"product_id\x18\x01 \x01(\x05R\tproductId\x12\x16\n" +
+	"\x06entity\x18\x02 \x01(\tR\x06entity\x12\x1b\n" +
+	"\tentity_id\x18\x03 \x01(\tR\bentityId\x12\x14\n" +
+	"\x05limit\x18\x04 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x06offset\x18\x05 \x01(\x05R\x06offset\"9\n" +
+	"\x14ListMyIssuesResponse\x12!\n" +
 	"\x06issues\x18\x01 \x03(\v2\t.v1.IssueR\x06issues\"\x81\x01\n" +
 	"\x12UpdateIssueRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
@@ -1508,7 +1637,7 @@ func file_proto_helpdesk_v1_issues_proto_rawDescGZIP() []byte {
 	return file_proto_helpdesk_v1_issues_proto_rawDescData
 }
 
-var file_proto_helpdesk_v1_issues_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_proto_helpdesk_v1_issues_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_proto_helpdesk_v1_issues_proto_goTypes = []any{
 	(*Issue)(nil),                       // 0: v1.Issue
 	(*IssueReply)(nil),                  // 1: v1.IssueReply
@@ -1518,37 +1647,40 @@ var file_proto_helpdesk_v1_issues_proto_goTypes = []any{
 	(*GetIssueResponse)(nil),            // 5: v1.GetIssueResponse
 	(*ListIssuesRequest)(nil),           // 6: v1.ListIssuesRequest
 	(*ListIssuesResponse)(nil),          // 7: v1.ListIssuesResponse
-	(*UpdateIssueRequest)(nil),          // 8: v1.UpdateIssueRequest
-	(*UpdateIssueResponse)(nil),         // 9: v1.UpdateIssueResponse
-	(*DeleteIssueRequest)(nil),          // 10: v1.DeleteIssueRequest
-	(*DeleteIssueResponse)(nil),         // 11: v1.DeleteIssueResponse
-	(*CreateIssueReplyRequest)(nil),     // 12: v1.CreateIssueReplyRequest
-	(*CreateIssueReplyResponse)(nil),    // 13: v1.CreateIssueReplyResponse
-	(*ListIssueRepliesRequest)(nil),     // 14: v1.ListIssueRepliesRequest
-	(*ListIssueRepliesResponse)(nil),    // 15: v1.ListIssueRepliesResponse
-	(*DeleteIssueReplyRequest)(nil),     // 16: v1.DeleteIssueReplyRequest
-	(*DeleteIssueReplyResponse)(nil),    // 17: v1.DeleteIssueReplyResponse
-	(*UpdateIssueStatusRequest)(nil),    // 18: v1.UpdateIssueStatusRequest
-	(*UpdateIssueStatusResponse)(nil),   // 19: v1.UpdateIssueStatusResponse
-	(*UpdateIssuePriorityRequest)(nil),  // 20: v1.UpdateIssuePriorityRequest
-	(*UpdateIssuePriorityResponse)(nil), // 21: v1.UpdateIssuePriorityResponse
-	(*ListIssueConfigRequest)(nil),      // 22: v1.ListIssueConfigRequest
-	(*ListIssueConfigResponse)(nil),     // 23: v1.ListIssueConfigResponse
+	(*ListMyIssuesRequest)(nil),         // 8: v1.ListMyIssuesRequest
+	(*ListMyIssuesResponse)(nil),        // 9: v1.ListMyIssuesResponse
+	(*UpdateIssueRequest)(nil),          // 10: v1.UpdateIssueRequest
+	(*UpdateIssueResponse)(nil),         // 11: v1.UpdateIssueResponse
+	(*DeleteIssueRequest)(nil),          // 12: v1.DeleteIssueRequest
+	(*DeleteIssueResponse)(nil),         // 13: v1.DeleteIssueResponse
+	(*CreateIssueReplyRequest)(nil),     // 14: v1.CreateIssueReplyRequest
+	(*CreateIssueReplyResponse)(nil),    // 15: v1.CreateIssueReplyResponse
+	(*ListIssueRepliesRequest)(nil),     // 16: v1.ListIssueRepliesRequest
+	(*ListIssueRepliesResponse)(nil),    // 17: v1.ListIssueRepliesResponse
+	(*DeleteIssueReplyRequest)(nil),     // 18: v1.DeleteIssueReplyRequest
+	(*DeleteIssueReplyResponse)(nil),    // 19: v1.DeleteIssueReplyResponse
+	(*UpdateIssueStatusRequest)(nil),    // 20: v1.UpdateIssueStatusRequest
+	(*UpdateIssueStatusResponse)(nil),   // 21: v1.UpdateIssueStatusResponse
+	(*UpdateIssuePriorityRequest)(nil),  // 22: v1.UpdateIssuePriorityRequest
+	(*UpdateIssuePriorityResponse)(nil), // 23: v1.UpdateIssuePriorityResponse
+	(*ListIssueConfigRequest)(nil),      // 24: v1.ListIssueConfigRequest
+	(*ListIssueConfigResponse)(nil),     // 25: v1.ListIssueConfigResponse
 }
 var file_proto_helpdesk_v1_issues_proto_depIdxs = []int32{
 	0, // 0: v1.CreateIssueResponse.issue:type_name -> v1.Issue
 	0, // 1: v1.GetIssueResponse.issue:type_name -> v1.Issue
 	0, // 2: v1.ListIssuesResponse.issues:type_name -> v1.Issue
-	0, // 3: v1.UpdateIssueResponse.issue:type_name -> v1.Issue
-	1, // 4: v1.CreateIssueReplyResponse.reply:type_name -> v1.IssueReply
-	1, // 5: v1.ListIssueRepliesResponse.replies:type_name -> v1.IssueReply
-	0, // 6: v1.UpdateIssueStatusResponse.issue:type_name -> v1.Issue
-	0, // 7: v1.UpdateIssuePriorityResponse.issue:type_name -> v1.Issue
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	0, // 3: v1.ListMyIssuesResponse.issues:type_name -> v1.Issue
+	0, // 4: v1.UpdateIssueResponse.issue:type_name -> v1.Issue
+	1, // 5: v1.CreateIssueReplyResponse.reply:type_name -> v1.IssueReply
+	1, // 6: v1.ListIssueRepliesResponse.replies:type_name -> v1.IssueReply
+	0, // 7: v1.UpdateIssueStatusResponse.issue:type_name -> v1.Issue
+	0, // 8: v1.UpdateIssuePriorityResponse.issue:type_name -> v1.Issue
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_proto_helpdesk_v1_issues_proto_init() }
@@ -1562,7 +1694,7 @@ func file_proto_helpdesk_v1_issues_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_helpdesk_v1_issues_proto_rawDesc), len(file_proto_helpdesk_v1_issues_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   24,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

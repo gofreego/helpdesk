@@ -96,6 +96,39 @@ func (r *PostgresRepository) ListIssues(ctx context.Context, f *filter.IssueFilt
 	return issues, rows.Err()
 }
 
+func (r *PostgresRepository) ListMyIssues(ctx context.Context, f *filter.MyIssuesFilter) ([]*dao.Issue, error) {
+	f.WithDefaults()
+
+	query := `
+		SELECT id, user_id, product_id, entity, entity_id, title, description, status, created_at, updated_at, issue_type, priority
+		FROM issues
+		WHERE user_id = $1
+		  AND product_id = $2
+		  AND ($3::text = '' OR entity = $3)
+		  AND ($4::text = '' OR entity_id = $4)
+		ORDER BY created_at DESC
+		LIMIT $5 OFFSET $6`
+
+	rows, err := r.db.QueryContext(ctx, query,
+		f.UserID, f.ProductID, f.Entity, f.EntityID, f.Limit, f.Offset)
+	if err != nil {
+		logger.Error(ctx, "failed to list my issues: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list issues: %v", err)
+	}
+	defer rows.Close()
+
+	var issues []*dao.Issue
+	for rows.Next() {
+		issue := &dao.Issue{}
+		if err := issue.Scan(rows); err != nil {
+			logger.Error(ctx, "failed to scan issue: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to scan issue: %v", err)
+		}
+		issues = append(issues, issue)
+	}
+	return issues, rows.Err()
+}
+
 func (r *PostgresRepository) UpdateIssue(ctx context.Context, issue *dao.Issue) error {
 	issue.UpdatedAt = time.Now().UnixMilli()
 

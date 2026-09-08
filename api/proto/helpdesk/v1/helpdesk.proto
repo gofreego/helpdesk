@@ -237,6 +237,17 @@ service BaseService {
         };
     }
 
+    rpc ListMyIssues (ListMyIssuesRequest) returns (ListMyIssuesResponse) {
+        option (google.api.http) = {
+            get: "/helpdesk/v1/my-issues"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: "Issues"
+            summary: "List my issues"
+            description: "List issues reported by the authenticated user (identified via the x-user-id header) for a product, optionally filtered by entity and entity_id."
+        };
+    }
+
     rpc UpdateIssue (UpdateIssueRequest) returns (UpdateIssueResponse) {
         option (google.api.http) = {
             put: "/helpdesk/v1/issues/{id}"
