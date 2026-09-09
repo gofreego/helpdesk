@@ -200,7 +200,7 @@ const IssueDetail = () => {
         const data = await fetchIssueById(id);
         setIssue(data.issue);
         setNewStatus(data.issue.status);
-        setEditData({ title: data.issue.title, description: data.issue.description });
+        setEditData({ title: data.issue.title || '', description: data.issue.description || '' });
       } catch (error) {
         console.error('Error fetching issue:', error);
         showNotification(error.message || 'Failed to fetch issue details', 'error');
