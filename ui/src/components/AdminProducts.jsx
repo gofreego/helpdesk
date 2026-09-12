@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -19,6 +20,7 @@ import { useNotification, extractErrorMessage } from '@gofreego/tsutils';
 import { adminService } from '../services';
 
 export function AdminProducts() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -148,6 +150,12 @@ export function AdminProducts() {
                   />
                 </TableCell>
                 <TableCell>
+                  <Button
+                    size="small"
+                    onClick={() => navigate(`/helpdesk/admin/products/${product.id}`)}
+                  >
+                    Manage
+                  </Button>
                   <Button
                     size="small"
                     color="primary"
