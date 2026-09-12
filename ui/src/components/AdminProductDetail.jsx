@@ -63,7 +63,7 @@ export function AdminProductDetail() {
       setEntities(entitiesRes.data.entities || []);
 
       const issueTypesRes = await adminService.listProductIssueTypes(productId);
-      setIssueTypes(issueTypesRes.data.issue_types || []);
+      setIssueTypes(issueTypesRes.data.issueTypes || []);
     } catch (error) {
       console.error('Error fetching product data:', error);
       showNotification(extractErrorMessage(error) || 'Failed to load product data', 'error');
@@ -78,14 +78,14 @@ export function AdminProductDetail() {
       setEditingId(item.id);
       if (type === 'entity') {
         setFormData({
-          entity_name: item.entity_name,
+          entity_name: item.entityName,
           type_name: '',
           description: item.description,
         });
       } else {
         setFormData({
           entity_name: '',
-          type_name: item.type_name,
+          type_name: item.typeName,
           description: item.description,
         });
       }
@@ -173,7 +173,7 @@ export function AdminProductDetail() {
         <CardContent>
           <h2>{product.name}</h2>
           <p>{product.description}</p>
-          <p>Status: {product.is_active ? 'Active' : 'Inactive'}</p>
+          <p>Status: {product.isActive ? 'Active' : 'Inactive'}</p>
         </CardContent>
       </Card>
 
@@ -208,7 +208,7 @@ export function AdminProductDetail() {
             <TableBody>
               {entities.map((entity) => (
                 <TableRow key={entity.id} hover>
-                  <TableCell>{entity.entity_name}</TableCell>
+                  <TableCell>{entity.entityName}</TableCell>
                   <TableCell>{entity.description}</TableCell>
                   <TableCell>
                     <Button
@@ -250,7 +250,7 @@ export function AdminProductDetail() {
             <TableBody>
               {issueTypes.map((type) => (
                 <TableRow key={type.id} hover>
-                  <TableCell>{type.type_name}</TableCell>
+                  <TableCell>{type.typeName}</TableCell>
                   <TableCell>{type.description}</TableCell>
                   <TableCell>
                     <Button

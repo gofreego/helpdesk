@@ -3,28 +3,28 @@ import { httpClient } from '../utils/httpClient';
 const API_BASE_URL = '/helpdesk/v1';
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
-  is_active: boolean;
-  created_at: number;
-  updated_at: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProductEntity {
-  id: number;
-  product_id: number;
-  entity_name: string;
+  id: string;
+  productId: string;
+  entityName: string;
   description: string;
-  created_at: number;
+  createdAt: string;
 }
 
 export interface ProductIssueType {
-  id: number;
-  product_id: number;
-  type_name: string;
+  id: string;
+  productId: string;
+  typeName: string;
   description: string;
-  created_at: number;
+  createdAt: string;
 }
 
 export const adminService = {
@@ -37,7 +37,7 @@ export const adminService = {
       `${API_BASE_URL}/products?page=${page}&page_size=${pageSize}`
     ),
 
-  createProduct: (data: Omit<Product, 'created_at' | 'updated_at'>) =>
+  createProduct: (data: Omit<Product, 'createdAt' | 'updatedAt'>) =>
     httpClient.post<{ product: Product }>(`${API_BASE_URL}/products`, data),
 
   updateProduct: (id: number, data: Partial<Product>) =>
@@ -52,7 +52,7 @@ export const adminService = {
       `${API_BASE_URL}/products/${productId}/entities?page=${page}&page_size=${pageSize}`
     ),
 
-  createProductEntity: (productId: number, data: Omit<ProductEntity, 'id' | 'created_at'>) =>
+  createProductEntity: (productId: number, data: Omit<ProductEntity, 'id' | 'createdAt'>) =>
     httpClient.post<{ entity: ProductEntity }>(
       `${API_BASE_URL}/products/${productId}/entities`,
       data
@@ -63,12 +63,12 @@ export const adminService = {
 
   // Product Issue Types
   listProductIssueTypes: (productId: number, page: number = 1, pageSize: number = 10) =>
-    httpClient.get<{ issue_types: ProductIssueType[] }>(
+    httpClient.get<{ issueTypes: ProductIssueType[] }>(
       `${API_BASE_URL}/products/${productId}/issue-types?page=${page}&page_size=${pageSize}`
     ),
 
-  createProductIssueType: (productId: number, data: Omit<ProductIssueType, 'id' | 'created_at'>) =>
-    httpClient.post<{ issue_type: ProductIssueType }>(
+  createProductIssueType: (productId: number, data: Omit<ProductIssueType, 'id' | 'createdAt'>) =>
+    httpClient.post<{ issueType: ProductIssueType }>(
       `${API_BASE_URL}/products/${productId}/issue-types`,
       data
     ),

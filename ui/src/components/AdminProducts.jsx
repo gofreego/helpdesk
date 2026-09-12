@@ -32,7 +32,7 @@ export function AdminProducts() {
     id: '',
     name: '',
     description: '',
-    is_active: true,
+    isActive: true,
   });
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export function AdminProducts() {
         id: '',
         name: '',
         description: '',
-        is_active: true,
+        isActive: true,
       });
     }
     setOpenDialog(true);
@@ -144,8 +144,8 @@ export function AdminProducts() {
                 <TableCell>{product.description}</TableCell>
                 <TableCell>
                   <Chip
-                    label={product.is_active ? 'Active' : 'Inactive'}
-                    color={product.is_active ? 'success' : 'default'}
+                    label={product.isActive ? 'Active' : 'Inactive'}
+                    color={product.isActive ? 'success' : 'default'}
                     size="small"
                   />
                 </TableCell>
@@ -215,8 +215,8 @@ export function AdminProducts() {
           <FormControlLabel
             control={
               <Checkbox
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                checked={formData.isActive}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
               />
             }
             label="Active"
