@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: helpdesk
-          image: ghcr.io/gofreego/helpdesk:pilot-1601384
+          image: ghcr.io/gofreego/helpdesk:pilot-7d3642f
           imagePullPolicy: Always
           ports:
             - name: http
