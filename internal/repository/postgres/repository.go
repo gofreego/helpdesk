@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/gofreego/goutils/databases/connections/pgsql"
+	"github.com/gofreego/goutils/databases/connections/sql/pgsql"
 	"github.com/gofreego/goutils/logger"
 )
 

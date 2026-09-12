@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/gofreego/goutils/logger"
+	"github.com/gofreego/goutils/metrics"
 	"github.com/gofreego/helpdesk/api/helpdesk_v1"
 	"github.com/gofreego/helpdesk/internal/configs"
 	"github.com/gofreego/helpdesk/internal/middleware"
@@ -45,7 +46,7 @@ func (a *GRPCServer) Run(ctx context.Context) error {
 
 	// Create a new gRPC server with auth interceptor
 	a.server = grpc.NewServer(
-		grpc.UnaryInterceptor(middleware.AuthInterceptor),
+		grpc.ChainUnaryInterceptor(metrics.UnaryServerInterceptor(), middleware.AuthInterceptor),
 	)
 
 	helpdesk_v1.RegisterBaseServiceServer(a.server, service)
