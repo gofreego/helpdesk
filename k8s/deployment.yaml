@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: helpdesk
-          image: ghcr.io/gofreego/helpdesk:pilot-7d3642f
+          image: ghcr.io/gofreego/helpdesk:pilot-58bb012
           imagePullPolicy: Always
           command:
             - /app/application
